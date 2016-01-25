@@ -1,9 +1,5 @@
 package kz.greetgo.mvc.jetty.utils;
 
-import kz.greetgo.mvc.jetty.ControllerHandler;
-import kz.greetgo.mvc.jetty.JettyRequestTunnel;
-import kz.greetgo.mvc.jetty.RequestTunnel;
-import kz.greetgo.mvc.jetty.probes.ProbeController;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -17,17 +13,10 @@ import java.util.Enumeration;
 
 public class MyHandler extends AbstractHandler {
 
-  private final ControllerHandler controllerHandler = ControllerHandler.create(new ProbeController(), null);
 
   @Override
   public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
-
-
-    final RequestTunnel tunnel = new JettyRequestTunnel(target, baseRequest, request, response);
-
-    if (controllerHandler.handleTunnel(tunnel)) return;
-
 
     if ("/goto1.html".equals(target)) {
 

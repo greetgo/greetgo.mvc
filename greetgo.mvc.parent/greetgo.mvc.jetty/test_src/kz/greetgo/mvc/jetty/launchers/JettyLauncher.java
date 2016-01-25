@@ -14,7 +14,7 @@ public class JettyLauncher {
 
     String warDir = "test_war";
     {
-      String prj = "greetgo.depinject.mvc/";
+      String prj = "greetgo.mvc.jetty/";
       if (new File(prj).isDirectory()) {
         warDir = prj + warDir;
       }

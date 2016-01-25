@@ -5,7 +5,7 @@ import kz.greetgo.mvc.jetty.JettyControllerHandler;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc1;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc2;
 import kz.greetgo.mvc.jetty.utils.MultipartInjectionHandler;
-import kz.greetgo.mvc.jetty.probes.ProbeViews;
+import kz.greetgo.mvc.jetty.utils.ProbeViews;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;

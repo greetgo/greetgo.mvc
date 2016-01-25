@@ -85,9 +85,16 @@ public class ControllerHandler extends TunnelHandlerList {
               }
             }
 
+            e.printStackTrace();
+
             {
-              views.errorView(tunnel.getResponseOutputStream(), tunnel.getTarget(), e);
-              e.printStackTrace();
+
+              try {
+                views.errorView(tunnel.getResponseOutputStream(), tunnel.getTarget(), e);
+              } catch (Exception e1) {
+                throw new RuntimeException(e1);
+              }
+
               return true;
             }
           }
@@ -98,7 +105,7 @@ public class ControllerHandler extends TunnelHandlerList {
 
     private void executeView(Object controllerMethodResult, MvcModel model,
                              RequestTunnel tunnel, MappingResult mappingResult,
-                             Method method) {
+                             Method method) throws Exception {
 
       if (controllerMethodResult instanceof Redirect) {
         Redirect r = (Redirect) controllerMethodResult;
