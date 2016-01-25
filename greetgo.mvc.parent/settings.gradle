@@ -1,1 +1,2 @@
 include 'greetgo.mvc'
+include 'greetgo.mvc.jetty'
