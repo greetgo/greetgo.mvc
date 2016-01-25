@@ -97,6 +97,11 @@ public class ControllerTunnelHandlerBuilder {
               }
             }
           }
+
+          @Override
+          public MultipartConf getMultipartConf() {
+            return null;
+          }
         };
 
 

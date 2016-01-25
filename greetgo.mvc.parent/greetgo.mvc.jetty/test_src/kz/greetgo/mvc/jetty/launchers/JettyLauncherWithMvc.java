@@ -2,8 +2,6 @@ package kz.greetgo.mvc.jetty.launchers;
 
 import kz.greetgo.mvc.jetty.ControllerTunnelHandlerBuilder;
 import kz.greetgo.mvc.jetty.JettyControllerHandler;
-import kz.greetgo.mvc.jetty.MultipartConf;
-import kz.greetgo.mvc.jetty.TunnelHandlerGetter;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc1;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc2;
 import kz.greetgo.mvc.jetty.utils.ProbeViews;
@@ -12,8 +10,6 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class JettyLauncherWithMvc {
 
@@ -38,13 +34,16 @@ public class JettyLauncherWithMvc {
     }
     {
       final ProbeViews views = new ProbeViews();
-      final List<TunnelHandlerGetter> controllerHandlerList = new ArrayList<>();
-      controllerHandlerList.addAll(ControllerTunnelHandlerBuilder.build(new ControllerForJettyLauncherWithMvc1(), views));
-      controllerHandlerList.addAll(ControllerTunnelHandlerBuilder.build(new ControllerForJettyLauncherWithMvc2(), views));
 
-      MultipartConf multipartConf = new MultipartConf();
-      multipartConf.fileSizeThreshold = 1000;
-      handlerList.addHandler(new JettyControllerHandler(controllerHandlerList, multipartConf));
+      final ControllerForJettyLauncherWithMvc1 c1 = new ControllerForJettyLauncherWithMvc1();
+      final ControllerForJettyLauncherWithMvc2 c2 = new ControllerForJettyLauncherWithMvc2();
+
+      final JettyControllerHandler controllerHandler = new JettyControllerHandler();
+
+      controllerHandler.tunnelHandlerGetters.addAll(ControllerTunnelHandlerBuilder.build(c1, views));
+      controllerHandler.tunnelHandlerGetters.addAll(ControllerTunnelHandlerBuilder.build(c2, views));
+
+      handlerList.addHandler(controllerHandler);
     }
 
     {

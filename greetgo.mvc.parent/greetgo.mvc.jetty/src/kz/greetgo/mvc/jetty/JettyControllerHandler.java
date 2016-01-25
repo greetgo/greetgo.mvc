@@ -17,40 +17,39 @@ import java.util.Collection;
 import java.util.List;
 
 public final class JettyControllerHandler extends AbstractHandler {
-  private final MultipartConfigElement multiPartConfig;
-
   public static final String MULTIPART_FORM_DATA_TYPE = "multipart/form-data";
 
   public static boolean isMultipartRequest(ServletRequest request) {
     return request.getContentType() != null && request.getContentType().startsWith(MULTIPART_FORM_DATA_TYPE);
   }
 
-  private void enableMultipartSupport(HttpServletRequest request) {
+  private static void enableMultipartSupport(HttpServletRequest request, MultipartConfigElement multiPartConfig) {
     request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, multiPartConfig);
   }
 
-  private final List<TunnelHandlerGetter> tunnelHandlerGetters = new ArrayList<>();
-
-  public JettyControllerHandler(Collection<TunnelHandlerGetter> handlers, MultipartConf multipartConf) {
-    tunnelHandlerGetters.addAll(handlers);
-    if (multipartConf == null) multipartConf = new MultipartConf();
-    multiPartConfig = new MultipartConfigElement(multipartConf.location, multipartConf.maxFileSize,
-      multipartConf.maxRequestSize, multipartConf.fileSizeThreshold);
-  }
-
-  public JettyControllerHandler(Collection<TunnelHandlerGetter> handlers) {
-    this(handlers, null);
-  }
+  public final List<TunnelHandlerGetter> tunnelHandlerGetters = new ArrayList<>();
 
   @Override
   public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
 
+    final JettyRequestTunnel tunnel = new JettyRequestTunnel(target, baseRequest, request, response);
+
+    final TunnelHandler tunnelHandler = getTunnelHandler(tunnel);
+    if (tunnelHandler == null) return;
+
     boolean multipartRequest = HttpMethod.POST.is(request.getMethod()) && isMultipartRequest(request);
-    if (multipartRequest) enableMultipartSupport(request);
+
+    if (multipartRequest) {
+      MultipartConf multipartConf = tunnelHandler.getMultipartConf();
+      if (multipartConf == null) multipartConf = new MultipartConf();
+      MultipartConfigElement multiPartConfig = new MultipartConfigElement(multipartConf.location,
+        multipartConf.maxFileSize, multipartConf.maxRequestSize, multipartConf.fileSizeThreshold);
+      enableMultipartSupport(request, multiPartConfig);
+    }
 
     try {
-      handleTunnels(target, baseRequest, request, response);
+      tunnelHandler.handle();
     } finally {
 
       if (multipartRequest) {
@@ -71,19 +70,11 @@ public final class JettyControllerHandler extends AbstractHandler {
     }
   }
 
-
-  private void handleTunnels(String target, Request baseRequest,
-                             HttpServletRequest request, HttpServletResponse response) {
-
-    final JettyRequestTunnel tunnel = new JettyRequestTunnel(target, baseRequest, request, response);
-
+  private TunnelHandler getTunnelHandler(JettyRequestTunnel tunnel) {
     for (TunnelHandlerGetter tunnelHandlerGetter : tunnelHandlerGetters) {
       final TunnelHandler tunnelHandler = tunnelHandlerGetter.getTunnelHandler(tunnel);
-      if (tunnelHandler != null) {
-        tunnelHandler.handle();
-        baseRequest.setHandled(true);
-      }
+      if (tunnelHandler != null) return tunnelHandler;
     }
-
+    return null;
   }
 }
