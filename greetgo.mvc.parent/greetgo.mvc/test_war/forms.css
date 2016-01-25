@@ -1,0 +1,17 @@
+
+form div.field span {
+  font-weight: bold;
+  width: 10em;
+  float: left;
+  text-align: right;
+  margin-right: 5px;
+}
+
+form div.field {
+  margin-top: 13px;
+}
+
+form button[type=submit] {
+  margin-top: 13px;
+  margin-left: 10em;
+}

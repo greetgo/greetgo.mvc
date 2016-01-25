@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Test post requests</title>
+  <link rel="stylesheet" href="forms.css" type="text/css">
+</head>
+<body>
+<form action="lot/save" method="post" enctype="multipart/form-data">
+  <div class="field">
+    <span>Фамилия:</span> <input type="text" name="surname" value="Иванов">
+  </div>
+
+  <div class="field">
+    <span>Имя:</span> <input type="text" name="name" value="Иван">
+  </div>
+
+  <div class="field">
+    <span>Опции:</span>
+    <input type="checkbox" name="options" value="glasses" checked>Очкаст,
+    <input type="checkbox" name="options" value="bald">Лысый,
+    <input type="checkbox" name="options" value="red">Рыжий
+  </div>
+
+  <div class="field">
+    <span>Файл А:</span> <input type="file" name="fileA">
+  </div>
+
+  <div class="field">
+    <span>Файл Б:</span> <input type="file" name="fileB">
+  </div>
+
+  <button type="submit">Send</button>
+</form>
+</body>
+</html>
