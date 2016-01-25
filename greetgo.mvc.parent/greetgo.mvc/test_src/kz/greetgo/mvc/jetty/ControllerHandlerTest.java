@@ -6,6 +6,8 @@ import kz.greetgo.mvc.jetty.utils.TestViews;
 import org.fest.assertions.api.Assertions;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ControllerHandlerTest {
@@ -67,6 +69,18 @@ public class ControllerHandlerTest {
   private static final String RETURN_REDIRECT_TO = RND.str(10);
   private static final String THROW_REDIRECT_TO = RND.str(10);
 
+  private static boolean handleFirst(List<TunnelHandlerGetter> handlerGetterList, TestTunnel tunnel) {
+    for (TunnelHandlerGetter tunnelHandlerGetter : handlerGetterList) {
+      final TunnelHandler tunnelHandler = tunnelHandlerGetter.getTunnelHandler(tunnel);
+      if (tunnelHandler != null) {
+        tunnelHandler.handle();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   @Test
   public void create_handleTunnel_return_redirect() throws Exception {
 
@@ -76,7 +90,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final ControllerHandler handler = ControllerHandler.create(controller, views);
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -85,7 +99,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final boolean handled = handler.handleTunnel(tunnel);
+    final boolean handled = handleFirst(handlerGetterList, tunnel);
     //
     //
 
@@ -104,7 +118,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final ControllerHandler handler = ControllerHandler.create(controller, views);
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -113,7 +127,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final boolean handled = handler.handleTunnel(tunnel);
+    final boolean handled = handleFirst(handlerGetterList, tunnel);
     //
     //
 
@@ -132,7 +146,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final ControllerHandler handler = ControllerHandler.create(controller, views);
+    final List<TunnelHandlerGetter> handlerGetterList  = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -141,7 +155,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final boolean handled = handler.handleTunnel(tunnel);
+    final boolean handled = handleFirst(handlerGetterList, tunnel);
     //
     //
 
@@ -158,7 +172,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final ControllerHandler handler = ControllerHandler.create(controller, views);
+    final  List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -168,7 +182,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final boolean handled = handler.handleTunnel(tunnel);
+    final boolean handled = handleFirst(handlerGetterList, tunnel);
     //
     //
 
@@ -187,7 +201,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final ControllerHandler handler = ControllerHandler.create(controller, views);
+    final  List<TunnelHandlerGetter> handlerGetterList  = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -197,7 +211,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final boolean handled = handler.handleTunnel(tunnel);
+    final boolean handled = handleFirst(handlerGetterList, tunnel);
     //
     //
 
@@ -216,7 +230,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final ControllerHandler handler = ControllerHandler.create(controller, views);
+    final  List<TunnelHandlerGetter> handlerGetterList  = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -226,7 +240,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final boolean handled = handler.handleTunnel(tunnel);
+    final boolean handled = handleFirst(handlerGetterList, tunnel);
     //
     //
 

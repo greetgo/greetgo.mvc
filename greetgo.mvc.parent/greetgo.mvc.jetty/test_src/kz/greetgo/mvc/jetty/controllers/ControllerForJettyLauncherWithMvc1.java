@@ -14,6 +14,7 @@ public class ControllerForJettyLauncherWithMvc1 {
     System.out.println("fileA.SubmittedFileName = " + fileA.getSubmittedFileName());
     System.out.println("fileA.ContentType = " + fileA.getContentType());
     System.out.println("fileA.InputStream = " + fileA.getInputStream());
+    System.out.println("fileA.Size = " + fileA.getSize());
     return Redirect.to("after_post.html");
   }
 

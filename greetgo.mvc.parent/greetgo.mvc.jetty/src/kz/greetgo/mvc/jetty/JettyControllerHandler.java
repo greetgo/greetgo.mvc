@@ -1,6 +1,5 @@
 package kz.greetgo.mvc.jetty;
 
-import kz.greetgo.mvc.jetty.ControllerHandler;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -30,15 +29,17 @@ public final class JettyControllerHandler extends AbstractHandler {
     request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, multiPartConfig);
   }
 
-  private final List<ControllerHandler> tunnelHandlers = new ArrayList<>();
+  private final List<TunnelHandlerGetter> tunnelHandlerGetters = new ArrayList<>();
 
-  public JettyControllerHandler(Collection<ControllerHandler> handlers, String tmpDir) {
-    tunnelHandlers.addAll(handlers);
-    multiPartConfig = new MultipartConfigElement(tmpDir);
+  public JettyControllerHandler(Collection<TunnelHandlerGetter> handlers, MultipartConf multipartConf) {
+    tunnelHandlerGetters.addAll(handlers);
+    if (multipartConf == null) multipartConf = new MultipartConf();
+    multiPartConfig = new MultipartConfigElement(multipartConf.location, multipartConf.maxFileSize,
+      multipartConf.maxRequestSize, multipartConf.fileSizeThreshold);
   }
 
-  public JettyControllerHandler(Collection<ControllerHandler> handlers) {
-    this(handlers, System.getProperty("java.io.tmpdir"));
+  public JettyControllerHandler(Collection<TunnelHandlerGetter> handlers) {
+    this(handlers, null);
   }
 
   @Override
@@ -76,10 +77,11 @@ public final class JettyControllerHandler extends AbstractHandler {
 
     final JettyRequestTunnel tunnel = new JettyRequestTunnel(target, baseRequest, request, response);
 
-    for (ControllerHandler tunnelHandler : tunnelHandlers) {
-      if (tunnelHandler.handleTunnel(tunnel)) {
+    for (TunnelHandlerGetter tunnelHandlerGetter : tunnelHandlerGetters) {
+      final TunnelHandler tunnelHandler = tunnelHandlerGetter.getTunnelHandler(tunnel);
+      if (tunnelHandler != null) {
+        tunnelHandler.handle();
         baseRequest.setHandled(true);
-        return;
       }
     }
 

@@ -1,0 +1,51 @@
+def nowDate = new Date()
+def nowFormattedDate = nowDate.format("yyyy-MM-dd/HH:mm:ss")
+
+eclipse {
+  jdt {
+    //
+    // if you want to alter the java versions (by default they are configured with
+    // gradle java plugin settings):
+    //
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+  }
+}
+
+configurations { repoUpload }
+
+dependencies {
+  compile project(':greetgo.mvc')
+
+}
+
+test { useTestNG() }
+
+task javadocJar(type: Jar, dependsOn: 'javadoc') {
+  from javadoc.destinationDir
+  classifier = 'javadoc'
+}
+
+task sourcesJar(type: Jar) {
+  from sourceSets.main.allSource
+  classifier = 'sources'
+}
+
+artifacts {
+  archives javadocJar
+  archives sourcesJar
+}
+
+uploadArchives {
+  repositories.mavenDeployer {
+    configuration = configurations.archives
+    repository(
+      url: System.getenv('GG_REPO')
+    )
+
+    pom.project {
+      name project.name
+      packaging 'jar'
+    }
+  }
+}

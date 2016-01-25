@@ -1,10 +1,11 @@
 package kz.greetgo.mvc.jetty.launchers;
 
-import kz.greetgo.mvc.jetty.ControllerHandler;
+import kz.greetgo.mvc.jetty.ControllerTunnelHandlerBuilder;
 import kz.greetgo.mvc.jetty.JettyControllerHandler;
+import kz.greetgo.mvc.jetty.MultipartConf;
+import kz.greetgo.mvc.jetty.TunnelHandlerGetter;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc1;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc2;
-import kz.greetgo.mvc.jetty.utils.MultipartInjectionHandler;
 import kz.greetgo.mvc.jetty.utils.ProbeViews;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -20,7 +21,7 @@ public class JettyLauncherWithMvc {
 
     String warDir = "test_war";
     {
-      String prj = "greetgo.depinject.mvc/";
+      String prj = "greetgo.mvc.jetty/";
       if (new File(prj).isDirectory()) {
         warDir = prj + warDir;
       }
@@ -37,13 +38,13 @@ public class JettyLauncherWithMvc {
     }
     {
       final ProbeViews views = new ProbeViews();
-      final List<ControllerHandler> controllerHandlerList = new ArrayList<>();
-      controllerHandlerList.add(ControllerHandler.create(new ControllerForJettyLauncherWithMvc1(), views));
-      controllerHandlerList.add(ControllerHandler.create(new ControllerForJettyLauncherWithMvc2(), views));
+      final List<TunnelHandlerGetter> controllerHandlerList = new ArrayList<>();
+      controllerHandlerList.addAll(ControllerTunnelHandlerBuilder.build(new ControllerForJettyLauncherWithMvc1(), views));
+      controllerHandlerList.addAll(ControllerTunnelHandlerBuilder.build(new ControllerForJettyLauncherWithMvc2(), views));
 
-      MultipartInjectionHandler mih = new MultipartInjectionHandler();
-      mih.setHandler(new JettyControllerHandler(controllerHandlerList));
-      handlerList.addHandler(mih);
+      MultipartConf multipartConf = new MultipartConf();
+      multipartConf.fileSizeThreshold = 1000;
+      handlerList.addHandler(new JettyControllerHandler(controllerHandlerList, multipartConf));
     }
 
     {
