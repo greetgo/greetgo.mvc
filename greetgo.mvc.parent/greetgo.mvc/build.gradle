@@ -15,7 +15,6 @@ eclipse {
 configurations { repoUpload }
 
 dependencies {
-  compile project(':greetgo.depinject')
 
   //ext.jettyServerVersion = "9.3.7.RC1" //for 8
 //ext.jettyServerVersion = "9.3.4.RC1" // for 8
