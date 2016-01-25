@@ -4,6 +4,7 @@ import kz.greetgo.mvc.jetty.utils.RND;
 import kz.greetgo.mvc.jetty.utils.TestTunnel;
 import kz.greetgo.mvc.jetty.utils.TestViews;
 import org.fest.assertions.api.Assertions;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -146,7 +147,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList  = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -172,7 +173,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final  List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -201,7 +202,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final  List<TunnelHandlerGetter> handlerGetterList  = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -230,7 +231,7 @@ public class ControllerHandlerTest {
 
     //
     //
-    final  List<TunnelHandlerGetter> handlerGetterList  = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
     //
     //
 
@@ -250,6 +251,572 @@ public class ControllerHandlerTest {
     assertThat(views.returnValue).isEqualTo(RETURN_DEFAULT_STR);
     assertThat(views.model).isNotNull();
     Assertions.assertThat(views.model.getParam(MODEL_PARAMETER_NAME)).isEqualTo(MODEL_PARAMETER_VALUE);
+  }
+
+  @SuppressWarnings("unused")
+  class UploadInfoDefault {
+    @Mapping("tmp")
+    public void forTest() {
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadInfoDefault() throws Exception {
+    UploadInfoDefault c = new UploadInfoDefault();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.location).isEqualTo(System.getProperty("java.io.tmpdir"));
+    assertThat(multipartConf.maxFileSize).isEqualTo(-1L);
+    assertThat(multipartConf.maxRequestSize).isEqualTo(-1L);
+    assertThat(multipartConf.fileSizeThreshold).isZero();
+
+  }
+
+  @SuppressWarnings("unused")
+  @UploadInfoFromMethod("getUploadInfoForTest")
+  class UploadInfoFromMethod1 {
+    @Mapping("tmp")
+    public void forTest() {
+    }
+
+    final String location = RND.str(10);
+
+    public UploadInfo getUploadInfoForTest() {
+      UploadInfo ret = new UploadInfo();
+      ret.location = location;
+      return ret;
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadInfoFromMethod1() throws Exception {
+    UploadInfoFromMethod1 c = new UploadInfoFromMethod1();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.location).isEqualTo(c.location);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadInfoFromMethod("getUploadInfoForTest")
+  class UploadInfoFromMethod2 {
+    @Mapping("tmp")
+    @UploadInfoFromMethod("getUploadInfoForMethod")
+    public void forTest() {
+    }
+
+    final String location = RND.str(10);
+
+    public UploadInfo getUploadInfoForMethod() {
+      UploadInfo ret = new UploadInfo();
+      ret.location = location;
+      return ret;
+    }
+
+    public UploadInfo getUploadInfoForTest() {
+      UploadInfo ret = new UploadInfo();
+      ret.location = "left";
+      return ret;
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadInfoFromMethod2() throws Exception {
+    UploadInfoFromMethod2 c = new UploadInfoFromMethod2();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.location).isEqualTo(c.location);
+  }
+
+  @SuppressWarnings("unused")
+  class AmountFormats {
+    @Mapping("forTest1")
+    @UploadMaxFileSize("22 745")
+    public void forTest1() {
+    }
+
+    @Mapping("forTest2")
+    @UploadMaxFileSize("22_745")
+    public void forTest2() {
+    }
+
+    @Mapping("forTest_K")
+    @UploadMaxFileSize("22_745 K")
+    public void forTest_K() {
+    }
+
+    @Mapping("forTest_k")
+    @UploadMaxFileSize("22_745 k")
+    public void forTest_k() {
+    }
+
+    @Mapping("forTest_Kb")
+    @UploadMaxFileSize("22_745Kb")
+    public void forTest_Kb() {
+    }
+
+    @Mapping("forTest_KB")
+    @UploadMaxFileSize("22 745 KB")
+    public void forTest_KB() {
+    }
+
+    @Mapping("forTest_kb")
+    @UploadMaxFileSize("22_745kb")
+    public void forTest_kb() {
+    }
+
+    @Mapping("forTest_kB")
+    @UploadMaxFileSize("22 745 kB")
+    public void forTest_kB() {
+    }
+
+    @Mapping("forTest_M")
+    @UploadMaxFileSize("711 M")
+    public void forTest_M() {
+    }
+
+    @Mapping("forTest_Mb")
+    @UploadMaxFileSize("711 Mb")
+    public void forTest_Mb() {
+    }
+
+    @Mapping("forTest_MB")
+    @UploadMaxFileSize("711 MB")
+    public void forTest_MB() {
+    }
+
+    @Mapping("forTest_G")
+    @UploadMaxFileSize("317 G")
+    public void forTest_G() {
+    }
+
+    @Mapping("forTest_Gb")
+    @UploadMaxFileSize("317 Gb")
+    public void forTest_Gb() {
+    }
+
+    @Mapping("forTest_GB")
+    @UploadMaxFileSize("317 GB")
+    public void forTest_GB() {
+    }
+
+    @Mapping("forTest_m1")
+    @UploadMaxFileSize("-1")
+    public void forTest_m1() {
+    }
+
+    @Mapping("forTest_zero")
+    @UploadMaxFileSize("0")
+    public void forTest_zero() {
+    }
+  }
+
+  @DataProvider
+  public Object[][] dataFor_getUploadInfo_amountFormats() {
+    return new Object[][]{
+
+      new Object[]{"forTest1", 22745L},
+      new Object[]{"forTest2", 22745L},
+      new Object[]{"forTest_k", 22745L * 1024L},
+      new Object[]{"forTest_K", 22745L * 1024L},
+      new Object[]{"forTest_Kb", 22745L * 1024L},
+      new Object[]{"forTest_KB", 22745L * 1024L},
+      new Object[]{"forTest_kb", 22745L * 1024L},
+      new Object[]{"forTest_kB", 22745L * 1024L},
+      new Object[]{"forTest_M", 771L * 1024L * 1024L},
+      new Object[]{"forTest_Mb", 771L * 1024L * 1024L},
+      new Object[]{"forTest_MB", 771L * 1024L * 1024L},
+      new Object[]{"forTest_G", 317L * 1024L * 1024L * 1024L},
+      new Object[]{"forTest_Gb", 317L * 1024L * 1024L * 1024L},
+      new Object[]{"forTest_GB", 317L * 1024L * 1024L * 1024L},
+      new Object[]{"forTest_m1", -1L},
+      new Object[]{"forTest_zero", 0L},
+
+    };
+  }
+
+  @Test(dataProvider = "dataFor_getUploadInfo_amountFormats")
+  public void getUploadInfo_amountFormats(String target, long expectedValue) throws Exception {
+    AmountFormats c = new AmountFormats();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = target;
+
+    for (TunnelHandlerGetter tunnelHandlerGetter : handlerGetterList) {
+      final TunnelHandler tunnelHandler = tunnelHandlerGetter.getTunnelHandler(tunnel);
+      if (tunnelHandler != null) {
+        final UploadInfo uploadInfo = tunnelHandler.getUploadInfo();
+        assertThat(uploadInfo).isNotNull();
+        assertThat(uploadInfo.maxFileSize).describedAs("target = " + target).isEqualTo(expectedValue);
+        return;
+      }
+    }
+
+    Assertions.fail("ERROR IN DATA PROVIDER: No method for target " + target);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadMaxFileSize("22745")
+  class UploadMaxFileSize1 {
+    @Mapping("tmp")
+    public void forTest() {
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadMaxFileSize1() throws Exception {
+    UploadMaxFileSize1 c = new UploadMaxFileSize1();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.maxFileSize).isEqualTo(22745L);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadMaxFileSize("22745")
+  class UploadMaxFileSize2 {
+    @Mapping("tmp")
+    @UploadMaxFileSize("7711")
+    public void forTest() {
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadMaxFileSize2() throws Exception {
+    UploadMaxFileSize2 c = new UploadMaxFileSize2();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.maxFileSize).isEqualTo(7711L);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadMaxRequestSize("22745")
+  class UploadMaxRequestSize1 {
+    @Mapping("tmp")
+    public void forTest() {
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadMaxRequestSize1() throws Exception {
+    UploadMaxRequestSize1 c = new UploadMaxRequestSize1();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.maxRequestSize).isEqualTo(22745L);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadMaxRequestSize("22745")
+  class UploadMaxRequestSize2 {
+    @Mapping("tmp")
+    @UploadMaxRequestSize("7711")
+    public void forTest() {
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadMaxRequestSize2() throws Exception {
+    UploadMaxRequestSize2 c = new UploadMaxRequestSize2();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.maxRequestSize).isEqualTo(7711L);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadFileSizeThreshold("22745")
+  class UploadFileSizeThreshold1 {
+    @Mapping("tmp")
+    public void forTest() {
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadFileSizeThreshold1() throws Exception {
+    UploadFileSizeThreshold1 c = new UploadFileSizeThreshold1();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.fileSizeThreshold).isEqualTo(22745);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadFileSizeThreshold("22745")
+  class UploadFileSizeThreshold2 {
+    @Mapping("tmp")
+    @UploadFileSizeThreshold("7711")
+    public void forTest() {
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadFileSizeThreshold2() throws Exception {
+    UploadFileSizeThreshold2 c = new UploadFileSizeThreshold2();
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.fileSizeThreshold).isEqualTo(7711);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadLocationFromMethod("getTestLocation")
+  class UploadLocationFromMethod1 {
+    @Mapping("tmp")
+    public void forTest() {
+    }
+
+    public String testLocation;
+
+    public String getTestLocation() {
+      return testLocation;
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadLocationFromMethod1() throws Exception {
+    UploadLocationFromMethod1 c = new UploadLocationFromMethod1();
+    c.testLocation = RND.str(10);
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    String expectedLocation = c.testLocation = RND.str(10);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.location).isEqualTo(expectedLocation);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadLocationFromMethod("getTestLocationLeft")
+  class UploadLocationFromMethod2 {
+    @Mapping("tmp")
+    @UploadLocationFromMethod("getTestLocation")
+    public void forTest() {
+    }
+
+    public String testLocation;
+
+    public String getTestLocation() {
+      return testLocation;
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadLocationFromMethod2() throws Exception {
+    UploadLocationFromMethod2 c = new UploadLocationFromMethod2();
+    c.testLocation = RND.str(10);
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    String expectedLocation = c.testLocation = RND.str(10);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.location).isEqualTo(expectedLocation);
   }
 
 }

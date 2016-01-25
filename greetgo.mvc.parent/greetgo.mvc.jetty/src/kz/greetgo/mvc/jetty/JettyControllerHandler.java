@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public final class JettyControllerHandler extends AbstractHandler {
@@ -41,10 +40,10 @@ public final class JettyControllerHandler extends AbstractHandler {
     boolean multipartRequest = HttpMethod.POST.is(request.getMethod()) && isMultipartRequest(request);
 
     if (multipartRequest) {
-      MultipartConf multipartConf = tunnelHandler.getMultipartConf();
-      if (multipartConf == null) multipartConf = new MultipartConf();
-      MultipartConfigElement multiPartConfig = new MultipartConfigElement(multipartConf.location,
-        multipartConf.maxFileSize, multipartConf.maxRequestSize, multipartConf.fileSizeThreshold);
+      UploadInfo uploadInfo = tunnelHandler.getUploadInfo();
+      if (uploadInfo == null) uploadInfo = new UploadInfo();
+      MultipartConfigElement multiPartConfig = new MultipartConfigElement(uploadInfo.location,
+        uploadInfo.maxFileSize, uploadInfo.maxRequestSize, uploadInfo.fileSizeThreshold);
       enableMultipartSupport(request, multiPartConfig);
     }
 

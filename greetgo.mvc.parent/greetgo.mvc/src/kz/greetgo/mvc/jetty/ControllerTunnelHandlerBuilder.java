@@ -99,7 +99,7 @@ public class ControllerTunnelHandlerBuilder {
           }
 
           @Override
-          public MultipartConf getMultipartConf() {
+          public UploadInfo getUploadInfo() {
             return null;
           }
         };
