@@ -10,7 +10,7 @@ public interface Upload {
    * Gets the content of this part as an <tt>InputStream</tt>
    *
    * @return The content of this part as an <tt>InputStream</tt>
-   * @throws IOException If an error occurs in retrieving the contet
+   * @throws IOException If an errors occurs in retrieving the contet
    * as an <tt>InputStream</tt>
    */
   InputStream getInputStream() throws IOException;

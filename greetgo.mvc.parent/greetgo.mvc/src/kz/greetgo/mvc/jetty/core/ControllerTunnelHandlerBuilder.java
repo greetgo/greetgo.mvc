@@ -1,17 +1,12 @@
 package kz.greetgo.mvc.jetty.core;
 
-import kz.greetgo.mvc.jetty.interfaces.TunnelHandlerGetter;
-import kz.greetgo.mvc.jetty.model.UploadInfo;
-import kz.greetgo.mvc.jetty.interfaces.Views;
 import kz.greetgo.mvc.jetty.annotations.Mapping;
 import kz.greetgo.mvc.jetty.annotations.ToJson;
 import kz.greetgo.mvc.jetty.annotations.ToXml;
-import kz.greetgo.mvc.jetty.interfaces.MappingResult;
-import kz.greetgo.mvc.jetty.interfaces.MethodParamExtractor;
-import kz.greetgo.mvc.jetty.interfaces.RequestTunnel;
-import kz.greetgo.mvc.jetty.interfaces.TunnelHandler;
+import kz.greetgo.mvc.jetty.interfaces.*;
 import kz.greetgo.mvc.jetty.model.MvcModel;
 import kz.greetgo.mvc.jetty.model.Redirect;
+import kz.greetgo.mvc.jetty.model.UploadInfo;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
@@ -43,8 +38,11 @@ public class ControllerTunnelHandlerBuilder {
 
   String parentMapping = "";
 
+  private final UploadInfoGetter uploadInfoGetter = new UploadInfoGetter();
+
   private void build() {
     prepareParentMapping();
+    uploadInfoGetter.assembleAnnotationFromController(controller);
     for (Method method : controllerClass.getMethods()) {
       appendHandlerForMethod(method);
     }
@@ -58,6 +56,10 @@ public class ControllerTunnelHandlerBuilder {
   private void appendHandlerForMethod(final Method method) {
     final Mapping mapping = method.getAnnotation(Mapping.class);
     if (mapping == null) return;
+
+    final UploadInfoGetter localUploadInfoGetter = uploadInfoGetter.copy();
+
+    localUploadInfoGetter.assembleAnnotationFromMethod(method);
 
     final TargetMapper targetMapper = new TargetMapper(parentMapping + mapping.value());
 
@@ -113,7 +115,7 @@ public class ControllerTunnelHandlerBuilder {
 
           @Override
           public UploadInfo getUploadInfo() {
-            return null;
+            return localUploadInfoGetter.get();
           }
         };
 

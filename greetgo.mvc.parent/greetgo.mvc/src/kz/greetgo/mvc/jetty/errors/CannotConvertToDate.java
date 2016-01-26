@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.jetty.error;
+package kz.greetgo.mvc.jetty.errors;
 
 public class CannotConvertToDate extends RuntimeException {
   public final String dateStr;

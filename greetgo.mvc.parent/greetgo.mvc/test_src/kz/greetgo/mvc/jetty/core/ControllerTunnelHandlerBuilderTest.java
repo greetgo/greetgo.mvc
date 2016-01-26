@@ -1,8 +1,8 @@
 package kz.greetgo.mvc.jetty.core;
 
 import kz.greetgo.mvc.jetty.annotations.*;
-import kz.greetgo.mvc.jetty.error.InconsistentUploadAnnotationsUnderClass;
-import kz.greetgo.mvc.jetty.error.InconsistentUploadAnnotationsUnderMethod;
+import kz.greetgo.mvc.jetty.errors.InconsistentUploadAnnotationsUnderClass;
+import kz.greetgo.mvc.jetty.errors.InconsistentUploadAnnotationsUnderMethod;
 import kz.greetgo.mvc.jetty.interfaces.TunnelHandler;
 import kz.greetgo.mvc.jetty.interfaces.TunnelHandlerGetter;
 import kz.greetgo.mvc.jetty.model.MvcModel;
@@ -487,9 +487,9 @@ public class ControllerTunnelHandlerBuilderTest {
       new Object[]{"forTest_KB", 22745L * 1024L},
       new Object[]{"forTest_kb", 22745L * 1024L},
       new Object[]{"forTest_kB", 22745L * 1024L},
-      new Object[]{"forTest_M", 771L * 1024L * 1024L},
-      new Object[]{"forTest_Mb", 771L * 1024L * 1024L},
-      new Object[]{"forTest_MB", 771L * 1024L * 1024L},
+      new Object[]{"forTest_M", 711L * 1024L * 1024L},
+      new Object[]{"forTest_Mb", 711L * 1024L * 1024L},
+      new Object[]{"forTest_MB", 711L * 1024L * 1024L},
       new Object[]{"forTest_G", 317L * 1024L * 1024L * 1024L},
       new Object[]{"forTest_Gb", 317L * 1024L * 1024L * 1024L},
       new Object[]{"forTest_GB", 317L * 1024L * 1024L * 1024L},

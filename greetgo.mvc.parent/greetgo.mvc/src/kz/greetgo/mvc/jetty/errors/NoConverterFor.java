@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.jetty.error;
+package kz.greetgo.mvc.jetty.errors;
 
 public class NoConverterFor extends RuntimeException {
   public final Class<?> aClass;

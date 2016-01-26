@@ -1,7 +1,8 @@
 package kz.greetgo.mvc.jetty.core;
 
-import kz.greetgo.mvc.jetty.error.CannotConvertToDate;
-import kz.greetgo.mvc.jetty.error.NoConverterFor;
+import kz.greetgo.mvc.jetty.errors.CannotConvertToDate;
+import kz.greetgo.mvc.jetty.errors.IllegalChar;
+import kz.greetgo.mvc.jetty.errors.NoConverterFor;
 import kz.greetgo.mvc.jetty.model.Redirect;
 
 import java.lang.reflect.ParameterizedType;
@@ -20,6 +21,49 @@ public class MvcUtil {
       e = e.getCause();
     }
     return null;
+  }
+
+  public static long amountBytesToLong(String amountBytes) {
+    String tmp = amountBytes;
+
+    if (tmp == null) return 0L;
+    tmp = tmp.trim();
+    if (tmp.length() == 0) return 0L;
+
+    long sign = +1;
+    if (tmp.startsWith("-")) {
+      sign = -1;
+      tmp = tmp.substring(1).trim();
+    }
+
+    char multiplicand = ' ';
+
+    StringBuilder sb = new StringBuilder(tmp.length());
+    for (int i = 0, n = tmp.length(); i < n; i++) {
+      char c = tmp.charAt(i);
+      if ('0' <= c && c <= '9') {
+        sb.append(c);
+        continue;
+      }
+      if (c == 'B' || c == 'b' || c == ' ' || c == '_') continue;
+      if (multiplicand == ' ' && (c == 'K' || c == 'k' || c == 'M' || c == 'G')) {
+        multiplicand = c;
+        continue;
+      }
+
+      throw new IllegalChar(c, "amountBytesToLong(" + amountBytes + ")");
+    }
+
+    long value = Long.parseLong(sb.toString());
+    if (multiplicand == 'K' || multiplicand == 'k') value *= 1024L;
+    else if (multiplicand == 'M') value *= 1024L * 1024L;
+    else if (multiplicand == 'G') value *= 1024L * 1024L * 1024L;
+
+    return sign * value;
+  }
+
+  public static int amountBytesToInt(String amountBytes) {
+    return (int) amountBytesToLong(amountBytes);
   }
 
   private interface Converter {
