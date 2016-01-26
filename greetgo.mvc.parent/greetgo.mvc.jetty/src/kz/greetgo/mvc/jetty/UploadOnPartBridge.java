@@ -1,6 +1,6 @@
 package kz.greetgo.mvc.jetty;
 
-import kz.greetgo.mvc.jetty.Upload;
+import kz.greetgo.mvc.jetty.interfaces.Upload;
 
 import javax.servlet.http.Part;
 import java.io.IOException;

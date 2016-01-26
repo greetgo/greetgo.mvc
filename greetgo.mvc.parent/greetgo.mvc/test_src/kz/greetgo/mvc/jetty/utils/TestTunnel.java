@@ -1,7 +1,7 @@
 package kz.greetgo.mvc.jetty.utils;
 
-import kz.greetgo.mvc.jetty.RequestTunnel;
-import kz.greetgo.mvc.jetty.Upload;
+import kz.greetgo.mvc.jetty.interfaces.RequestTunnel;
+import kz.greetgo.mvc.jetty.interfaces.Upload;
 
 import java.io.*;
 import java.util.HashMap;

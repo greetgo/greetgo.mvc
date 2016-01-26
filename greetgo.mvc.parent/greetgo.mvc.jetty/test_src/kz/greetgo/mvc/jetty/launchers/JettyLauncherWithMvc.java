@@ -1,6 +1,6 @@
 package kz.greetgo.mvc.jetty.launchers;
 
-import kz.greetgo.mvc.jetty.ControllerTunnelHandlerBuilder;
+import kz.greetgo.mvc.jetty.core.ControllerTunnelHandlerBuilder;
 import kz.greetgo.mvc.jetty.JettyControllerHandler;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc1;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc2;

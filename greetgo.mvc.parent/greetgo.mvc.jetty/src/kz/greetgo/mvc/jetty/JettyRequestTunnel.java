@@ -1,7 +1,7 @@
 package kz.greetgo.mvc.jetty;
 
-import kz.greetgo.mvc.jetty.RequestTunnel;
-import kz.greetgo.mvc.jetty.Upload;
+import kz.greetgo.mvc.jetty.interfaces.RequestTunnel;
+import kz.greetgo.mvc.jetty.interfaces.Upload;
 import org.eclipse.jetty.server.Request;
 
 import javax.servlet.ServletException;

@@ -1,5 +1,8 @@
 package kz.greetgo.mvc.jetty;
 
+import kz.greetgo.mvc.jetty.interfaces.TunnelHandler;
+import kz.greetgo.mvc.jetty.interfaces.TunnelHandlerGetter;
+import kz.greetgo.mvc.jetty.model.UploadInfo;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;

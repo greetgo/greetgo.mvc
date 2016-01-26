@@ -1,9 +1,9 @@
 package kz.greetgo.mvc.jetty.controllers;
 
-import kz.greetgo.mvc.jetty.Mapping;
-import kz.greetgo.mvc.jetty.Par;
-import kz.greetgo.mvc.jetty.Redirect;
-import kz.greetgo.mvc.jetty.Upload;
+import kz.greetgo.mvc.jetty.annotations.Mapping;
+import kz.greetgo.mvc.jetty.annotations.Par;
+import kz.greetgo.mvc.jetty.model.Redirect;
+import kz.greetgo.mvc.jetty.interfaces.Upload;
 
 @Mapping("/lot")
 @SuppressWarnings("unused")

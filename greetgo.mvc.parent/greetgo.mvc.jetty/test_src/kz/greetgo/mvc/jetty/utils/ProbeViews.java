@@ -1,8 +1,8 @@
 package kz.greetgo.mvc.jetty.utils;
 
-import kz.greetgo.mvc.jetty.MappingResult;
-import kz.greetgo.mvc.jetty.MvcModel;
-import kz.greetgo.mvc.jetty.Views;
+import kz.greetgo.mvc.jetty.interfaces.MappingResult;
+import kz.greetgo.mvc.jetty.model.MvcModel;
+import kz.greetgo.mvc.jetty.interfaces.Views;
 
 import java.io.OutputStream;
 import java.io.PrintStream;

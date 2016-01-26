@@ -1,6 +1,6 @@
 package kz.greetgo.mvc.jetty.utils;
 
-import kz.greetgo.mvc.jetty.MappingResult;
+import kz.greetgo.mvc.jetty.interfaces.MappingResult;
 import kz.greetgo.mvc.jetty.error.NoPathParam;
 
 import java.util.Collections;
