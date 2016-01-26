@@ -1,7 +1,9 @@
 package kz.greetgo.mvc.jetty.utils;
 
+import kz.greetgo.mvc.jetty.core.RequestMethod;
 import kz.greetgo.mvc.jetty.interfaces.RequestTunnel;
 import kz.greetgo.mvc.jetty.interfaces.Upload;
+import kz.greetgo.mvc.jetty.model.UploadInfo;
 
 import java.io.*;
 import java.util.HashMap;
@@ -91,5 +93,45 @@ public class TestTunnel implements RequestTunnel {
   @Override
   public void sendRedirect(String reference) {
     redirectedTo = reference;
+  }
+
+  public UploadInfo enableMultipartSupportWith;
+
+  @Override
+  public void enableMultipartSupport(UploadInfo uploadInfo) {
+    enableMultipartSupportWith = uploadInfo;
+  }
+
+  public boolean removedMultipartData = false;
+
+  @Override
+  public void removeMultipartData() {
+    removedMultipartData = true;
+  }
+
+  public String requestContentType;
+
+  @Override
+  public String getRequestContentType() {
+    return requestContentType;
+  }
+
+  private boolean executed = false;
+
+  @Override
+  public boolean isExecuted() {
+    return executed;
+  }
+
+  @Override
+  public void setExecuted(boolean executed) {
+    this.executed = executed;
+  }
+
+  public RequestMethod requestMethod;
+
+  @Override
+  public RequestMethod getRequestMethod() {
+    return requestMethod;
   }
 }

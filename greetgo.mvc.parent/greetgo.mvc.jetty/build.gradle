@@ -16,6 +16,7 @@ configurations { repoUpload }
 
 dependencies {
   compile project(':greetgo.mvc')
+  compile project(':greetgo.mvc.security')
 
   //ext.jettyServerVersion = "9.3.7.RC1" //for 8
 //ext.jettyServerVersion = "9.3.4.RC1" // for 8

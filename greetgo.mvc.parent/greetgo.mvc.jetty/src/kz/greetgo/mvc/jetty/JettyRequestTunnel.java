@@ -1,9 +1,14 @@
 package kz.greetgo.mvc.jetty;
 
+import kz.greetgo.mvc.jetty.core.RequestMethod;
 import kz.greetgo.mvc.jetty.interfaces.RequestTunnel;
 import kz.greetgo.mvc.jetty.interfaces.Upload;
+import kz.greetgo.mvc.jetty.model.UploadInfo;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.util.MultiException;
+import org.eclipse.jetty.util.MultiPartInputStreamParser;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,11 +16,11 @@ import java.io.*;
 
 public class JettyRequestTunnel implements RequestTunnel {
 
-  private final String target;
+  final String target;
   @SuppressWarnings({"FieldCanBeLocal", "unused"})
-  private final Request baseRequest;
-  private final HttpServletRequest request;
-  private final HttpServletResponse response;
+  final Request baseRequest;
+  final HttpServletRequest request;
+  final HttpServletResponse response;
 
   public JettyRequestTunnel(String target, Request baseRequest,
                             HttpServletRequest request, HttpServletResponse response) {
@@ -73,6 +78,48 @@ public class JettyRequestTunnel implements RequestTunnel {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public void enableMultipartSupport(UploadInfo uploadInfo) {
+    request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, new MultipartConfigElement(uploadInfo.location,
+      uploadInfo.maxFileSize, uploadInfo.maxRequestSize, uploadInfo.fileSizeThreshold));
+  }
+
+  @Override
+  public void removeMultipartData() {
+    MultiPartInputStreamParser multipartInputStream =
+      (MultiPartInputStreamParser) request.getAttribute(Request.__MULTIPART_INPUT_STREAM);
+
+    if (multipartInputStream != null) {
+      try {
+        // a multipart request to a servlet will have the parts cleaned up correctly, but
+        // the repeated call to deleteParts() here will safely do nothing.
+        multipartInputStream.deleteParts();
+      } catch (MultiException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  @Override
+  public String getRequestContentType() {
+    return request.getContentType();
+  }
+
+  @Override
+  public boolean isExecuted() {
+    return baseRequest.isHandled();
+  }
+
+  @Override
+  public void setExecuted(boolean executed) {
+    baseRequest.setHandled(executed);
+  }
+
+  @Override
+  public RequestMethod getRequestMethod() {
+    return RequestMethod.fromStr(request.getMethod());
   }
 
   @Override

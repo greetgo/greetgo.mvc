@@ -1,6 +1,6 @@
 package kz.greetgo.mvc.jetty.launchers;
 
-import kz.greetgo.mvc.jetty.core.ControllerTunnelHandlerBuilder;
+import kz.greetgo.mvc.jetty.core.ControllerTunnelExecutorBuilder;
 import kz.greetgo.mvc.jetty.JettyControllerHandler;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc1;
 import kz.greetgo.mvc.jetty.controllers.ControllerForJettyLauncherWithMvc2;
@@ -40,8 +40,8 @@ public class JettyLauncherWithMvc {
 
       final JettyControllerHandler controllerHandler = new JettyControllerHandler();
 
-      controllerHandler.tunnelHandlerGetters.addAll(ControllerTunnelHandlerBuilder.build(c1, views));
-      controllerHandler.tunnelHandlerGetters.addAll(ControllerTunnelHandlerBuilder.build(c2, views));
+      controllerHandler.tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(c1, views));
+      controllerHandler.tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(c2, views));
 
       handlerList.addHandler(controllerHandler);
     }

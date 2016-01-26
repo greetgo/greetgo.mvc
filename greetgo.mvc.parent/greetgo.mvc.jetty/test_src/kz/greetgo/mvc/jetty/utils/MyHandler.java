@@ -13,7 +13,6 @@ import java.util.Enumeration;
 
 public class MyHandler extends AbstractHandler {
 
-
   @Override
   public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {

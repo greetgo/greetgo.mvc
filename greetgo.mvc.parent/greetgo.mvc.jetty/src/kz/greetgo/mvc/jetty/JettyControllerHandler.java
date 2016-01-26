@@ -1,7 +1,7 @@
 package kz.greetgo.mvc.jetty;
 
-import kz.greetgo.mvc.jetty.interfaces.TunnelHandler;
-import kz.greetgo.mvc.jetty.interfaces.TunnelHandlerGetter;
+import kz.greetgo.mvc.jetty.interfaces.TunnelExecutor;
+import kz.greetgo.mvc.jetty.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.jetty.model.UploadInfo;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Request;
@@ -29,7 +29,7 @@ public final class JettyControllerHandler extends AbstractHandler {
     request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, multiPartConfig);
   }
 
-  public final List<TunnelHandlerGetter> tunnelHandlerGetters = new ArrayList<>();
+  public final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
 
   @Override
   public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
@@ -37,13 +37,13 @@ public final class JettyControllerHandler extends AbstractHandler {
 
     final JettyRequestTunnel tunnel = new JettyRequestTunnel(target, baseRequest, request, response);
 
-    final TunnelHandler tunnelHandler = getTunnelHandler(tunnel);
-    if (tunnelHandler == null) return;
+    final TunnelExecutor tunnelExecutor = getTunnelHandler(tunnel);
+    if (tunnelExecutor == null) return;
 
     boolean multipartRequest = HttpMethod.POST.is(request.getMethod()) && isMultipartRequest(request);
 
     if (multipartRequest) {
-      UploadInfo uploadInfo = tunnelHandler.getUploadInfo();
+      UploadInfo uploadInfo = tunnelExecutor.getUploadInfo();
       if (uploadInfo == null) uploadInfo = new UploadInfo();
       MultipartConfigElement multiPartConfig = new MultipartConfigElement(uploadInfo.location,
         uploadInfo.maxFileSize, uploadInfo.maxRequestSize, uploadInfo.fileSizeThreshold);
@@ -51,7 +51,8 @@ public final class JettyControllerHandler extends AbstractHandler {
     }
 
     try {
-      tunnelHandler.handle();
+      tunnelExecutor.execute();
+      baseRequest.setHandled(true);
     } finally {
 
       if (multipartRequest) {
@@ -72,10 +73,10 @@ public final class JettyControllerHandler extends AbstractHandler {
     }
   }
 
-  private TunnelHandler getTunnelHandler(JettyRequestTunnel tunnel) {
-    for (TunnelHandlerGetter tunnelHandlerGetter : tunnelHandlerGetters) {
-      final TunnelHandler tunnelHandler = tunnelHandlerGetter.getTunnelHandler(tunnel);
-      if (tunnelHandler != null) return tunnelHandler;
+  private TunnelExecutor getTunnelHandler(JettyRequestTunnel tunnel) {
+    for (TunnelExecutorGetter tunnelExecutorGetter : tunnelExecutorGetters) {
+      final TunnelExecutor tunnelExecutor = tunnelExecutorGetter.getTunnelExecutor(tunnel);
+      if (tunnelExecutor != null) return tunnelExecutor;
     }
     return null;
   }

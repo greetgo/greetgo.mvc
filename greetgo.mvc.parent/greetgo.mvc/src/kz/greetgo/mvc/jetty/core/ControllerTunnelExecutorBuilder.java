@@ -13,9 +13,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControllerTunnelHandlerBuilder {
-  public static List<TunnelHandlerGetter> build(Object controller, Views views) {
-    final ControllerTunnelHandlerBuilder builder = new ControllerTunnelHandlerBuilder(controller, views);
+public class ControllerTunnelExecutorBuilder {
+  public static List<TunnelExecutorGetter> build(Object controller, Views views) {
+    final ControllerTunnelExecutorBuilder builder = new ControllerTunnelExecutorBuilder(controller, views);
 
     builder.build();
 
@@ -25,11 +25,11 @@ public class ControllerTunnelHandlerBuilder {
   final Object controller;
   final Views views;
 
-  final List<TunnelHandlerGetter> result = new ArrayList<>();
+  final List<TunnelExecutorGetter> result = new ArrayList<>();
 
   final Class<?> controllerClass;
 
-  private ControllerTunnelHandlerBuilder(Object controller, Views views) {
+  private ControllerTunnelExecutorBuilder(Object controller, Views views) {
     this.controller = controller;
     this.views = views;
 
@@ -65,15 +65,15 @@ public class ControllerTunnelHandlerBuilder {
 
     final List<MethodParamExtractor> extractorList = MethodParameterMeta.create(method);
 
-    result.add(new TunnelHandlerGetter() {
+    result.add(new TunnelExecutorGetter() {
       @Override
-      public TunnelHandler getTunnelHandler(final RequestTunnel tunnel) {
+      public TunnelExecutor getTunnelExecutor(final RequestTunnel tunnel) {
         final MappingResult mappingResult = targetMapper.mapTarget(tunnel.getTarget());
         if (!mappingResult.ok()) return null;
 
-        return new TunnelHandler() {
+        return new TunnelExecutor() {
           @Override
-          public void handle() {
+          public void execute() {
             try {
 
               MvcModel model = new MvcModel();

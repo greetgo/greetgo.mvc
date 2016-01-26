@@ -4,8 +4,8 @@ import kz.greetgo.mvc.jetty.annotations.*;
 import kz.greetgo.mvc.jetty.errors.AmbiguousMaxFileSize;
 import kz.greetgo.mvc.jetty.errors.InconsistentUploadAnnotationsUnderClass;
 import kz.greetgo.mvc.jetty.errors.InconsistentUploadAnnotationsUnderMethod;
-import kz.greetgo.mvc.jetty.interfaces.TunnelHandler;
-import kz.greetgo.mvc.jetty.interfaces.TunnelHandlerGetter;
+import kz.greetgo.mvc.jetty.interfaces.TunnelExecutor;
+import kz.greetgo.mvc.jetty.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.jetty.model.MvcModel;
 import kz.greetgo.mvc.jetty.model.Redirect;
 import kz.greetgo.mvc.jetty.model.UploadInfo;
@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class ControllerTunnelHandlerBuilderTest {
+public class ControllerTunnelExecutorBuilderTest {
 
   private static final long RETURN_JSON = RND.plusLong(1000000000);
   private static final long RETURN_XML = RND.plusLong(1000000000);
@@ -79,11 +79,11 @@ public class ControllerTunnelHandlerBuilderTest {
   private static final String RETURN_REDIRECT_TO = RND.str(10);
   private static final String THROW_REDIRECT_TO = RND.str(10);
 
-  private static boolean handleFirst(List<TunnelHandlerGetter> handlerGetterList, TestTunnel tunnel) {
-    for (TunnelHandlerGetter tunnelHandlerGetter : handlerGetterList) {
-      final TunnelHandler tunnelHandler = tunnelHandlerGetter.getTunnelHandler(tunnel);
-      if (tunnelHandler != null) {
-        tunnelHandler.handle();
+  private static boolean handleFirst(List<TunnelExecutorGetter> handlerGetterList, TestTunnel tunnel) {
+    for (TunnelExecutorGetter tunnelExecutorGetter : handlerGetterList) {
+      final TunnelExecutor tunnelExecutor = tunnelExecutorGetter.getTunnelExecutor(tunnel);
+      if (tunnelExecutor != null) {
+        tunnelExecutor.execute();
         return true;
       }
     }
@@ -100,7 +100,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -128,7 +128,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -156,7 +156,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -182,7 +182,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -211,7 +211,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -240,7 +240,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(controller, views);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -275,7 +275,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -284,11 +284,11 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -322,7 +322,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -331,11 +331,11 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -372,7 +372,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -381,11 +381,11 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -506,17 +506,17 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = target;
 
-    for (TunnelHandlerGetter tunnelHandlerGetter : handlerGetterList) {
-      final TunnelHandler tunnelHandler = tunnelHandlerGetter.getTunnelHandler(tunnel);
-      if (tunnelHandler != null) {
-        final UploadInfo uploadInfo = tunnelHandler.getUploadInfo();
+    for (TunnelExecutorGetter tunnelExecutorGetter : handlerGetterList) {
+      final TunnelExecutor tunnelExecutor = tunnelExecutorGetter.getTunnelExecutor(tunnel);
+      if (tunnelExecutor != null) {
+        final UploadInfo uploadInfo = tunnelExecutor.getUploadInfo();
         assertThat(uploadInfo).isNotNull();
         assertThat(uploadInfo.maxFileSize).describedAs("target = " + target).isEqualTo(expectedValue);
         return;
@@ -540,7 +540,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -549,11 +549,11 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -576,7 +576,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -585,11 +585,11 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -611,7 +611,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -620,11 +620,11 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -647,7 +647,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -656,11 +656,11 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -682,7 +682,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -691,11 +691,11 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -718,7 +718,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -727,11 +727,11 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -760,7 +760,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -769,13 +769,13 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     String expectedLocation = c.testLocation = RND.str(10);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -805,7 +805,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -814,13 +814,13 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     String expectedLocation = c.testLocation = RND.str(10);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -842,7 +842,7 @@ public class ControllerTunnelHandlerBuilderTest {
     TestInconsistentUploadAnnotationsUnderClass c = new TestInconsistentUploadAnnotationsUnderClass();
     //
     //
-    ControllerTunnelHandlerBuilder.build(c, null);
+    ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
   }
@@ -861,7 +861,7 @@ public class ControllerTunnelHandlerBuilderTest {
     TestInconsistentUploadAnnotationsUnderMethod c = new TestInconsistentUploadAnnotationsUnderMethod();
     //
     //
-    ControllerTunnelHandlerBuilder.build(c, null);
+    ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
   }
@@ -888,7 +888,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -897,13 +897,13 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     long expectedMaxFileSize = c.testMaxFileSize = RND.plusLong(1_000_000_000);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -933,7 +933,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -942,13 +942,13 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     int expectedMaxFileSize = c.testMaxFileSize = RND.plusInt(1_000_000_000);
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -978,7 +978,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -987,14 +987,14 @@ public class ControllerTunnelHandlerBuilderTest {
     TestTunnel tunnel = new TestTunnel();
     tunnel.target = "tmp";
 
-    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+    final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
 
     c.testMaxFileSize = "123G";
     long expectedMaxFileSize = 123L * 1024L * 1024L * 1024L;
 
     //
     //
-    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    final UploadInfo multipartConf = tunnelExecutor.getUploadInfo();
     //
     //
 
@@ -1018,7 +1018,7 @@ public class ControllerTunnelHandlerBuilderTest {
 
     //
     //
-    ControllerTunnelHandlerBuilder.build(c, null);
+    ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
   }
