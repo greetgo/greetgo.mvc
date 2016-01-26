@@ -41,7 +41,7 @@ public class RND {
     return L % max;
   }
 
-  public static long plusInt(int max) {
+  public static int plusInt(int max) {
     return rnd.nextInt(max);
   }
 

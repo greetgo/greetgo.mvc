@@ -1,6 +1,7 @@
 package kz.greetgo.mvc.jetty.core;
 
 import kz.greetgo.mvc.jetty.annotations.*;
+import kz.greetgo.mvc.jetty.errors.AmbiguousMaxFileSize;
 import kz.greetgo.mvc.jetty.errors.InconsistentUploadAnnotationsUnderClass;
 import kz.greetgo.mvc.jetty.errors.InconsistentUploadAnnotationsUnderMethod;
 import kz.greetgo.mvc.jetty.interfaces.GetterInt;
@@ -89,12 +90,23 @@ public class UploadInfoGetter {
     }
   }
 
+  private UploadMaxFileSize uploadMaxFileSize = null;
+  private UploadMaxFileSizeFromMethod uploadMaxFileSizeFromMethod = null;
 
   private void applyAnnotation(Annotation annotation) {
     if (annotation instanceof UploadMaxFileSize) {
       UploadMaxFileSize a = (UploadMaxFileSize) annotation;
       maxFileSize = new FixGetterLong(amountBytesToLong(a.value()));
       usedAnnotation = annotation;
+      uploadMaxFileSize = a;
+      checkErrors();
+      return;
+    }
+    if (annotation instanceof UploadMaxFileSizeFromMethod) {
+      UploadMaxFileSizeFromMethod a = (UploadMaxFileSizeFromMethod) annotation;
+      maxFileSize = new AmountMethodGetter(controller, a.value());
+      usedAnnotation = annotation;
+      uploadMaxFileSizeFromMethod = a;
       checkErrors();
       return;
     }
@@ -130,7 +142,16 @@ public class UploadInfoGetter {
   }
 
   private void checkErrors() {
-    if (extractMethodName == null || usedAnnotation == null) return;
+    if (extractMethodName == null || usedAnnotation == null) {
+
+      if (uploadMaxFileSize == null || uploadMaxFileSizeFromMethod == null) return;
+
+      if (assemblingMethod != null) {
+        throw new AmbiguousMaxFileSize(assemblingMethod.toGenericString());
+      }
+
+      throw new AmbiguousMaxFileSize(controller.getClass().toString());
+    }
 
     if (assemblingMethod != null) {
       throw new InconsistentUploadAnnotationsUnderMethod(assemblingMethod, usedAnnotation, extractMethodName);

@@ -1,6 +1,7 @@
 package kz.greetgo.mvc.jetty.core;
 
 import kz.greetgo.mvc.jetty.annotations.*;
+import kz.greetgo.mvc.jetty.errors.AmbiguousMaxFileSize;
 import kz.greetgo.mvc.jetty.errors.InconsistentUploadAnnotationsUnderClass;
 import kz.greetgo.mvc.jetty.errors.InconsistentUploadAnnotationsUnderMethod;
 import kz.greetgo.mvc.jetty.interfaces.TunnelHandler;
@@ -858,6 +859,163 @@ public class ControllerTunnelHandlerBuilderTest {
   @Test(expectedExceptions = InconsistentUploadAnnotationsUnderMethod.class)
   public void getUploadInfo_InconsistentUploadAnnotationsUnderMethod() throws Exception {
     TestInconsistentUploadAnnotationsUnderMethod c = new TestInconsistentUploadAnnotationsUnderMethod();
+    //
+    //
+    ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+  }
+
+  @SuppressWarnings("unused")
+  @UploadMaxFileSizeFromMethod("left")
+  class UploadMaxFileSizeFromMethod_long {
+    @Mapping("tmp")
+    @UploadMaxFileSizeFromMethod("getTestMaxFileSize")
+    public void forTest() {
+    }
+
+    public long testMaxFileSize;
+
+    public long getTestMaxFileSize() {
+      return testMaxFileSize;
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadMaxFileSizeFromMethod_long() throws Exception {
+    UploadMaxFileSizeFromMethod_long c = new UploadMaxFileSizeFromMethod_long();
+    c.testMaxFileSize = RND.plusLong(1_000_000_000);
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    long expectedMaxFileSize = c.testMaxFileSize = RND.plusLong(1_000_000_000);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.maxFileSize).isEqualTo(expectedMaxFileSize);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadMaxFileSizeFromMethod("left")
+  class UploadMaxFileSizeFromMethod_int {
+    @Mapping("tmp")
+    @UploadMaxFileSizeFromMethod("getTestMaxFileSize")
+    public void forTest() {
+    }
+
+    public int testMaxFileSize;
+
+    public int getTestMaxFileSize() {
+      return testMaxFileSize;
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadMaxFileSizeFromMethod_int() throws Exception {
+    UploadMaxFileSizeFromMethod_int c = new UploadMaxFileSizeFromMethod_int();
+    c.testMaxFileSize = RND.plusInt(1_000_000_000);
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    int expectedMaxFileSize = c.testMaxFileSize = RND.plusInt(1_000_000_000);
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.maxFileSize).isEqualTo(expectedMaxFileSize);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadMaxFileSize("1M")
+  class UploadMaxFileSizeFromMethod_String {
+    @Mapping("tmp")
+    @UploadMaxFileSizeFromMethod("getTestMaxFileSize")
+    public void forTest() {
+    }
+
+    public String testMaxFileSize;
+
+    public String getTestMaxFileSize() {
+      return testMaxFileSize;
+    }
+  }
+
+  @Test
+  public void getUploadInfo_UploadMaxFileSizeFromMethod_String() throws Exception {
+    UploadMaxFileSizeFromMethod_String c = new UploadMaxFileSizeFromMethod_String();
+    c.testMaxFileSize = "left";
+
+    //
+    //
+    final List<TunnelHandlerGetter> handlerGetterList = ControllerTunnelHandlerBuilder.build(c, null);
+    //
+    //
+
+    assertThat(handlerGetterList).hasSize(1);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "tmp";
+
+    final TunnelHandler tunnelHandler = handlerGetterList.get(0).getTunnelHandler(tunnel);
+
+    c.testMaxFileSize = "123G";
+    long expectedMaxFileSize = 123L * 1024L * 1024L * 1024L;
+
+    //
+    //
+    final UploadInfo multipartConf = tunnelHandler.getUploadInfo();
+    //
+    //
+
+    assertThat(multipartConf).isNotNull();
+    assertThat(multipartConf.maxFileSize).isEqualTo(expectedMaxFileSize);
+  }
+
+  @SuppressWarnings("unused")
+  @UploadMaxFileSize("1M")
+  class TestAmbiguousMaxFileSize {
+    @Mapping("tmp")
+    @UploadMaxFileSize("1M")
+    @UploadMaxFileSizeFromMethod("asd")
+    public void forTest() {
+    }
+  }
+
+  @Test(expectedExceptions = AmbiguousMaxFileSize.class)
+  public void testAmbiguousMaxFileSize() throws Exception {
+    TestAmbiguousMaxFileSize c = new TestAmbiguousMaxFileSize();
+
     //
     //
     ControllerTunnelHandlerBuilder.build(c, null);
