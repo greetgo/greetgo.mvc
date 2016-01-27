@@ -1,7 +1,7 @@
 package kz.greetgo.mvc.jetty.utils;
 
-import kz.greetgo.mvc.security.BytesSessionStorage;
-import kz.greetgo.mvc.security.BytesStorage;
+import kz.greetgo.mvc.jetty.CookieUtil;
+import kz.greetgo.mvc.security.SessionStorage;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -13,11 +13,11 @@ import java.io.IOException;
 
 public class ProbeSecurityHandler extends AbstractHandler {
   private final Handler inner;
-  private final BytesStorage bytesStorage;
+  private final SessionStorage sessionStorage;
 
-  public ProbeSecurityHandler(Handler inner, BytesStorage bytesStorage) {
+  public ProbeSecurityHandler(Handler inner, SessionStorage sessionStorage) {
     this.inner = inner;
-    this.bytesStorage = bytesStorage;
+    this.sessionStorage = sessionStorage;
   }
 
   @Override

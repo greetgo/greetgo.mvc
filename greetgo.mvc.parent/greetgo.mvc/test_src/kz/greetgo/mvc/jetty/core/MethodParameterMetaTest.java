@@ -11,8 +11,8 @@ import kz.greetgo.mvc.jetty.model.MvcModel;
 import kz.greetgo.mvc.jetty.utils.TestMappingResult;
 import kz.greetgo.mvc.jetty.utils.TestTunnel;
 import kz.greetgo.mvc.jetty.utils.TestUtil;
-import kz.greetgo.mvc.jetty.utils.RND;
 import kz.greetgo.mvc.jetty.utils.TestUpload;
+import kz.greetgo.util.RND;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

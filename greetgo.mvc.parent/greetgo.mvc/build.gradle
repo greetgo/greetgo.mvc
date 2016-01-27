@@ -17,11 +17,13 @@ configurations { repoUpload }
 dependencies {
 
   //ext.jettyServerVersion = "9.3.7.RC1" //for 8
-//ext.jettyServerVersion = "9.3.4.RC1" // for 8
+  //ext.jettyServerVersion = "9.3.4.RC1" // for 8
   //ext.jettyServerVersion = "9.3.3.v20150827" // for 8
   ext.jettyServerVersion = "9.3.0.RC0" // for 7
   //ext.jettyServerVersion = "9.2.14.v20151106" // for 7
   //ext.jettyServerVersion = "9.0.0.RC0" // for 7
+
+  compile "kz.greetgo:greetgo.util:${greetgoUtilVersion}"
 
   testCompile "org.eclipse.jetty:jetty-server:${jettyServerVersion}"
   testCompile "org.eclipse.jetty:jetty-servlet:${jettyServerVersion}"

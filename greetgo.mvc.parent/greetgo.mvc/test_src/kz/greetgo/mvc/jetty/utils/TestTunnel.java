@@ -2,8 +2,10 @@ package kz.greetgo.mvc.jetty.utils;
 
 import kz.greetgo.mvc.jetty.core.RequestMethod;
 import kz.greetgo.mvc.jetty.interfaces.RequestTunnel;
+import kz.greetgo.mvc.jetty.interfaces.TunnelCookies;
 import kz.greetgo.mvc.jetty.interfaces.Upload;
 import kz.greetgo.mvc.jetty.model.UploadInfo;
+import kz.greetgo.util.events.EventHandlerList;
 
 import java.io.*;
 import java.util.HashMap;
@@ -133,5 +135,17 @@ public class TestTunnel implements RequestTunnel {
   @Override
   public RequestMethod getRequestMethod() {
     return requestMethod;
+  }
+
+  @Override
+  public TunnelCookies cookies() {
+    return null;
+  }
+
+  private final EventHandlerList beforeCompleteHeaders = new EventHandlerList();
+
+  @Override
+  public EventHandlerList eventBeforeCompleteHeaders() {
+    return beforeCompleteHeaders;
   }
 }

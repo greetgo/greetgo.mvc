@@ -6,6 +6,7 @@ import kz.greetgo.mvc.jetty.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.jetty.interfaces.TunnelHandler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static kz.greetgo.mvc.jetty.core.RequestMethod.POST;
@@ -14,6 +15,13 @@ public class ExecutorListHandler implements TunnelHandler {
   public static final String MULTIPART_FORM_DATA_TYPE = "multipart/form-data";
 
   public final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
+
+  public ExecutorListHandler() {
+  }
+  public ExecutorListHandler(Collection<TunnelExecutorGetter> tunnelExecutorGetters) {
+    this.tunnelExecutorGetters.addAll(tunnelExecutorGetters);
+  }
+
 
   public static boolean isMultipart(String contentType) {
     return contentType != null && contentType.startsWith(MULTIPART_FORM_DATA_TYPE);

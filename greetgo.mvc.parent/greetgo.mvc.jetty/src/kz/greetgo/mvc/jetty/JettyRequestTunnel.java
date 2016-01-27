@@ -2,8 +2,10 @@ package kz.greetgo.mvc.jetty;
 
 import kz.greetgo.mvc.jetty.core.RequestMethod;
 import kz.greetgo.mvc.jetty.interfaces.RequestTunnel;
+import kz.greetgo.mvc.jetty.interfaces.TunnelCookies;
 import kz.greetgo.mvc.jetty.interfaces.Upload;
 import kz.greetgo.mvc.jetty.model.UploadInfo;
+import kz.greetgo.util.events.EventHandlerList;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.MultiException;
 import org.eclipse.jetty.util.MultiPartInputStreamParser;
@@ -21,6 +23,14 @@ public class JettyRequestTunnel implements RequestTunnel {
   final Request baseRequest;
   final HttpServletRequest request;
   final HttpServletResponse response;
+  private final JettyTunnelCookies cookies;
+
+  private final EventHandlerList beforeCompleteHeaders = new EventHandlerList();
+
+  @Override
+  public EventHandlerList eventBeforeCompleteHeaders() {
+    return beforeCompleteHeaders;
+  }
 
   public JettyRequestTunnel(String target, Request baseRequest,
                             HttpServletRequest request, HttpServletResponse response) {
@@ -28,6 +38,7 @@ public class JettyRequestTunnel implements RequestTunnel {
     this.baseRequest = baseRequest;
     this.request = request;
     this.response = response;
+    cookies = new JettyTunnelCookies(request, response);
   }
 
   @Override
@@ -37,6 +48,7 @@ public class JettyRequestTunnel implements RequestTunnel {
 
   @Override
   public PrintWriter getResponseWriter() {
+    beforeCompleteHeaders.fire();
     try {
       return response.getWriter();
     } catch (IOException e) {
@@ -46,6 +58,7 @@ public class JettyRequestTunnel implements RequestTunnel {
 
   @Override
   public OutputStream getResponseOutputStream() {
+    beforeCompleteHeaders.fire();
     try {
       return response.getOutputStream();
     } catch (IOException e) {
@@ -73,8 +86,10 @@ public class JettyRequestTunnel implements RequestTunnel {
 
   @Override
   public void sendRedirect(String reference) {
+    beforeCompleteHeaders.fire();
     try {
       response.sendRedirect(reference);
+      baseRequest.setHandled(true);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -123,6 +138,11 @@ public class JettyRequestTunnel implements RequestTunnel {
   }
 
   @Override
+  public TunnelCookies cookies() {
+    return cookies;
+  }
+
+  @Override
   public String[] getParamValues(String name) {
     return request.getParameterValues(name);
   }
@@ -135,5 +155,6 @@ public class JettyRequestTunnel implements RequestTunnel {
       throw new RuntimeException(e);
     }
   }
+
 
 }

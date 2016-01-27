@@ -2,6 +2,7 @@ package kz.greetgo.mvc.jetty.interfaces;
 
 import kz.greetgo.mvc.jetty.core.RequestMethod;
 import kz.greetgo.mvc.jetty.model.UploadInfo;
+import kz.greetgo.util.events.EventHandlerList;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -37,4 +38,8 @@ public interface RequestTunnel {
   void setExecuted(boolean executed);
 
   RequestMethod getRequestMethod();
+
+  TunnelCookies cookies();
+
+  EventHandlerList eventBeforeCompleteHeaders();
 }

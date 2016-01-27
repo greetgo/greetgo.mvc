@@ -31,6 +31,8 @@ dependencies {
 
   testCompile 'org.apache.tomcat:jasper:6.0.32'
 
+  testCompile "kz.greetgo:greetgo.util:${greetgoUtilVersion}"
+
   //testCompile 'javax.servlet.jsp:jsp-api:2.2.1-b03'
 
 }

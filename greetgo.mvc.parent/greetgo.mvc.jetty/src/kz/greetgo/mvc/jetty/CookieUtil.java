@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.jetty.utils;
+package kz.greetgo.mvc.jetty;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
