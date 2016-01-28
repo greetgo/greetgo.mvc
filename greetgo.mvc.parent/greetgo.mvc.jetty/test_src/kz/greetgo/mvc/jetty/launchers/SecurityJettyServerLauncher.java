@@ -57,7 +57,7 @@ public class SecurityJettyServerLauncher {
       tunnelHandlerList.list.add(new ExecutorListHandler(executorList));
     }
 
-    SecurityCrypto sessionCrypto , signatureCrypto ;
+    SecurityCrypto sessionCrypto, signatureCrypto;
 
     {
       String dir = "build/JettyServerLauncherKeys/";

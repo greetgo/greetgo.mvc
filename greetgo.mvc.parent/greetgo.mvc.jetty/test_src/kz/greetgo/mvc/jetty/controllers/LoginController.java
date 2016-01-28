@@ -49,5 +49,4 @@ public class LoginController {
 
     return Redirect.to("/login.html");
   }
-
 }

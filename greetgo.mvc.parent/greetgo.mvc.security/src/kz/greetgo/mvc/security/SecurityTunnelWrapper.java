@@ -10,7 +10,7 @@ import java.util.Objects;
 import static kz.greetgo.mvc.security.Base64Util.base64ToBytes;
 import static kz.greetgo.mvc.security.Base64Util.bytesToBase64;
 
-public class SecurityTunnelWrapper implements TunnelHandler {
+public final class SecurityTunnelWrapper implements TunnelHandler {
 
   private final TunnelHandler whatWrapping;
   private final SecurityProvider provider;
@@ -71,29 +71,28 @@ public class SecurityTunnelWrapper implements TunnelHandler {
         performed = true;
 
         byte[] bytes = sessionStorage.getSessionBytes();
-        if (!Objects.equals(bytesInStorage, bytes)) {
+        if (Objects.equals(bytesInStorage, bytes)) return;
 
-          if (bytes == null) {
-            tunnel.cookies().removeCookieFromResponse(provider.cookieKeySession());
-            tunnel.cookies().removeCookieFromResponse(provider.cookieKeySignature());
-          } else {
+        if (bytes == null) {
+          tunnel.cookies().removeCookieFromResponse(provider.cookieKeySession());
+          tunnel.cookies().removeCookieFromResponse(provider.cookieKeySignature());
+        } else {
 
-            if (signatureCrypto != null) {
-              byte[] signature = signatureCrypto.sign(bytes);
-              final String signatureBase64 = bytesToBase64(signature);
-              tunnel.cookies().saveCookieToResponse(provider.cookieKeySignature(), signatureBase64);
-            }
-
-            if (sessionCrypto != null) {
-              bytes = sessionCrypto.encrypt(bytes);
-            }
-
-            final String bytesBase64 = bytesToBase64(bytes);
-            tunnel.cookies().saveCookieToResponse(provider.cookieKeySession(), bytesBase64);
-
+          if (signatureCrypto != null) {
+            byte[] signature = signatureCrypto.sign(bytes);
+            final String signatureBase64 = bytesToBase64(signature);
+            tunnel.cookies().saveCookieToResponse(provider.cookieKeySignature(), signatureBase64);
           }
 
+          if (sessionCrypto != null) {
+            bytes = sessionCrypto.encrypt(bytes);
+          }
+
+          final String bytesBase64 = bytesToBase64(bytes);
+          tunnel.cookies().saveCookieToResponse(provider.cookieKeySession(), bytesBase64);
+
         }
+
       }
     };
 
