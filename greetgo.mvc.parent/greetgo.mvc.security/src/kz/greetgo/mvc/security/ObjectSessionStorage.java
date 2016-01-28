@@ -5,23 +5,28 @@ import static kz.greetgo.mvc.security.SerializeUtil.serialize;
 
 public class ObjectSessionStorage implements SessionStorage {
 
-  private static final ThreadLocal<byte[]> storage = new ThreadLocal<>();
+  private static final ThreadLocal<Object> storage = new ThreadLocal<>();
 
   @Override
   public void setSessionBytes(byte[] bytes) {
-    storage.set(serialize(deserialize(bytes)));
+    setObject(deserialize(bytes));
   }
 
   @Override
   public byte[] getSessionBytes() {
-    return storage.get();
+    return serialize(getObject());
+  }
+
+  @Override
+  public String viewSessionObject() {
+    return "[[" + getObject() + "]], session bytes = " + Base64Util.bytesToBase64(getSessionBytes());
   }
 
   protected Object getObject() {
-    return deserialize(getSessionBytes());
+    return storage.get();
   }
 
   protected void setObject(Object object) {
-    setSessionBytes(serialize(object));
+    storage.set(object);
   }
 }

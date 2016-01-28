@@ -15,9 +15,11 @@ public class LoginController {
 
   @Mapping("/client/save")
   @SuppressWarnings("unused")
-  public Redirect saveLot(@Par("surname") String surname, @Par("name") String name) {
+  public Redirect clientSave(@Par("surname") String surname, @Par("name") String name) {
 
+    System.out.println("Prev surname = " + userDetailsStorage.getUserDetails().surname);
     System.out.println("Surname = " + surname + ", Name = " + name);
+    userDetailsStorage.getUserDetails().surname = surname;
 
     return Redirect.to("/content.html");
   }

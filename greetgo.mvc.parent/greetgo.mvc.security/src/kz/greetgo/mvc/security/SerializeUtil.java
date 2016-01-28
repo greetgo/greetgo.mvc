@@ -9,7 +9,7 @@ public class SerializeUtil {
       final ByteArrayInputStream bin = new ByteArrayInputStream(bytes);
       ObjectInputStream ois = new ObjectInputStream(bin);
       return ois.readObject();
-    } catch (EOFException | StreamCorruptedException e) {
+    } catch (EOFException | StreamCorruptedException | InvalidClassException e) {
       return null;
     } catch (IOException | ClassNotFoundException e) {
       throw new RuntimeException(e);

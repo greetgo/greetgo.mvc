@@ -32,8 +32,14 @@ public class SecurityTunnelWrapper implements TunnelHandler {
 
   @Override
   public void handleTunnel(final RequestTunnel tunnel) {
+    final String target = tunnel.getTarget();
 
-    final boolean underSecurityUmbrella = provider.isUnderSecurityUmbrella(tunnel.getTarget());
+    if (provider.skipSession(target)) {
+      whatWrapping.handleTunnel(tunnel);
+      return;
+    }
+
+    final boolean underSecurityUmbrella = provider.isUnderSecurityUmbrella(target);
 
     final byte[] bytesInStorage;
 
@@ -102,7 +108,7 @@ public class SecurityTunnelWrapper implements TunnelHandler {
       } else {
 
         if (sessionStorage.getSessionBytes() == null) {
-          tunnel.sendRedirect(provider.redirectOnSecurityError(tunnel.getTarget()));
+          tunnel.sendRedirect(provider.redirectOnSecurityError(target));
         } else {
           whatWrapping.handleTunnel(tunnel);
         }

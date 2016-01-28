@@ -9,5 +9,5 @@ public interface SecurityProvider {
 
   String redirectOnSecurityError(String target);
 
-
+  boolean skipSession(String target);
 }

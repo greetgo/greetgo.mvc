@@ -4,4 +4,6 @@ public interface SessionStorage {
   void setSessionBytes(byte[] bytes);
 
   byte[] getSessionBytes();
+
+  String viewSessionObject();
 }

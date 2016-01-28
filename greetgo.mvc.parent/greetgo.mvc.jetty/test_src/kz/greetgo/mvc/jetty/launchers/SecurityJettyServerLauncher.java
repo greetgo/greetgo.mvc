@@ -9,8 +9,7 @@ import kz.greetgo.mvc.jetty.core.TunnelHandlerList;
 import kz.greetgo.mvc.jetty.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.jetty.utils.ProbeViews;
 import kz.greetgo.mvc.jetty.utils.UserDetailsStorage;
-import kz.greetgo.mvc.security.SecurityProvider;
-import kz.greetgo.mvc.security.SecurityTunnelWrapper;
+import kz.greetgo.mvc.security.*;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 
@@ -23,7 +22,7 @@ public class SecurityJettyServerLauncher {
     new SecurityJettyServerLauncher().run();
   }
 
-  public SecurityJettyServerLauncher() {
+  private SecurityJettyServerLauncher() {
   }
 
 
@@ -58,11 +57,28 @@ public class SecurityJettyServerLauncher {
       tunnelHandlerList.list.add(new ExecutorListHandler(executorList));
     }
 
+    SecurityCrypto sessionCrypto , signatureCrypto ;
+
+    {
+      String dir = "build/JettyServerLauncherKeys/";
+      final File sessionPriKey = new File(dir + "session.pri.key");
+      final File sessionPubKey = new File(dir + "session.pub.key");
+      final File signaturePriKey = new File(dir + "signature.pri.key");
+      final File signaturePubKey = new File(dir + "signature.pub.key");
+
+
+      final SecuritySource sessionSS = new SecuritySource_RSA_SHA256(1024, sessionPriKey, sessionPubKey);
+      final SecuritySource signatureSS = new SecuritySource_RSA_SHA256(1024, signaturePriKey, signaturePubKey);
+
+      sessionCrypto = new SecurityCryptoBridge(sessionSS);
+      signatureCrypto = new SecurityCryptoBridge(signatureSS);
+    }
+
     {
       Server server = new Server(8080);
 
       server.setHandler(new JettyWrapperOfTunnelHandler(new SecurityTunnelWrapper(
-        tunnelHandlerList, securityProvider, userDetailsStorage, null, null)));
+        tunnelHandlerList, securityProvider, userDetailsStorage, sessionCrypto, signatureCrypto)));
 
       server.start();
       server.join();
@@ -81,10 +97,16 @@ public class SecurityJettyServerLauncher {
     }
 
     @Override
+    public boolean skipSession(String target) {
+      //noinspection RedundantIfStatement
+      if (target.startsWith("/img/")) return true;
+      return false;
+    }
+
+    @Override
     public boolean isUnderSecurityUmbrella(String target) {
       if (target.startsWith("/login")) return false;
       //noinspection RedundantIfStatement
-      if (target.startsWith("/img/")) return false;
       return true;
     }
 
@@ -92,5 +114,6 @@ public class SecurityJettyServerLauncher {
     public String redirectOnSecurityError(String target) {
       return "/login.html";
     }
+
   };
 }
