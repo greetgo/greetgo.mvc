@@ -35,6 +35,13 @@ dependencies {
 
   //testCompile 'javax.servlet.jsp:jsp-api:2.2.1-b03'
 
+  //compile "org.apache.cxf:cxf-rt-frontend-jaxws:3.0.0-SNAPSHOT"
+  compile 'org.apache.cxf:cxf-rt-transports-http:3.1.4'
+  compile 'org.apache.cxf:cxf-rt-frontend-jaxws:3.1.4'
+
+  //compile 'org.apache.cxf:cxf-api:2.7.18'
+
+
 }
 
 test { useTestNG() }

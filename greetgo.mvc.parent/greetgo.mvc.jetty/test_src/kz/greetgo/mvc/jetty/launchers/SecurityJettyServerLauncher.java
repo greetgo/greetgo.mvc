@@ -10,9 +10,11 @@ import kz.greetgo.mvc.jetty.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.jetty.utils.ProbeViews;
 import kz.greetgo.mvc.jetty.utils.UserDetailsStorage;
 import kz.greetgo.mvc.security.*;
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 
+import javax.xml.ws.Endpoint;
 import java.io.File;
 import java.util.List;
 
@@ -24,7 +26,6 @@ public class SecurityJettyServerLauncher {
 
   private SecurityJettyServerLauncher() {
   }
-
 
   private void run() throws Exception {
 
@@ -66,7 +67,6 @@ public class SecurityJettyServerLauncher {
       final File signaturePriKey = new File(dir + "signature.pri.key");
       final File signaturePubKey = new File(dir + "signature.pub.key");
 
-
       final SecuritySource sessionSS = new SecuritySource_RSA_SHA256(1024, sessionPriKey, sessionPubKey);
       final SecuritySource signatureSS = new SecuritySource_RSA_SHA256(1024, signaturePriKey, signaturePubKey);
 
@@ -78,10 +78,15 @@ public class SecurityJettyServerLauncher {
       Server server = new Server(8080);
 
       server.setHandler(new JettyWrapperOfTunnelHandler(new SecurityTunnelWrapper(
-        tunnelHandlerList, securityProvider, userDetailsStorage, sessionCrypto, signatureCrypto)));
+        tunnelHandlerList, securityProvider, userDetailsStorage, sessionCrypto, signatureCrypto
+      )));
 
       server.start();
       server.join();
+
+      Endpoint e;
+
+      JaxWsProxyFactoryBean d;
     }
   }
 

@@ -1,3 +1,4 @@
 include 'greetgo.mvc'
 include 'greetgo.mvc.jetty'
 include 'greetgo.mvc.security'
+include 'greetgo.mvc.war'
