@@ -5,6 +5,8 @@ import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.UploadInfo;
+import kz.greetgo.mvc.util.HttpServletTunnelCookies;
+import kz.greetgo.mvc.util.UploadOnPartBridge;
 import kz.greetgo.util.events.EventHandlerList;
 
 import javax.servlet.ServletException;
@@ -16,14 +18,16 @@ import java.io.*;
 
 public class WarRequestTunnel implements RequestTunnel {
   private final String target;
-  private final ServletRequest request;
-  private final ServletResponse response;
+  private final HttpServletRequest request;
+  private final HttpServletResponse response;
+  private final HttpServletTunnelCookies cookies;
   private volatile boolean executed = false;
 
   public WarRequestTunnel(String target, ServletRequest request, ServletResponse response) {
     this.target = target;
-    this.request = request;
-    this.response = response;
+    this.request = (HttpServletRequest)request;
+    this.response = (HttpServletResponse)response;
+    cookies = new HttpServletTunnelCookies(this.request, this.response);
   }
 
   @Override
@@ -76,14 +80,8 @@ public class WarRequestTunnel implements RequestTunnel {
 
   @Override
   public Upload getUpload(String paramName) {
-    if (!(request instanceof HttpServletRequest)) {
-      throw new RuntimeException("Cannot get Upload from " + request.getClass());
-    }
-
-    HttpServletRequest httpRequest = (HttpServletRequest) request;
-
     try {
-      return new UploadOnPartBridge(httpRequest.getPart(paramName));
+      return new UploadOnPartBridge(request.getPart(paramName));
     } catch (ServletException | IOException e) {
       throw new RuntimeException(e);
     }
@@ -91,15 +89,9 @@ public class WarRequestTunnel implements RequestTunnel {
 
   @Override
   public void sendRedirect(String reference) {
-    if (!(response instanceof HttpServletResponse)) {
-      throw new RuntimeException("Cannot get Upload from " + request.getClass());
-    }
-
-    HttpServletResponse httpResponse = (HttpServletResponse) request;
-
     beforeCompleteHeaders.fire();
     try {
-      httpResponse.sendRedirect(reference);
+      response.sendRedirect(reference);
       executed = true;
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -109,11 +101,13 @@ public class WarRequestTunnel implements RequestTunnel {
   @Override
   public void enableMultipartSupport(UploadInfo uploadInfo) {
     //TODO realize it
+    throw new RuntimeException("Just not realized");
   }
 
   @Override
   public void removeMultipartData() {
     //TODO realize it
+    throw new RuntimeException("Just not realized");
   }
 
   @Override
@@ -133,18 +127,12 @@ public class WarRequestTunnel implements RequestTunnel {
 
   @Override
   public RequestMethod getRequestMethod() {
-    if (!(request instanceof HttpServletRequest)) {
-      throw new RuntimeException("Cannot get Upload from " + request.getClass());
-    }
-
-    HttpServletRequest httpRequest = (HttpServletRequest) request;
-
-    return RequestMethod.fromStr(httpRequest.getMethod());
+    return RequestMethod.fromStr(request.getMethod());
   }
 
   @Override
   public TunnelCookies cookies() {
-    return null;
+    return cookies;
   }
 
   private final EventHandlerList beforeCompleteHeaders = new EventHandlerList();

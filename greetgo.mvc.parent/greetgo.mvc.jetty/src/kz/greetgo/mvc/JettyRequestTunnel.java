@@ -157,6 +157,4 @@ public class JettyRequestTunnel implements RequestTunnel {
       throw new RuntimeException(e);
     }
   }
-
-
 }
