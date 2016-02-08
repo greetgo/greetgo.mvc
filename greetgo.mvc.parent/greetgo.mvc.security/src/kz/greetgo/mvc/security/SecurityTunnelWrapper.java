@@ -1,7 +1,7 @@
 package kz.greetgo.mvc.security;
 
-import kz.greetgo.mvc.jetty.interfaces.RequestTunnel;
-import kz.greetgo.mvc.jetty.interfaces.TunnelHandler;
+import kz.greetgo.mvc.interfaces.RequestTunnel;
+import kz.greetgo.mvc.interfaces.TunnelHandler;
 import kz.greetgo.util.events.EventHandler;
 import kz.greetgo.util.events.HandlerKiller;
 
