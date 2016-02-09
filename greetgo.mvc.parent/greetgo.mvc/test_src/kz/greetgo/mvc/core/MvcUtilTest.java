@@ -60,4 +60,10 @@ public class MvcUtilTest {
     MvcUtil.amountBytesToLong("tmp");
   }
 
+  @Test
+  public void extractRedirect() {
+    //noinspection ThrowableResultOfMethodCallIgnored
+    MvcUtil.extractRedirect(null, 10);
+  }
+
 }

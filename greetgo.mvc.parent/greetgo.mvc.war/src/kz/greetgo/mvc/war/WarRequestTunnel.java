@@ -91,8 +91,6 @@ public class WarRequestTunnel implements RequestTunnel {
     try {
       if (reference != null && reference.startsWith("/")) {
         reference = request.getContextPath() + reference;
-        System.out.println("redirected to reference = " + reference
-          + ", request.getContextPath() = " + request.getContextPath());
       }
       response.sendRedirect(reference);
       executed = true;
@@ -109,14 +107,12 @@ public class WarRequestTunnel implements RequestTunnel {
 
   @Override
   public void enableMultipartSupport(UploadInfo uploadInfo) {
-    //TODO realize it
-    throw new RuntimeException("Just not realized");
+    throw new RuntimeException("enableMultipartSupport cannot be called");
   }
 
   @Override
   public void removeMultipartData() {
-    //TODO realize it
-    throw new RuntimeException("Just not realized");
+    throw new RuntimeException("removeMultipartData cannot be called");
   }
 
   @Override

@@ -12,10 +12,12 @@ public class App implements ServletContainerInitializer {
 
   @Override
   public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
+
     UserDetailsStorage userDetailsStorage = new UserDetailsStorage();
 
     FileResourceTunnelExecutorGetter fileResourceTEG = new FileResourceTunnelExecutorGetter(ctx.getRealPath(""));
     fileResourceTEG.useETag = true;
+    fileResourceTEG.wellComeFiles.add("index.html");
 
     final AppServlet appServlet = new StandAppServlet(fileResourceTEG, userDetailsStorage);
     appServlet.register(ctx);

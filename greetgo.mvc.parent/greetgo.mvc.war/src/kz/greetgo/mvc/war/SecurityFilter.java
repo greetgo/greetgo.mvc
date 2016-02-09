@@ -27,6 +27,14 @@ public abstract class SecurityFilter implements Filter {
     reg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
   }
 
+  protected abstract SecurityCrypto getSignatureCrypto();
+
+  protected abstract SecurityCrypto getSessionCrypto();
+
+  protected abstract SessionStorage getSessionStorage();
+
+  protected abstract SecurityProvider getProvider();
+
   @Override
   public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
     throws IOException, ServletException {
@@ -57,12 +65,4 @@ public abstract class SecurityFilter implements Filter {
       throw e;
     }
   }
-
-  protected abstract SecurityCrypto getSignatureCrypto();
-
-  protected abstract SecurityCrypto getSessionCrypto();
-
-  protected abstract SessionStorage getSessionStorage();
-
-  protected abstract SecurityProvider getProvider();
 }

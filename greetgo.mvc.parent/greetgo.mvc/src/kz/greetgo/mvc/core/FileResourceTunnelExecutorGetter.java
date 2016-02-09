@@ -22,6 +22,8 @@ public class FileResourceTunnelExecutorGetter implements TunnelExecutorGetter {
 
   public boolean useETag = false;
 
+  public final List<String> wellComeFiles = new ArrayList<>();
+
   private final List<String> resourceDirList = new ArrayList<>();
 
   private static Map<File, FileCache> cache = new ConcurrentHashMap<>();
@@ -35,13 +37,28 @@ public class FileResourceTunnelExecutorGetter implements TunnelExecutorGetter {
 
     for (String resourceDir : resourceDirList) {
       File file = new File(resourceDir + tunnel.getTarget());
-      if (file.exists()) return executorFor(file, tunnel);
+      if (file.isFile()) return executorForFile(file, tunnel);
+      if (file.isDirectory()) {
+        final TunnelExecutor exe = executorForDir(file, tunnel);
+        if (exe != null) return exe;
+      }
     }
 
     return null;
   }
 
-  private TunnelExecutor executorFor(final File file, final RequestTunnel tunnel) {
+  private TunnelExecutor executorForDir(File dir, RequestTunnel tunnel) {
+    if (!dir.exists()) return null;
+
+    for (String wellComeFile : wellComeFiles) {
+      final File file = new File(dir.getPath() + File.separator + wellComeFile);
+      if (file.exists()) return executorForFile(file, tunnel);
+    }
+
+    return null;
+  }
+
+  private TunnelExecutor executorForFile(final File file, final RequestTunnel tunnel) {
     if (!file.exists()) return null;
 
     return new TunnelExecutor() {
@@ -146,7 +163,6 @@ public class FileResourceTunnelExecutorGetter implements TunnelExecutorGetter {
     }
 
     public String getWeakETag() {
-
       StringBuilder b = new StringBuilder(32);
       b.append("W/\"");
 
@@ -163,9 +179,7 @@ public class FileResourceTunnelExecutorGetter implements TunnelExecutorGetter {
       b.append(Base64Util.bytesToBase64(bytes));
       b.append('"');
       return b.toString();
-
     }
-
   }
 
   private void shoveFileInTunnel(File file, RequestTunnel tunnel) throws Exception {

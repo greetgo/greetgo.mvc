@@ -2,6 +2,7 @@ package kz.greetgo.mvc.war.stand;
 
 import kz.greetgo.mvc.annotations.Mapping;
 import kz.greetgo.mvc.annotations.Par;
+import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.Redirect;
 
 public class LoginController {
@@ -47,5 +48,21 @@ public class LoginController {
     userDetailsStorage.setUsername(null);
 
     return Redirect.to("/login.html");
+  }
+
+  @Mapping("/uploadFile")
+  @SuppressWarnings("unused")
+  public Redirect uploadFile(
+    @Par("description") String description,
+    @Par("file1") Upload file1, @Par("file2") Upload file2
+  ) {
+
+    System.out.println("----- upload file -----");
+    System.out.println("description = " + description);
+    System.out.println("file1 = " + file1.getSubmittedFileName());
+    System.out.println("file2 = " + file2.getSubmittedFileName());
+    System.out.println("file2.size = " + file2.getSize());
+
+    return Redirect.to("/content.html");
   }
 }

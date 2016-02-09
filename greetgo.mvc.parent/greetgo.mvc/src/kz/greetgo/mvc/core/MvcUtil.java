@@ -16,7 +16,7 @@ import static java.util.Collections.unmodifiableMap;
 public class MvcUtil {
 
   public static Redirect extractRedirect(Throwable e, int deep) {
-    for (int i = 0; i < deep; i++) {
+    for (int i = 0; e != null && i < deep; i++) {
       if (e instanceof Redirect) return (Redirect) e;
       e = e.getCause();
     }
