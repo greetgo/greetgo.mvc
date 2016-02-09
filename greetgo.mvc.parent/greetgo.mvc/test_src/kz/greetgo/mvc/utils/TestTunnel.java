@@ -1,9 +1,9 @@
 package kz.greetgo.mvc.utils;
 
 import kz.greetgo.mvc.core.RequestMethod;
+import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
-import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.util.events.EventHandlerList;
 
@@ -147,5 +147,41 @@ public class TestTunnel implements RequestTunnel {
   @Override
   public EventHandlerList eventBeforeCompleteHeaders() {
     return beforeCompleteHeaders;
+  }
+
+  boolean flushBuffersCalled = false;
+
+  @Override
+  public void flushBuffer() {
+    flushBuffersCalled = true;
+  }
+
+  @Override
+  public void setResponseContentType(String contentType) {
+  }
+
+  @Override
+  public String getRequestHeader(String headerName) {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public void setResponseStatus(int statusCode) {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public void setResponseHeader(String headerName, String headerValue) {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public long getRequestDateHeader(String headerName) {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public void setResponseDateHeader(String headerName, long headerValue) {
+    throw new RuntimeException();
   }
 }

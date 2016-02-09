@@ -1,6 +1,7 @@
-package kz.greetgo.mvc.util;
+package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.interfaces.TunnelCookies;
+import kz.greetgo.mvc.util.CookieUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

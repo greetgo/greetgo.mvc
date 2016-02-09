@@ -13,7 +13,6 @@ eclipse {
 }
 
 dependencies {
-  compile project(':greetgo.mvc')
 
   testCompile "kz.greetgo:greetgo.util:${greetgoUtilVersion}"
 

@@ -27,6 +27,9 @@ allprojects {
 }
 
 subprojects {
+  compileJava.options.debugOptions.debugLevel = "source,lines,vars"
+  compileTestJava.options.debugOptions.debugLevel = "source,lines,vars"
+
   repositories {
     maven {
       name 'Our repository'

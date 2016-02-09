@@ -5,8 +5,8 @@ import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.UploadInfo;
-import kz.greetgo.mvc.util.HttpServletTunnelCookies;
-import kz.greetgo.mvc.util.UploadOnPartBridge;
+import kz.greetgo.mvc.core.HttpServletTunnelCookies;
+import kz.greetgo.mvc.core.UploadOnPartBridge;
 import kz.greetgo.util.events.EventHandlerList;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.MultiException;
@@ -33,6 +33,16 @@ public class JettyRequestTunnel implements RequestTunnel {
   public EventHandlerList eventBeforeCompleteHeaders() {
     return beforeCompleteHeaders;
   }
+
+  @Override
+  public void flushBuffer() {
+    try {
+      response.flushBuffer();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 
   public JettyRequestTunnel(String target, Request baseRequest,
                             HttpServletRequest request, HttpServletResponse response) {
@@ -98,6 +108,12 @@ public class JettyRequestTunnel implements RequestTunnel {
   }
 
   @Override
+  public void setResponseContentType(String contentType) {
+    beforeCompleteHeaders.fire();
+    response.setContentType(contentType);
+  }
+
+  @Override
   public void enableMultipartSupport(UploadInfo uploadInfo) {
     request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, new MultipartConfigElement(uploadInfo.location,
       uploadInfo.maxFileSize, uploadInfo.maxRequestSize, uploadInfo.fileSizeThreshold));
@@ -156,5 +172,34 @@ public class JettyRequestTunnel implements RequestTunnel {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public String getRequestHeader(String headerName) {
+    beforeCompleteHeaders.fire();
+    return request.getHeader(headerName);
+  }
+
+  @Override
+  public void setResponseStatus(int statusCode) {
+    beforeCompleteHeaders.fire();
+    response.setStatus(statusCode);
+  }
+
+  @Override
+  public void setResponseHeader(String headerName, String headerValue) {
+    beforeCompleteHeaders.fire();
+    response.setHeader(headerName, headerValue);
+  }
+
+  @Override
+  public void setResponseDateHeader(String headerName, long headerValue) {
+    beforeCompleteHeaders.fire();
+    response.setDateHeader(headerName, headerValue);
+  }
+
+  @Override
+  public long getRequestDateHeader(String headerName) {
+    return request.getDateHeader(headerName);
   }
 }

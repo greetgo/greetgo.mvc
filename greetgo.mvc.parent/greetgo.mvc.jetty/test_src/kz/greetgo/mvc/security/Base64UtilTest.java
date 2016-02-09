@@ -1,5 +1,6 @@
 package kz.greetgo.mvc.security;
 
+import kz.greetgo.mvc.util.Base64Util;
 import kz.greetgo.util.RND;
 import org.testng.annotations.Test;
 

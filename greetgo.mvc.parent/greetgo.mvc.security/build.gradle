@@ -16,7 +16,6 @@ configurations { repoUpload }
 
 dependencies {
   compile project(':greetgo.mvc')
-  compile project(':greetgo.mvc.security')
 
   testCompile "kz.greetgo:greetgo.util:${greetgoUtilVersion}"
 }

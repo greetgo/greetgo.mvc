@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.security;
+package kz.greetgo.mvc.util;
 
 import javax.xml.bind.DatatypeConverter;
 

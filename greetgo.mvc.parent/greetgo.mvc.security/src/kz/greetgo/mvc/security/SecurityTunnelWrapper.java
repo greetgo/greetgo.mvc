@@ -7,8 +7,8 @@ import kz.greetgo.util.events.HandlerKiller;
 
 import java.util.Objects;
 
-import static kz.greetgo.mvc.security.Base64Util.base64ToBytes;
-import static kz.greetgo.mvc.security.Base64Util.bytesToBase64;
+import static kz.greetgo.mvc.util.Base64Util.base64ToBytes;
+import static kz.greetgo.mvc.util.Base64Util.bytesToBase64;
 
 public final class SecurityTunnelWrapper implements TunnelHandler {
 

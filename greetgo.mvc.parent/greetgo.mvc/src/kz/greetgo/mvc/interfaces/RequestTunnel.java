@@ -42,4 +42,18 @@ public interface RequestTunnel {
   TunnelCookies cookies();
 
   EventHandlerList eventBeforeCompleteHeaders();
+
+  void flushBuffer();
+
+  void setResponseContentType(String contentType);
+
+  String getRequestHeader(String headerName);
+
+  void setResponseDateHeader(String headerName, long headerValue);
+
+  void setResponseStatus(int statusCode);
+
+  void setResponseHeader(String headerName, String headerValue);
+
+  long getRequestDateHeader(String headerName);
 }

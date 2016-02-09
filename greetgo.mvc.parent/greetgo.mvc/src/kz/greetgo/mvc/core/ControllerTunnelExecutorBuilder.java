@@ -88,7 +88,6 @@ public class ControllerTunnelExecutorBuilder {
 
               executeView(result, model, tunnel, mappingResult, method);
 
-
             } catch (Exception e) {
               {
                 //noinspection ThrowableResultOfMethodCallIgnored
@@ -118,8 +117,6 @@ public class ControllerTunnelExecutorBuilder {
             return localUploadInfoGetter.get();
           }
         };
-
-
       }
     });
   }

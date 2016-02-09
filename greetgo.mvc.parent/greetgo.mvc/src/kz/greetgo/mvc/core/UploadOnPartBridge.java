@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.util;
+package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.interfaces.Upload;
 

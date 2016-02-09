@@ -1,12 +1,12 @@
 package kz.greetgo.mvc.war;
 
+import kz.greetgo.mvc.core.HttpServletTunnelCookies;
 import kz.greetgo.mvc.core.RequestMethod;
+import kz.greetgo.mvc.core.UploadOnPartBridge;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.UploadInfo;
-import kz.greetgo.mvc.util.HttpServletTunnelCookies;
-import kz.greetgo.mvc.util.UploadOnPartBridge;
 import kz.greetgo.util.events.EventHandlerList;
 
 import javax.servlet.ServletException;
@@ -17,22 +17,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
 public class WarRequestTunnel implements RequestTunnel {
-  private final String target;
-  private final HttpServletRequest request;
-  private final HttpServletResponse response;
+  public final HttpServletRequest request;
+  public final HttpServletResponse response;
   private final HttpServletTunnelCookies cookies;
   private volatile boolean executed = false;
 
-  public WarRequestTunnel(String target, ServletRequest request, ServletResponse response) {
-    this.target = target;
-    this.request = (HttpServletRequest)request;
-    this.response = (HttpServletResponse)response;
+  public WarRequestTunnel(ServletRequest request, ServletResponse response) {
+    this.request = (HttpServletRequest) request;
+    this.response = (HttpServletResponse) response;
     cookies = new HttpServletTunnelCookies(this.request, this.response);
   }
 
   @Override
   public String getTarget() {
-    return target;
+    return request.getPathInfo();
   }
 
   @Override
@@ -91,11 +89,22 @@ public class WarRequestTunnel implements RequestTunnel {
   public void sendRedirect(String reference) {
     beforeCompleteHeaders.fire();
     try {
+      if (reference != null && reference.startsWith("/")) {
+        reference = request.getContextPath() + reference;
+        System.out.println("redirected to reference = " + reference
+          + ", request.getContextPath() = " + request.getContextPath());
+      }
       response.sendRedirect(reference);
       executed = true;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public void setResponseContentType(String contentType) {
+    beforeCompleteHeaders.fire();
+    response.setContentType(contentType);
   }
 
   @Override
@@ -140,5 +149,45 @@ public class WarRequestTunnel implements RequestTunnel {
   @Override
   public EventHandlerList eventBeforeCompleteHeaders() {
     return beforeCompleteHeaders;
+  }
+
+  @Override
+  public void flushBuffer() {
+    beforeCompleteHeaders.fire();
+
+    try {
+      response.flushBuffer();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public String getRequestHeader(String headerName) {
+    beforeCompleteHeaders.fire();
+    return request.getHeader(headerName);
+  }
+
+  @Override
+  public void setResponseStatus(int statusCode) {
+    beforeCompleteHeaders.fire();
+    response.setStatus(statusCode);
+  }
+
+  @Override
+  public void setResponseHeader(String headerName, String headerValue) {
+    beforeCompleteHeaders.fire();
+    response.setHeader(headerName, headerValue);
+  }
+
+  @Override
+  public void setResponseDateHeader(String headerName, long headerValue) {
+    beforeCompleteHeaders.fire();
+    response.setDateHeader(headerName, headerValue);
+  }
+
+  @Override
+  public long getRequestDateHeader(String headerName) {
+    return request.getDateHeader(headerName);
   }
 }

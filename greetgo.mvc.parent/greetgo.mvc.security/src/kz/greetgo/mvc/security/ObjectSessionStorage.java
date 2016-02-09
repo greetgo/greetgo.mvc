@@ -1,5 +1,7 @@
 package kz.greetgo.mvc.security;
 
+import kz.greetgo.mvc.util.Base64Util;
+
 import static kz.greetgo.mvc.security.SerializeUtil.deserialize;
 import static kz.greetgo.mvc.security.SerializeUtil.serialize;
 
