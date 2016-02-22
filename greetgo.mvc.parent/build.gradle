@@ -31,6 +31,7 @@ subprojects {
   compileTestJava.options.debugOptions.debugLevel = "source,lines,vars"
 
   repositories {
+    mavenLocal()
     maven {
       name 'Our repository'
       url System.getenv('GG_REPO')
@@ -40,7 +41,7 @@ subprojects {
   dependencies {
     //ext.jettyVersion = '8.0+'
     ext.jettyVersion = '9.2+'
-    ext.greetgoUtilVersion = '0.0.15'
+    ext.greetgoUtilVersion = '0.0.21'
     ext.servletApiVersion = '3.1.0'
 
     compile 'com.google.code.findbugs:annotations:2.0.1'
