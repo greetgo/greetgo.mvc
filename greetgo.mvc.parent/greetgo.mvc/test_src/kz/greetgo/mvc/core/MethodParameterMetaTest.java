@@ -447,6 +447,28 @@ public class MethodParameterMetaTest {
   }
 
   @SuppressWarnings("unused")
+  class NakedRequestTunnel {
+    @SuppressWarnings({"unused", "EmptyMethod"})
+    public void forTest(RequestTunnel requestTunnel) {
+    }
+  }
+
+  @Test
+  public void nakedRequestTunnel() throws Exception {
+    final Method method = TestUtil.getMethod(NakedRequestTunnel.class, "forTest");
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+
+    final Object actualParamValue = e.extract(null, tunnel, null);
+
+    assertThat(actualParamValue).isInstanceOf(RequestTunnel.class);
+
+    assertThat(identityHashCode(actualParamValue)).isEqualTo(identityHashCode(tunnel));
+  }
+
+  @SuppressWarnings("unused")
   class ForMvcModel {
     @SuppressWarnings({"unused", "EmptyMethod"})
     public void forTest(MvcModel model) {
@@ -492,4 +514,7 @@ public class MethodParameterMetaTest {
     assertThat(identityHashCode(actualParamValue)).isEqualTo(identityHashCode(abra));
 
   }
+
+
+
 }

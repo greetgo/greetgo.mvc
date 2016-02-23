@@ -202,4 +202,10 @@ public class JettyRequestTunnel implements RequestTunnel {
   public long getRequestDateHeader(String headerName) {
     return request.getDateHeader(headerName);
   }
+
+  @Override
+  public void setResponseContentLength(int length) {
+    beforeCompleteHeaders.fire();
+    response.setContentLength(length);
+  }
 }

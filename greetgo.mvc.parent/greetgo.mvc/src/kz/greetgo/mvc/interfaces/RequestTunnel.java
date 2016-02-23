@@ -27,6 +27,8 @@ public interface RequestTunnel {
 
   void sendRedirect(String reference);
 
+  void setResponseContentLength(int length);
+
   void enableMultipartSupport(UploadInfo uploadInfo);
 
   void removeMultipartData();

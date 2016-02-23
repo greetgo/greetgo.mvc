@@ -26,6 +26,8 @@ public class WarRequestTunnel implements RequestTunnel {
     this.request = (HttpServletRequest) request;
     this.response = (HttpServletResponse) response;
     cookies = new HttpServletTunnelCookies(this.request, this.response);
+
+    response.setContentType("asd");
   }
 
   @Override
@@ -103,6 +105,12 @@ public class WarRequestTunnel implements RequestTunnel {
   public void setResponseContentType(String contentType) {
     beforeCompleteHeaders.fire();
     response.setContentType(contentType);
+  }
+
+  @Override
+  public void setResponseContentLength(int length) {
+    beforeCompleteHeaders.fire();
+    response.setContentLength(length);
   }
 
   @Override

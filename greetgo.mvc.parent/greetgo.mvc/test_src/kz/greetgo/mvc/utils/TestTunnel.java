@@ -184,4 +184,9 @@ public class TestTunnel implements RequestTunnel {
   public void setResponseDateHeader(String headerName, long headerValue) {
     throw new RuntimeException();
   }
+
+  @Override
+  public void setResponseContentLength(int length) {
+    throw new RuntimeException();
+  }
 }
