@@ -1,5 +1,6 @@
 package kz.greetgo.mvc.war;
 
+import kz.greetgo.mvc.core.EventTunnelCookies;
 import kz.greetgo.mvc.core.HttpServletTunnelCookies;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.core.UploadOnPartBridge;
@@ -20,14 +21,14 @@ public class WarRequestTunnel implements RequestTunnel {
   public final HttpServletRequest request;
   public final HttpServletResponse response;
   private final HttpServletTunnelCookies cookies;
+  private final EventTunnelCookies cookiesReturn;
   private volatile boolean executed = false;
 
   public WarRequestTunnel(ServletRequest request, ServletResponse response) {
     this.request = (HttpServletRequest) request;
     this.response = (HttpServletResponse) response;
     cookies = new HttpServletTunnelCookies(this.request, this.response);
-
-    response.setContentType("asd");
+    cookiesReturn = new EventTunnelCookies(cookies, beforeCompleteHeaders);
   }
 
   @Override
@@ -145,7 +146,7 @@ public class WarRequestTunnel implements RequestTunnel {
 
   @Override
   public TunnelCookies cookies() {
-    return cookies;
+    return cookiesReturn;
   }
 
   private final EventHandlerList beforeCompleteHeaders = new EventHandlerList();

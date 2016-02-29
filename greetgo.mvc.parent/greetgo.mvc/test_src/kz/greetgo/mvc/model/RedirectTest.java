@@ -8,7 +8,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class RedirectTest {
 
   @Test
-  public void test() {
+  public void addCookie() {
     //noinspection ThrowableResultOfMethodCallIgnored
     final Redirect redirect = Redirect.to("some reference")
       .addCookie("asd", "asd value").addCookieObject("dsa", "dsa object value");

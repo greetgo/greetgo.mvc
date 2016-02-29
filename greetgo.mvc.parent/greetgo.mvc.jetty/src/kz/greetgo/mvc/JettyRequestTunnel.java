@@ -1,5 +1,6 @@
 package kz.greetgo.mvc;
 
+import kz.greetgo.mvc.core.EventTunnelCookies;
 import kz.greetgo.mvc.core.HttpServletTunnelCookies;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.core.UploadOnPartBridge;
@@ -26,6 +27,7 @@ public class JettyRequestTunnel implements RequestTunnel {
   final HttpServletRequest request;
   final HttpServletResponse response;
   private final HttpServletTunnelCookies cookies;
+  private final EventTunnelCookies cookiesReturn;
 
   private final EventHandlerList beforeCompleteHeaders = new EventHandlerList();
 
@@ -51,6 +53,7 @@ public class JettyRequestTunnel implements RequestTunnel {
     this.request = request;
     this.response = response;
     cookies = new HttpServletTunnelCookies(request, response);
+    cookiesReturn = new EventTunnelCookies(cookies, beforeCompleteHeaders);
   }
 
   @Override
@@ -157,7 +160,7 @@ public class JettyRequestTunnel implements RequestTunnel {
 
   @Override
   public TunnelCookies cookies() {
-    return cookies;
+    return cookiesReturn;
   }
 
   @Override

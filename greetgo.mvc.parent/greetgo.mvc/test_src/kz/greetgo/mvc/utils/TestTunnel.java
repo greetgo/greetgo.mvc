@@ -1,5 +1,6 @@
 package kz.greetgo.mvc.utils;
 
+import kz.greetgo.mvc.core.EventTunnelCookies;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.core.TestTunnelCookies;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
@@ -138,14 +139,16 @@ public class TestTunnel implements RequestTunnel {
     return requestMethod;
   }
 
-  public TestTunnelCookies testCookies = new TestTunnelCookies();
+  public final TestTunnelCookies testCookies = new TestTunnelCookies();
+
 
   @Override
   public TunnelCookies cookies() {
-    return testCookies;
+    return cookiesReturn;
   }
 
   private final EventHandlerList beforeCompleteHeaders = new EventHandlerList();
+  private final EventTunnelCookies cookiesReturn = new EventTunnelCookies(testCookies, beforeCompleteHeaders);
 
   @Override
   public EventHandlerList eventBeforeCompleteHeaders() {

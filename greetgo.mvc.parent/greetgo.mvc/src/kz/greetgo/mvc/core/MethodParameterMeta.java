@@ -8,7 +8,6 @@ import kz.greetgo.mvc.errors.IDoNotKnowHowToConvertRequestContentToType;
 import kz.greetgo.mvc.errors.NoAnnotationParInUploadParam;
 import kz.greetgo.mvc.interfaces.*;
 import kz.greetgo.mvc.model.MvcModel;
-import kz.greetgo.util.events.EventHandler;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -126,14 +125,7 @@ public class MethodParameterMeta {
     if (TunnelCookies.class == genericParameterType) return new MethodParamExtractor() {
       @Override
       public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-        final PostApplyTunnelCookies ret = new PostApplyTunnelCookies(tunnel.cookies());
-        tunnel.eventBeforeCompleteHeaders().addEventHandler(new EventHandler() {
-          @Override
-          public void handle() {
-            ret.apply();
-          }
-        });
-        return ret;
+        return tunnel.cookies();
       }
     };
 
