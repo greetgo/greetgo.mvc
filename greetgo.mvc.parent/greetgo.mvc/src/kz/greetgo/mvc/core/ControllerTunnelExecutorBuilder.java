@@ -4,6 +4,7 @@ import kz.greetgo.mvc.annotations.Mapping;
 import kz.greetgo.mvc.annotations.ToJson;
 import kz.greetgo.mvc.annotations.ToXml;
 import kz.greetgo.mvc.interfaces.*;
+import kz.greetgo.mvc.model.DefaultMvcModel;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.model.UploadInfo;
@@ -76,7 +77,7 @@ public class ControllerTunnelExecutorBuilder {
           public void execute() {
             try {
 
-              MvcModel model = new MvcModel();
+              DefaultMvcModel model = new DefaultMvcModel();
 
               Object[] paramValues = new Object[extractorList.size()];
               for (int i = 0, n = extractorList.size(); i < n; i++) {
@@ -103,7 +104,7 @@ public class ControllerTunnelExecutorBuilder {
               {
 
                 try {
-                  views.errorView(tunnel.getResponseOutputStream(), tunnel.getTarget(), e);
+                  views.errorView(tunnel, tunnel.getTarget(), e);
                 } catch (Exception e1) {
                   throw new RuntimeException(e1);
                 }
@@ -146,7 +147,7 @@ public class ControllerTunnelExecutorBuilder {
       }
     }
 
-    views.defaultView(tunnel.getResponseOutputStream(), controllerMethodResult, model, mappingResult);
+    views.defaultView(tunnel, controllerMethodResult, model, mappingResult);
   }
 }
 

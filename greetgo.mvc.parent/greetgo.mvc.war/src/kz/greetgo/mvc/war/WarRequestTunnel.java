@@ -194,4 +194,21 @@ public class WarRequestTunnel implements RequestTunnel {
   public long getRequestDateHeader(String headerName) {
     return request.getDateHeader(headerName);
   }
+
+  @Override
+  public void forward(String reference, boolean executeBeforeCompleteHeaders) {
+    if (executeBeforeCompleteHeaders) {
+      beforeCompleteHeaders.fire();
+    }
+    try {
+      request.getRequestDispatcher(reference).forward(request, response);
+    } catch (ServletException | IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public void setRequestAttribute(String name, Object value) {
+    request.setAttribute(name, value);
+  }
 }

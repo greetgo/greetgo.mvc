@@ -9,7 +9,7 @@ public interface Views {
 
   String toXml(Object object) throws Exception;
 
-  void defaultView(OutputStream outputStream, Object returnValue, MvcModel model, MappingResult mappingResult) throws Exception;
+  void defaultView(RequestTunnel tunnel, Object returnValue, MvcModel model, MappingResult mappingResult) throws Exception;
 
-  void errorView(OutputStream outputStream, String target, Exception error) throws Exception;
+  void errorView(RequestTunnel tunnel, String target, Exception error) throws Exception;
 }

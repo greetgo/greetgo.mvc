@@ -181,6 +181,16 @@ public class TestTunnel implements RequestTunnel {
   }
 
   @Override
+  public void forward(String reference, boolean executeBeforeCompleteHeaders) {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public void setRequestAttribute(String name, Object value) {
+    throw new RuntimeException();
+  }
+
+  @Override
   public void setResponseDateHeader(String headerName, long headerValue) {
     throw new RuntimeException();
   }

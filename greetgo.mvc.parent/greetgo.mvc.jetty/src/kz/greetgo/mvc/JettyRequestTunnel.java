@@ -1,12 +1,12 @@
 package kz.greetgo.mvc;
 
+import kz.greetgo.mvc.core.HttpServletTunnelCookies;
 import kz.greetgo.mvc.core.RequestMethod;
+import kz.greetgo.mvc.core.UploadOnPartBridge;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.UploadInfo;
-import kz.greetgo.mvc.core.HttpServletTunnelCookies;
-import kz.greetgo.mvc.core.UploadOnPartBridge;
 import kz.greetgo.util.events.EventHandlerList;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.MultiException;
@@ -207,5 +207,22 @@ public class JettyRequestTunnel implements RequestTunnel {
   public void setResponseContentLength(int length) {
     beforeCompleteHeaders.fire();
     response.setContentLength(length);
+  }
+
+  @Override
+  public void forward(String reference, boolean executeBeforeCompleteHeaders) {
+    if (executeBeforeCompleteHeaders) {
+      beforeCompleteHeaders.fire();
+    }
+    try {
+      request.getRequestDispatcher(reference).forward(request, response);
+    } catch (ServletException | IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public void setRequestAttribute(String name, Object value) {
+    request.setAttribute(name, value);
   }
 }

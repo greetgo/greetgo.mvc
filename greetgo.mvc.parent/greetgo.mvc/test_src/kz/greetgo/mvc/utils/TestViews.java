@@ -1,6 +1,7 @@
 package kz.greetgo.mvc.utils;
 
 import kz.greetgo.mvc.interfaces.MappingResult;
+import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.interfaces.Views;
 
@@ -23,13 +24,13 @@ public class TestViews implements Views {
   public MappingResult mappingResult = null;
 
   @Override
-  public void defaultView(OutputStream outputStream, Object returnValue, MvcModel model, MappingResult mappingResult) {
+  public void defaultView(RequestTunnel tunnel, Object returnValue, MvcModel model, MappingResult mappingResult) {
 
     this.returnValue = returnValue;
     this.model = model;
     this.mappingResult = mappingResult;
 
-    try (PrintStream pr = new PrintStream(outputStream, false, "UTF-8")) {
+    try (PrintStream pr = new PrintStream(tunnel.getResponseOutputStream(), false, "UTF-8")) {
       pr.print("view of " + returnValue);
       pr.flush();
     } catch (Exception e) {
@@ -40,9 +41,9 @@ public class TestViews implements Views {
   public String errorTarget = null;
 
   @Override
-  public void errorView(OutputStream outputStream, String target, Exception error) {
+  public void errorView(RequestTunnel tunnel, String target, Exception error) {
     errorTarget = target;
-    try (PrintStream pr = new PrintStream(outputStream, false, "UTF-8")) {
+    try (PrintStream pr = new PrintStream(tunnel.getResponseOutputStream(), false, "UTF-8")) {
       error.printStackTrace(pr);
     } catch (Exception e) {
       throw new RuntimeException(e);

@@ -1,16 +1,17 @@
 package kz.greetgo.mvc.core;
 
+import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.annotations.PathPar;
 import kz.greetgo.mvc.annotations.RequestInput;
-import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.interfaces.MethodParamExtractor;
-import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
+import kz.greetgo.mvc.interfaces.Upload;
+import kz.greetgo.mvc.model.DefaultMvcModel;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.utils.TestMappingResult;
 import kz.greetgo.mvc.utils.TestTunnel;
-import kz.greetgo.mvc.utils.TestUtil;
 import kz.greetgo.mvc.utils.TestUpload;
+import kz.greetgo.mvc.utils.TestUtil;
 import kz.greetgo.util.RND;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -482,7 +483,7 @@ public class MethodParameterMetaTest {
     final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
     final MethodParamExtractor e = ee.get(0);
 
-    MvcModel model = new MvcModel();
+    DefaultMvcModel model = new DefaultMvcModel();
 
     final Object actualParamValue = e.extract(null, null, model);
 
@@ -514,7 +515,6 @@ public class MethodParameterMetaTest {
     assertThat(identityHashCode(actualParamValue)).isEqualTo(identityHashCode(abra));
 
   }
-
 
 
 }

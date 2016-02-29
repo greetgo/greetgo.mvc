@@ -58,4 +58,8 @@ public interface RequestTunnel {
   void setResponseHeader(String headerName, String headerValue);
 
   long getRequestDateHeader(String headerName);
+
+  void forward(String reference, boolean executeBeforeCompleteHeaders);
+
+  void setRequestAttribute(String name, Object value);
 }

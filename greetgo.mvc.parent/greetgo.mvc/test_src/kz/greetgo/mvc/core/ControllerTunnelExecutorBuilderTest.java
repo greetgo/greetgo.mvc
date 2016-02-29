@@ -6,6 +6,7 @@ import kz.greetgo.mvc.errors.InconsistentUploadAnnotationsUnderClass;
 import kz.greetgo.mvc.errors.InconsistentUploadAnnotationsUnderMethod;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
+import kz.greetgo.mvc.model.DefaultMvcModel;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.model.UploadInfo;
@@ -259,7 +260,8 @@ public class ControllerTunnelExecutorBuilderTest {
     assertThat(tunnel.responseBinText()).isEqualTo("view of " + RETURN_DEFAULT_STR);
     assertThat(views.returnValue).isEqualTo(RETURN_DEFAULT_STR);
     assertThat(views.model).isNotNull();
-    Assertions.assertThat(views.model.getParam(MODEL_PARAMETER_NAME)).isEqualTo(MODEL_PARAMETER_VALUE);
+    final DefaultMvcModel model = (DefaultMvcModel) views.model;
+    assertThat(model.data.get(MODEL_PARAMETER_NAME)).isEqualTo(MODEL_PARAMETER_VALUE);
   }
 
   @SuppressWarnings("unused")
