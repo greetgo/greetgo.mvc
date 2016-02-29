@@ -96,6 +96,7 @@ public class TestTunnel implements RequestTunnel {
 
   @Override
   public void sendRedirect(String reference) {
+    beforeCompleteHeaders.fire();
     redirectedTo = reference;
   }
 

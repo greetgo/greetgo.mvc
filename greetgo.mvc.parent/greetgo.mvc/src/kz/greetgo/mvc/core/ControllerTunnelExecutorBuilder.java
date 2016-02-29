@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ControllerTunnelExecutorBuilder {
   public static List<TunnelExecutorGetter> build(Object controller, Views views) {
@@ -94,6 +95,7 @@ public class ControllerTunnelExecutorBuilder {
                 //noinspection ThrowableResultOfMethodCallIgnored
                 final Redirect redirect = MvcUtil.extractRedirect(e, 4);
                 if (redirect != null) {
+                  copyCookies(redirect, tunnel.cookies());
                   tunnel.sendRedirect(redirect.reference);
                   return;
                 }
@@ -110,6 +112,7 @@ public class ControllerTunnelExecutorBuilder {
                 }
 
               }
+
             }
           }
 
@@ -122,14 +125,21 @@ public class ControllerTunnelExecutorBuilder {
     });
   }
 
+  private static void copyCookies(Redirect redirect, TunnelCookies cookies) {
+    for (Map.Entry<String, String> e : redirect.savingCookiesToResponse.entrySet()) {
+      cookies.saveCookieToResponse(e.getKey(), e.getValue());
+    }
+  }
+
 
   private void executeView(Object controllerMethodResult, MvcModel model,
                            RequestTunnel tunnel, MappingResult mappingResult,
                            Method method) throws Exception {
 
     if (controllerMethodResult instanceof Redirect) {
-      Redirect r = (Redirect) controllerMethodResult;
-      tunnel.sendRedirect(r.reference);
+      Redirect redirect = (Redirect) controllerMethodResult;
+      copyCookies(redirect, tunnel.cookies());
+      tunnel.sendRedirect(redirect.reference);
       return;
     }
 

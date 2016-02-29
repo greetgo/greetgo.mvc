@@ -14,8 +14,8 @@ public class RedirectTest {
       .addCookie("asd", "asd value").addCookieObject("dsa", "dsa object value");
 
     assertThat(redirect.reference).isEqualTo("some reference");
-    assertThat(redirect.addingCookiesToResponse.get("asd")).isEqualTo("asd value");
-    assertThat(redirect.addingCookiesToResponse.get("dsa")).isEqualTo(CookieUtil.objectToStr("dsa object value"));
+    assertThat(redirect.savingCookiesToResponse.get("asd")).isEqualTo("asd value");
+    assertThat(redirect.savingCookiesToResponse.get("dsa")).isEqualTo(CookieUtil.objectToStr("dsa object value"));
   }
 
 }

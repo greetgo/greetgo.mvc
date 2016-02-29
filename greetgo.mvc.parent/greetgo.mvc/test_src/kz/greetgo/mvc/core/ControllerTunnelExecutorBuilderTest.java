@@ -10,6 +10,7 @@ import kz.greetgo.mvc.model.DefaultMvcModel;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.model.UploadInfo;
+import kz.greetgo.mvc.util.CookieUtil;
 import kz.greetgo.mvc.utils.TestTunnel;
 import kz.greetgo.mvc.utils.TestViews;
 import kz.greetgo.util.RND;
@@ -18,6 +19,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -29,6 +31,11 @@ public class ControllerTunnelExecutorBuilderTest {
   private static final String RETURN_DEFAULT_STR = RND.str(10);
   private static final String MODEL_PARAMETER_NAME = RND.str(10);
   private static final String MODEL_PARAMETER_VALUE = RND.str(10);
+
+  private static final String COOKIE_KEY1 = "COOKIE_KEY1_" + RND.str(10);
+  private static final String COOKIE_VALUE1 = "COOKIE_VALUE1_" + RND.str(10);
+  private static final String COOKIE_KEY2 = "COOKIE_KEY2_" + RND.str(10);
+  private static final String COOKIE_VALUE2 = "COOKIE_VALUE2_" + RND.str(10);
 
   @Mapping("/test")
   @SuppressWarnings("unused")
@@ -64,7 +71,11 @@ public class ControllerTunnelExecutorBuilderTest {
     @Mapping("/return_redirect")
     public Redirect returnRedirect() {
       calledReturnRedirect = true;
-      return Redirect.to(RETURN_REDIRECT_TO);
+      //noinspection ThrowableResultOfMethodCallIgnored
+      return Redirect.to(RETURN_REDIRECT_TO)
+        .addCookie(COOKIE_KEY1, COOKIE_VALUE1)
+        .addCookieObject(COOKIE_KEY2, COOKIE_VALUE2)
+        ;
     }
 
     public boolean calledThrowRedirect = false;
@@ -72,7 +83,11 @@ public class ControllerTunnelExecutorBuilderTest {
     @Mapping("/throw_redirect")
     public Redirect throwRedirect() {
       calledThrowRedirect = true;
-      throw Redirect.to(THROW_REDIRECT_TO);
+      //noinspection ThrowableResultOfMethodCallIgnored
+      throw Redirect.to(THROW_REDIRECT_TO)
+        .addCookie(COOKIE_KEY1, COOKIE_VALUE1)
+        .addCookieObject(COOKIE_KEY2, COOKIE_VALUE2)
+        ;
     }
 
   }
@@ -93,7 +108,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_return_redirect() throws Exception {
+  public void create_handleTunnel_return_redirect() {
 
     final TestViews views = new TestViews();
 
@@ -118,10 +133,14 @@ public class ControllerTunnelExecutorBuilderTest {
     assertThat(controller.calledReturnRedirect).isTrue();
     assertThat(tunnel.redirectedTo).isEqualTo(RETURN_REDIRECT_TO);
 
+    final Map<String, String> savedCookies = tunnel.testCookies.savedCookies;
+    assertThat(savedCookies.get(COOKIE_KEY1)).isEqualTo(COOKIE_VALUE1);
+    assertThat(savedCookies.get(COOKIE_KEY2)).isEqualTo(CookieUtil.objectToStr(COOKIE_VALUE2));
+
   }
 
   @Test
-  public void create_handleTunnel_throw_redirect() throws Exception {
+  public void create_handleTunnel_throw_redirect() {
 
     final TestViews views = new TestViews();
 
@@ -146,10 +165,13 @@ public class ControllerTunnelExecutorBuilderTest {
     assertThat(controller.calledThrowRedirect).isTrue();
     assertThat(tunnel.redirectedTo).isEqualTo(THROW_REDIRECT_TO);
 
+    final Map<String, String> savedCookies = tunnel.testCookies.savedCookies;
+    assertThat(savedCookies.get(COOKIE_KEY1)).isEqualTo(COOKIE_VALUE1);
+    assertThat(savedCookies.get(COOKIE_KEY2)).isEqualTo(CookieUtil.objectToStr(COOKIE_VALUE2));
   }
 
   @Test
-  public void create_handleTunnel_notHandled() throws Exception {
+  public void create_handleTunnel_notHandled() {
 
     final TestViews views = new TestViews();
 
@@ -175,7 +197,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_to_json() throws Exception {
+  public void create_handleTunnel_to_json() {
 
     final TestViews views = new TestViews();
 
@@ -204,7 +226,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_to_xml() throws Exception {
+  public void create_handleTunnel_to_xml() {
 
     final TestViews views = new TestViews();
 
@@ -233,7 +255,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_default_str() throws Exception {
+  public void create_handleTunnel_default_str() {
 
     final TestViews views = new TestViews();
 
@@ -266,13 +288,14 @@ public class ControllerTunnelExecutorBuilderTest {
 
   @SuppressWarnings("unused")
   class UploadInfoDefault {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     public void forTest() {
     }
   }
 
   @Test
-  public void getUploadInfo_UploadInfoDefault() throws Exception {
+  public void getUploadInfo_UploadInfoDefault() {
     UploadInfoDefault c = new UploadInfoDefault();
 
     //
@@ -305,6 +328,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadInfoFromMethod("getUploadInfoForTest")
   class UploadInfoFromMethod1 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     public void forTest() {
     }
@@ -319,7 +343,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadInfoFromMethod1() throws Exception {
+  public void getUploadInfo_UploadInfoFromMethod1() {
     UploadInfoFromMethod1 c = new UploadInfoFromMethod1();
 
     //
@@ -348,6 +372,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadInfoFromMethod("getUploadInfoForTest")
   class UploadInfoFromMethod2 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadInfoFromMethod("getUploadInfoForMethod")
     public void forTest() {
@@ -369,7 +394,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadInfoFromMethod2() throws Exception {
+  public void getUploadInfo_UploadInfoFromMethod2() {
     UploadInfoFromMethod2 c = new UploadInfoFromMethod2();
 
     //
@@ -397,81 +422,97 @@ public class ControllerTunnelExecutorBuilderTest {
 
   @SuppressWarnings("unused")
   class AmountFormats {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest1")
     @UploadMaxFileSize("22 745")
     public void forTest1() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest2")
     @UploadMaxFileSize("22_745")
     public void forTest2() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_K")
     @UploadMaxFileSize("22_745 K")
     public void forTest_K() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_k")
     @UploadMaxFileSize("22_745 k")
     public void forTest_k() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_Kb")
     @UploadMaxFileSize("22_745Kb")
     public void forTest_Kb() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_KB")
     @UploadMaxFileSize("22 745 KB")
     public void forTest_KB() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_kb")
     @UploadMaxFileSize("22_745kb")
     public void forTest_kb() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_kB")
     @UploadMaxFileSize("22 745 kB")
     public void forTest_kB() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_M")
     @UploadMaxFileSize("711 M")
     public void forTest_M() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_Mb")
     @UploadMaxFileSize("711 Mb")
     public void forTest_Mb() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_MB")
     @UploadMaxFileSize("711 MB")
     public void forTest_MB() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_G")
     @UploadMaxFileSize("317 G")
     public void forTest_G() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_Gb")
     @UploadMaxFileSize("317 Gb")
     public void forTest_Gb() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_GB")
     @UploadMaxFileSize("317 GB")
     public void forTest_GB() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_m1")
     @UploadMaxFileSize("-1")
     public void forTest_m1() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Mapping("forTest_zero")
     @UploadMaxFileSize("0")
     public void forTest_zero() {
@@ -503,7 +544,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test(dataProvider = "dataFor_getUploadInfo_amountFormats")
-  public void getUploadInfo_amountFormats(String target, long expectedValue) throws Exception {
+  public void getUploadInfo_amountFormats(String target, long expectedValue) {
     AmountFormats c = new AmountFormats();
 
     //
@@ -531,13 +572,14 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadMaxFileSize("22745")
   class UploadMaxFileSize1 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     public void forTest() {
     }
   }
 
   @Test
-  public void getUploadInfo_UploadMaxFileSize1() throws Exception {
+  public void getUploadInfo_UploadMaxFileSize1() {
     UploadMaxFileSize1 c = new UploadMaxFileSize1();
 
     //
@@ -566,6 +608,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadMaxFileSize("22745")
   class UploadMaxFileSize2 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadMaxFileSize("7711")
     public void forTest() {
@@ -573,7 +616,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadMaxFileSize2() throws Exception {
+  public void getUploadInfo_UploadMaxFileSize2() {
     UploadMaxFileSize2 c = new UploadMaxFileSize2();
 
     //
@@ -602,13 +645,14 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadMaxRequestSize("22745")
   class UploadMaxRequestSize1 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     public void forTest() {
     }
   }
 
   @Test
-  public void getUploadInfo_UploadMaxRequestSize1() throws Exception {
+  public void getUploadInfo_UploadMaxRequestSize1() {
     UploadMaxRequestSize1 c = new UploadMaxRequestSize1();
 
     //
@@ -637,6 +681,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadMaxRequestSize("22745")
   class UploadMaxRequestSize2 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadMaxRequestSize("7711")
     public void forTest() {
@@ -644,7 +689,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadMaxRequestSize2() throws Exception {
+  public void getUploadInfo_UploadMaxRequestSize2() {
     UploadMaxRequestSize2 c = new UploadMaxRequestSize2();
 
     //
@@ -673,13 +718,14 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadFileSizeThreshold("22745")
   class UploadFileSizeThreshold1 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     public void forTest() {
     }
   }
 
   @Test
-  public void getUploadInfo_UploadFileSizeThreshold1() throws Exception {
+  public void getUploadInfo_UploadFileSizeThreshold1() {
     UploadFileSizeThreshold1 c = new UploadFileSizeThreshold1();
 
     //
@@ -708,6 +754,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadFileSizeThreshold("22745")
   class UploadFileSizeThreshold2 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadFileSizeThreshold("7711")
     public void forTest() {
@@ -715,7 +762,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadFileSizeThreshold2() throws Exception {
+  public void getUploadInfo_UploadFileSizeThreshold2() {
     UploadFileSizeThreshold2 c = new UploadFileSizeThreshold2();
 
     //
@@ -744,6 +791,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadLocationFromMethod("getTestLocation")
   class UploadLocationFromMethod1 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     public void forTest() {
     }
@@ -756,7 +804,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadLocationFromMethod1() throws Exception {
+  public void getUploadInfo_UploadLocationFromMethod1() {
     UploadLocationFromMethod1 c = new UploadLocationFromMethod1();
     c.testLocation = RND.str(10);
 
@@ -788,6 +836,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadLocationFromMethod("getTestLocationLeft")
   class UploadLocationFromMethod2 {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadLocationFromMethod("getTestLocation")
     public void forTest() {
@@ -801,7 +850,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadLocationFromMethod2() throws Exception {
+  public void getUploadInfo_UploadLocationFromMethod2() {
     UploadLocationFromMethod2 c = new UploadLocationFromMethod2();
     c.testLocation = RND.str(10);
 
@@ -834,13 +883,14 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadInfoFromMethod("tmp1")
   @UploadLocationFromMethod("tmp2")
   class TestInconsistentUploadAnnotationsUnderClass {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     public void forTest() {
     }
   }
 
   @Test(expectedExceptions = InconsistentUploadAnnotationsUnderClass.class)
-  public void getUploadInfo_InconsistentUploadAnnotationsUnderClass() throws Exception {
+  public void getUploadInfo_InconsistentUploadAnnotationsUnderClass() {
     TestInconsistentUploadAnnotationsUnderClass c = new TestInconsistentUploadAnnotationsUnderClass();
     //
     //
@@ -851,6 +901,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
   @SuppressWarnings("unused")
   class TestInconsistentUploadAnnotationsUnderMethod {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadInfoFromMethod("tmp1")
     @UploadLocationFromMethod("tmp2")
@@ -859,7 +910,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test(expectedExceptions = InconsistentUploadAnnotationsUnderMethod.class)
-  public void getUploadInfo_InconsistentUploadAnnotationsUnderMethod() throws Exception {
+  public void getUploadInfo_InconsistentUploadAnnotationsUnderMethod() {
     TestInconsistentUploadAnnotationsUnderMethod c = new TestInconsistentUploadAnnotationsUnderMethod();
     //
     //
@@ -871,6 +922,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadMaxFileSizeFromMethod("left")
   class UploadMaxFileSizeFromMethod_long {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadMaxFileSizeFromMethod("getTestMaxFileSize")
     public void forTest() {
@@ -884,7 +936,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadMaxFileSizeFromMethod_long() throws Exception {
+  public void getUploadInfo_UploadMaxFileSizeFromMethod_long() {
     UploadMaxFileSizeFromMethod_long c = new UploadMaxFileSizeFromMethod_long();
     c.testMaxFileSize = RND.plusLong(1_000_000_000);
 
@@ -916,6 +968,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadMaxFileSizeFromMethod("left")
   class UploadMaxFileSizeFromMethod_int {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadMaxFileSizeFromMethod("getTestMaxFileSize")
     public void forTest() {
@@ -929,7 +982,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadMaxFileSizeFromMethod_int() throws Exception {
+  public void getUploadInfo_UploadMaxFileSizeFromMethod_int() {
     UploadMaxFileSizeFromMethod_int c = new UploadMaxFileSizeFromMethod_int();
     c.testMaxFileSize = RND.plusInt(1_000_000_000);
 
@@ -961,6 +1014,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadMaxFileSize("1M")
   class UploadMaxFileSizeFromMethod_String {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadMaxFileSizeFromMethod("getTestMaxFileSize")
     public void forTest() {
@@ -974,7 +1028,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void getUploadInfo_UploadMaxFileSizeFromMethod_String() throws Exception {
+  public void getUploadInfo_UploadMaxFileSizeFromMethod_String() {
     UploadMaxFileSizeFromMethod_String c = new UploadMaxFileSizeFromMethod_String();
     c.testMaxFileSize = "left";
 
@@ -1007,6 +1061,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   @UploadMaxFileSize("1M")
   class TestAmbiguousMaxFileSize {
+    @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
     @UploadMaxFileSize("1M")
     @UploadMaxFileSizeFromMethod("asd")

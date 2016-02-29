@@ -8,7 +8,7 @@ import java.util.Map;
 public class Redirect extends RuntimeException {
   public final String reference;
 
-  public final Map<String, String> addingCookiesToResponse = new HashMap<>();
+  public final Map<String, String> savingCookiesToResponse = new HashMap<>();
 
   public static Redirect to(String reference) {
     return new Redirect(reference);
@@ -20,12 +20,12 @@ public class Redirect extends RuntimeException {
   }
 
   public Redirect addCookieObject(String name, Object value) {
-    addingCookiesToResponse.put(name, CookieUtil.objectToStr(value));
+    savingCookiesToResponse.put(name, CookieUtil.objectToStr(value));
     return this;
   }
 
   public Redirect addCookie(String name, String value) {
-    addingCookiesToResponse.put(name, value);
+    savingCookiesToResponse.put(name, value);
     return this;
   }
 }

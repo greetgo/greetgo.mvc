@@ -3,7 +3,9 @@ package kz.greetgo.mvc.core;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TestTunnelCookies implements TunnelCookies {
 
@@ -17,9 +19,11 @@ public class TestTunnelCookies implements TunnelCookies {
   }
 
   public final List<String> calls = new ArrayList<>();
+  public final Map<String, String> savedCookies = new HashMap<>();
 
   @Override
   public void saveCookieToResponse(String name, String value) {
+    savedCookies.put(name, value);
     calls.add("saveCookieToResponse " + name + ' ' + value);
   }
 
