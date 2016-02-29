@@ -5,6 +5,7 @@ import kz.greetgo.mvc.annotations.PathPar;
 import kz.greetgo.mvc.annotations.RequestInput;
 import kz.greetgo.mvc.interfaces.MethodParamExtractor;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
+import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.DefaultMvcModel;
 import kz.greetgo.mvc.model.MvcModel;
@@ -516,5 +517,46 @@ public class MethodParameterMetaTest {
 
   }
 
+  class ForTunnelCookies {
+    public void forTest(TunnelCookies cookies) {
+    }
+  }
 
+  @Test
+  public void tunnelCookies() throws Exception {
+    final Method method = TestUtil.getMethod(ForTunnelCookies.class, "forTest");
+
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final MethodParamExtractor e = ee.get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+
+    final Object actualParamValue = e.extract(null, tunnel, null);
+
+    assertThat(actualParamValue).isInstanceOf(TunnelCookies.class);
+
+    TunnelCookies ex = (TunnelCookies) actualParamValue;
+
+    tunnel.testCookies.getRequestCookieValue_return = RND.str(10);
+
+    String name = RND.str(10);
+    assertThat(ex.getRequestCookieValue(name)).isEqualTo(tunnel.testCookies.getRequestCookieValue_return);
+    assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo(name);
+
+    ex.saveCookieToResponse("asd", "asd_value");
+    ex.removeCookieFromResponse("dsa");
+
+    assertThat(tunnel.testCookies.calls).isEmpty();
+
+    tunnel.eventBeforeCompleteHeaders().fire();
+
+    assertThat(tunnel.testCookies.calls)
+      .containsExactly("saveCookieToResponse asd asd_value", "removeCookieFromResponse dsa");
+
+    ex.removeCookieFromResponse("pom");
+
+    assertThat(tunnel.testCookies.calls).containsExactly(
+      "saveCookieToResponse asd asd_value", "removeCookieFromResponse dsa", "removeCookieFromResponse pom"
+    );
+  }
 }

@@ -1,16 +1,14 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.annotations.PathPar;
 import kz.greetgo.mvc.annotations.RequestInput;
 import kz.greetgo.mvc.errors.CannotExtractParamValue;
 import kz.greetgo.mvc.errors.IDoNotKnowHowToConvertRequestContentToType;
 import kz.greetgo.mvc.errors.NoAnnotationParInUploadParam;
-import kz.greetgo.mvc.interfaces.MappingResult;
-import kz.greetgo.mvc.interfaces.MethodParamExtractor;
-import kz.greetgo.mvc.interfaces.RequestTunnel;
+import kz.greetgo.mvc.interfaces.*;
 import kz.greetgo.mvc.model.MvcModel;
+import kz.greetgo.util.events.EventHandler;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -122,6 +120,20 @@ public class MethodParameterMeta {
       @Override
       public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
         return tunnel;
+      }
+    };
+
+    if (TunnelCookies.class == genericParameterType) return new MethodParamExtractor() {
+      @Override
+      public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
+        final PostApplyTunnelCookies ret = new PostApplyTunnelCookies(tunnel.cookies());
+        tunnel.eventBeforeCompleteHeaders().addEventHandler(new EventHandler() {
+          @Override
+          public void handle() {
+            ret.apply();
+          }
+        });
+        return ret;
       }
     };
 
