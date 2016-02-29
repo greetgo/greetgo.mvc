@@ -25,14 +25,21 @@ public abstract class AppServlet extends GenericServlet {
 
   private final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
 
-  public void register(ServletContext ctx) {
+  protected String getAddingServletName() {
+    return "appServlet";
+  }
+
+  public void register(ServletContext ctx, String mappingBase) {
     final Views views = getViews();
     for (Object controller : getControllerList()) {
       tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
     }
 
-    final ServletRegistration.Dynamic registration = ctx.addServlet("appServlet", this);
-    registration.addMapping("/*");
+    final ServletRegistration.Dynamic registration = ctx.addServlet(getAddingServletName(), this);
+    {
+      if (mappingBase == null) mappingBase = "/*";
+      registration.addMapping(mappingBase);
+    }
 
     {
       UploadInfo ui = getUploadInfo();
@@ -49,7 +56,10 @@ public abstract class AppServlet extends GenericServlet {
       if (te != null) return te;
     }
 
-    return getFileResourceTunnelExecutorGetter().getTunnelExecutor(tunnel);
+    final FileResourceTunnelExecutorGetter fileResourceTunnelExecutorGetter = getFileResourceTunnelExecutorGetter();
+    if (fileResourceTunnelExecutorGetter == null) return null;
+
+    return fileResourceTunnelExecutorGetter.getTunnelExecutor(tunnel);
   }
 
   @Override

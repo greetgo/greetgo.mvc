@@ -20,7 +20,7 @@ public class App implements ServletContainerInitializer {
     fileResourceTEG.wellComeFiles.add("index.html");
 
     final AppServlet appServlet = new StandAppServlet(fileResourceTEG, userDetailsStorage);
-    appServlet.register(ctx);
+    appServlet.register(ctx, null);
 
     String securityDir = ctx.getRealPath("");
     while (securityDir.endsWith("/")) securityDir = securityDir.substring(0, securityDir.length() - 1);
