@@ -22,8 +22,12 @@ public abstract class SecurityFilter implements Filter {
   public void destroy() {
   }
 
+  protected String getAddingFilterName() {
+    return "SecurityFilter";
+  }
+
   public void register(ServletContext ctx) {
-    FilterRegistration.Dynamic reg = ctx.addFilter("SecurityFilter", this);
+    FilterRegistration.Dynamic reg = ctx.addFilter(getAddingFilterName(), this);
     reg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
   }
 
