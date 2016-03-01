@@ -1,14 +1,17 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.Par;
-import kz.greetgo.mvc.annotations.PathPar;
+import kz.greetgo.mvc.annotations.ParCookie;
+import kz.greetgo.mvc.annotations.ParPath;
 import kz.greetgo.mvc.annotations.RequestInput;
+import kz.greetgo.mvc.errors.AsIsOnlyForString;
 import kz.greetgo.mvc.interfaces.MethodParamExtractor;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.DefaultMvcModel;
 import kz.greetgo.mvc.model.MvcModel;
+import kz.greetgo.mvc.util.CookieUtil;
 import kz.greetgo.mvc.utils.TestMappingResult;
 import kz.greetgo.mvc.utils.TestTunnel;
 import kz.greetgo.mvc.utils.TestUpload;
@@ -249,7 +252,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForStrPathParam {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@PathPar("param") String param) {
+    public void forTest(@ParPath("param") String param) {
     }
   }
 
@@ -517,7 +520,9 @@ public class MethodParameterMetaTest {
 
   }
 
-  class ForTunnelCookies {
+  @SuppressWarnings("unused")
+  private class ForTunnelCookies {
+    @SuppressWarnings({"EmptyMethod", "UnusedParameters"})
     public void forTest(TunnelCookies cookies) {
     }
   }
@@ -558,5 +563,127 @@ public class MethodParameterMetaTest {
     assertThat(tunnel.testCookies.calls).containsExactly(
       "saveCookieToResponse asd asd_value", "removeCookieFromResponse dsa", "removeCookieFromResponse pom"
     );
+  }
+
+  private class ForParCookie {
+    @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
+    public void forTest(@ParCookie("asd") String asd) {
+    }
+  }
+
+  @Test
+  public void forParCookie_str() throws Exception {
+    final Method method = TestUtil.getMethod(ForParCookie.class, "forTest");
+
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    MethodParamExtractor e = ee.get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+
+    String value = RND.str(10);
+
+    tunnel.testCookies.getRequestCookieValue_return = CookieUtil.objectToStr(value);
+    tunnel.testCookies.getRequestCookieValue_name = null;
+
+    final Object extractedValue = e.extract(null, tunnel, null);
+
+    assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo("asd");
+
+    assertThat(extractedValue).isInstanceOf(String.class);
+
+    String actual = (String) extractedValue;
+    assertThat(actual).isEqualTo(value);
+  }
+
+  private class ForParCookie_asIs {
+    @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
+    public void forTest(@ParCookie(value = "asd", asIs = true) String asd) {
+    }
+  }
+
+  @Test
+  public void forParCookie_asIs() throws Exception {
+    final Method method = TestUtil.getMethod(ForParCookie_asIs.class, "forTest");
+
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    MethodParamExtractor e = ee.get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+
+    String value = RND.str(10);
+
+    tunnel.testCookies.getRequestCookieValue_return = value;
+    tunnel.testCookies.getRequestCookieValue_name = null;
+
+    final Object extractedValue = e.extract(null, tunnel, null);
+
+    assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo("asd");
+
+    assertThat(extractedValue).isInstanceOf(String.class);
+
+    String actual = (String) extractedValue;
+    assertThat(actual).isEqualTo(value);
+  }
+
+  public static class SomeObject implements Serializable {
+    public int intField;
+    public String strField;
+    public Date dateField;
+
+    @Override
+    public String toString() {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+      return "SomeObject{" +
+        "intField=" + intField +
+        ", strField='" + strField + '\'' +
+        ", dateField=" + (dateField == null ? "null" : sdf.format(dateField)) +
+        '}';
+    }
+  }
+
+  private class ForParCookie_SomeObject {
+    @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
+    public void forTest(@ParCookie("asd") SomeObject asd) {
+    }
+  }
+
+  @Test
+  public void forParCookie_SomeObject() throws Exception {
+    final Method method = TestUtil.getMethod(ForParCookie_SomeObject.class, "forTest");
+
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    MethodParamExtractor e = ee.get(0);
+
+    SomeObject original = new SomeObject();
+    original.intField = RND.plusInt(1_000_000_000);
+    original.dateField = RND.dateDays(-10_000, 100);
+    original.strField = RND.str(30);
+
+    TestTunnel tunnel = new TestTunnel();
+
+    tunnel.testCookies.getRequestCookieValue_return = CookieUtil.objectToStr(original);
+    tunnel.testCookies.getRequestCookieValue_name = null;
+
+    final Object extractedValue = e.extract(null, tunnel, null);
+
+    assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo("asd");
+
+    assertThat(extractedValue).isInstanceOf(SomeObject.class);
+
+    SomeObject actual = (SomeObject) extractedValue;
+    assertThat(actual.toString()).isEqualTo(original.toString());
+  }
+
+  private class ForParCookie_AsIsOnlyForString {
+    @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
+    public void forTest(@ParCookie(value = "asd", asIs = true) SomeObject asd) {
+    }
+  }
+
+  @Test(expectedExceptions = AsIsOnlyForString.class)
+  public void forParCookie_AsIsOnlyForString() throws Exception {
+    final Method method = TestUtil.getMethod(ForParCookie_AsIsOnlyForString.class, "forTest");
+
+    MethodParameterMeta.create(method);
   }
 }

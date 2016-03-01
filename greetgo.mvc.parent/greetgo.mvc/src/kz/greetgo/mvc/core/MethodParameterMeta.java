@@ -1,13 +1,16 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.Par;
-import kz.greetgo.mvc.annotations.PathPar;
+import kz.greetgo.mvc.annotations.ParCookie;
+import kz.greetgo.mvc.annotations.ParPath;
 import kz.greetgo.mvc.annotations.RequestInput;
+import kz.greetgo.mvc.errors.AsIsOnlyForString;
 import kz.greetgo.mvc.errors.CannotExtractParamValue;
 import kz.greetgo.mvc.errors.IDoNotKnowHowToConvertRequestContentToType;
 import kz.greetgo.mvc.errors.NoAnnotationParInUploadParam;
 import kz.greetgo.mvc.interfaces.*;
 import kz.greetgo.mvc.model.MvcModel;
+import kz.greetgo.mvc.util.CookieUtil;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -55,18 +58,24 @@ public class MethodParameterMeta {
 
   private boolean requestInput = false;
 
+  private ParCookie parCookie = null;
+
   private void prepareAnnotations() {
     for (Annotation annotation : parameterAnnotation) {
       if (annotation instanceof Par) {
         parValue = ((Par) annotation).value();
         continue;
       }
-      if (annotation instanceof PathPar) {
-        pathParValue = ((PathPar) annotation).value();
+      if (annotation instanceof ParPath) {
+        pathParValue = ((ParPath) annotation).value();
         continue;
       }
       if (annotation instanceof RequestInput) {
         requestInput = true;
+        continue;
+      }
+      if (annotation instanceof ParCookie) {
+        parCookie = (ParCookie) annotation;
         //noinspection UnnecessaryContinue
         continue;
       }
@@ -100,6 +109,20 @@ public class MethodParameterMeta {
         return MvcUtil.convertStrToType(paramValue, genericParameterType);
       }
     };
+
+    if (parCookie != null) {
+      if (parCookie.asIs() && String.class != genericParameterType) {
+        throw new AsIsOnlyForString(parameterIndex, method);
+      }
+      return new MethodParamExtractor() {
+        @Override
+        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
+          final String str = tunnel.cookies().getRequestCookieValue(parCookie.value());
+          if (parCookie.asIs()) return str;
+          return CookieUtil.strToObject(str);
+        }
+      };
+    }
 
     if (requestInput) return new MethodParamExtractor() {
       @Override

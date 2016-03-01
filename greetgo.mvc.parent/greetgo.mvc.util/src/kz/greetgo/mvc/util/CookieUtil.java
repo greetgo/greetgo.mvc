@@ -35,6 +35,17 @@ public class CookieUtil {
     response.addCookie(cookie);
   }
 
+  /**
+   * <p>
+   * Преобразует объект в строку посредством java-сериализации и последующего преобразования в base64
+   * </p>
+   * <p>
+   * Комплиментарный метод: {@link #strToObject(String)}
+   * </p>
+   *
+   * @param object сериализуемый объект
+   * @return строка с сериализованным объектом
+   */
   public static String objectToStr(Object object) {
     ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 
@@ -47,6 +58,17 @@ public class CookieUtil {
     return Base64Util.bytesToBase64(bOut.toByteArray());
   }
 
+  /**
+   * <p>
+   * Преобразует строку в объект. Объект храниться в виде base64 кода, который получился java-десериализацией
+   * </p>
+   * <p>
+   * Комплиментарный метод: {@link #objectToStr(Object)}
+   * </p>
+   *
+   * @param str base64-строка хранящая сериализованный объект
+   * @return десериализованный объект
+   */
   public static <T> T strToObject(String str) {
 
     if (str == null) return null;
