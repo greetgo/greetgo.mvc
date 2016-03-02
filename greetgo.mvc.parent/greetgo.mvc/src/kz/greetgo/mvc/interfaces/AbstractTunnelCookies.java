@@ -10,7 +10,7 @@ public abstract class AbstractTunnelCookies implements TunnelCookies {
   public abstract void removeFromResponse(String name);
 
   @Override
-  public <T> T getFromResponse(String name) {
+  public <T> T getFromRequest(String name) {
     return CookieUtil.strToObject(getFromRequestStr(name));
   }
 

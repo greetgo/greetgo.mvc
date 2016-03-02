@@ -7,7 +7,7 @@ public interface TunnelCookies {
 
   void removeFromResponse(String name);
 
-  <T> T getFromResponse(String name);
+  <T> T getFromRequest(String name);
 
   void saveToResponse(String name, Object object);
 }
