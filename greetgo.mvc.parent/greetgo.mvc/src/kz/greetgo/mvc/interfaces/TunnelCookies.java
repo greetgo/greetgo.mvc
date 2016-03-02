@@ -1,9 +1,13 @@
 package kz.greetgo.mvc.interfaces;
 
 public interface TunnelCookies {
-  String getRequestCookieValue(String name);
+  String getFromRequestStr(String name);
 
-  void saveCookieToResponse(String name, String value);
+  void saveToResponseStr(String name, String value);
 
-  void removeCookieFromResponse(String name);
+  void removeFromResponse(String name);
+
+  <T> T getFromResponse(String name);
+
+  void saveToResponse(String name, Object object);
 }

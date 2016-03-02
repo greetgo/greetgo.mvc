@@ -33,7 +33,11 @@ public class WarRequestTunnel implements RequestTunnel {
 
   @Override
   public String getTarget() {
-    return request.getPathInfo();
+    final String requestURI = request.getRequestURI();
+    if (requestURI == null) return "";
+    final String contextPath = request.getContextPath();
+    if (contextPath == null) return requestURI;
+    return requestURI.substring(contextPath.length());
   }
 
   @Override

@@ -44,7 +44,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
     final byte[] bytesInStorage;
 
     {
-      final String sessionBase64 = tunnel.cookies().getRequestCookieValue(provider.cookieKeySession());
+      final String sessionBase64 = tunnel.cookies().getFromRequestStr(provider.cookieKeySession());
       byte[] bytes = base64ToBytes(sessionBase64);
 
       if (sessionCrypto != null) {
@@ -52,7 +52,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
       }
 
       if (underSecurityUmbrella && bytes != null && signatureCrypto != null) {
-        String signatureBase64 = tunnel.cookies().getRequestCookieValue(provider.cookieKeySignature());
+        String signatureBase64 = tunnel.cookies().getFromRequestStr(provider.cookieKeySignature());
         byte[] signature = base64ToBytes(signatureBase64);
         if (!signatureCrypto.verifySignature(bytes, signature)) {
           bytes = null;
@@ -74,14 +74,14 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
         if (Objects.equals(bytesInStorage, bytes)) return;
 
         if (bytes == null) {
-          tunnel.cookies().removeCookieFromResponse(provider.cookieKeySession());
-          tunnel.cookies().removeCookieFromResponse(provider.cookieKeySignature());
+          tunnel.cookies().removeFromResponse(provider.cookieKeySession());
+          tunnel.cookies().removeFromResponse(provider.cookieKeySignature());
         } else {
 
           if (signatureCrypto != null) {
             byte[] signature = signatureCrypto.sign(bytes);
             final String signatureBase64 = bytesToBase64(signature);
-            tunnel.cookies().saveCookieToResponse(provider.cookieKeySignature(), signatureBase64);
+            tunnel.cookies().saveToResponseStr(provider.cookieKeySignature(), signatureBase64);
           }
 
           if (sessionCrypto != null) {
@@ -89,7 +89,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
           }
 
           final String bytesBase64 = bytesToBase64(bytes);
-          tunnel.cookies().saveCookieToResponse(provider.cookieKeySession(), bytesBase64);
+          tunnel.cookies().saveToResponseStr(provider.cookieKeySession(), bytesBase64);
 
         }
 

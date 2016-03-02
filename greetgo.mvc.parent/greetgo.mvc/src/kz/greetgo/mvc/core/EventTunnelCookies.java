@@ -1,5 +1,6 @@
 package kz.greetgo.mvc.core;
 
+import kz.greetgo.mvc.interfaces.AbstractTunnelCookies;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.util.events.EventHandler;
 import kz.greetgo.util.events.EventHandlerList;
@@ -7,7 +8,7 @@ import kz.greetgo.util.events.EventHandlerList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventTunnelCookies implements TunnelCookies, EventHandler {
+public class EventTunnelCookies extends AbstractTunnelCookies implements EventHandler {
   private final TunnelCookies cookies;
 
   public EventTunnelCookies(TunnelCookies cookies, EventHandlerList beforeCompleteHeaders) {
@@ -16,8 +17,8 @@ public class EventTunnelCookies implements TunnelCookies, EventHandler {
   }
 
   @Override
-  public String getRequestCookieValue(String name) {
-    return cookies.getRequestCookieValue(name);
+  public String getFromRequestStr(String name) {
+    return cookies.getFromRequestStr(name);
   }
 
   interface Command {
@@ -37,14 +38,14 @@ public class EventTunnelCookies implements TunnelCookies, EventHandler {
 
     @Override
     public void apply() {
-      cookies.saveCookieToResponse(name, value);
+      cookies.saveToResponseStr(name, value);
     }
   }
 
   @Override
-  public void saveCookieToResponse(String name, String value) {
+  public void saveToResponseStr(String name, String value) {
     if (commandList == null) {
-      cookies.saveCookieToResponse(name, value);
+      cookies.saveToResponseStr(name, value);
     } else {
       commandList.add(new Save(name, value));
     }
@@ -59,14 +60,14 @@ public class EventTunnelCookies implements TunnelCookies, EventHandler {
 
     @Override
     public void apply() {
-      cookies.removeCookieFromResponse(name);
+      cookies.removeFromResponse(name);
     }
   }
 
   @Override
-  public void removeCookieFromResponse(String name) {
+  public void removeFromResponse(String name) {
     if (commandList == null) {
-      cookies.removeCookieFromResponse(name);
+      cookies.removeFromResponse(name);
     } else {
       commandList.add(new Remove(name));
     }
@@ -86,4 +87,5 @@ public class EventTunnelCookies implements TunnelCookies, EventHandler {
       command.apply();
     }
   }
+
 }

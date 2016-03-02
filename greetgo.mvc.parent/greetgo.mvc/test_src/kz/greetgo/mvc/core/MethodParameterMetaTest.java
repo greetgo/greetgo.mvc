@@ -545,23 +545,23 @@ public class MethodParameterMetaTest {
     tunnel.testCookies.getRequestCookieValue_return = RND.str(10);
 
     String name = RND.str(10);
-    assertThat(ex.getRequestCookieValue(name)).isEqualTo(tunnel.testCookies.getRequestCookieValue_return);
+    assertThat(ex.getFromRequestStr(name)).isEqualTo(tunnel.testCookies.getRequestCookieValue_return);
     assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo(name);
 
-    ex.saveCookieToResponse("asd", "asd_value");
-    ex.removeCookieFromResponse("dsa");
+    ex.saveToResponseStr("asd", "asd_value");
+    ex.removeFromResponse("dsa");
 
     assertThat(tunnel.testCookies.calls).isEmpty();
 
     tunnel.eventBeforeCompleteHeaders().fire();
 
     assertThat(tunnel.testCookies.calls)
-      .containsExactly("saveCookieToResponse asd asd_value", "removeCookieFromResponse dsa");
+      .containsExactly("saveToResponseStr asd asd_value", "removeFromResponse dsa");
 
-    ex.removeCookieFromResponse("pom");
+    ex.removeFromResponse("pom");
 
     assertThat(tunnel.testCookies.calls).containsExactly(
-      "saveCookieToResponse asd asd_value", "removeCookieFromResponse dsa", "removeCookieFromResponse pom"
+      "saveToResponseStr asd asd_value", "removeFromResponse dsa", "removeFromResponse pom"
     );
   }
 

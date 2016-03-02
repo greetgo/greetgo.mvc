@@ -18,9 +18,7 @@ war {
   dependsOn jar
   //from "webapp"
   classpath = classpath - sourceSets.main.output
-  from(jar) {
-    into 'WEB-INF/lib'
-  }
+  from(jar) { into 'WEB-INF/lib' }
 }
 
 configurations { repoUpload }

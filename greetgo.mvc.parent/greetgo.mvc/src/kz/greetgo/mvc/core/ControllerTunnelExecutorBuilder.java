@@ -127,7 +127,7 @@ public class ControllerTunnelExecutorBuilder {
 
   private static void copyCookies(Redirect redirect, TunnelCookies cookies) {
     for (Map.Entry<String, String> e : redirect.savingCookiesToResponse.entrySet()) {
-      cookies.saveCookieToResponse(e.getKey(), e.getValue());
+      cookies.saveToResponseStr(e.getKey(), e.getValue());
     }
   }
 
