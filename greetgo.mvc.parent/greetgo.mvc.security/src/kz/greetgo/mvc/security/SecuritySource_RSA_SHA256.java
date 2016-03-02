@@ -1,7 +1,5 @@
 package kz.greetgo.mvc.security;
 
-import kz.greetgo.util.ServerUtil;
-
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import java.io.*;
@@ -9,20 +7,29 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Random;
 
 import static kz.greetgo.util.ServerUtil.dummyCheck;
 import static kz.greetgo.util.ServerUtil.streamToByteArray;
 
 public class SecuritySource_RSA_SHA256 implements SecuritySource {
 
-  private final int keySize;
+  public static final int DEFAULT_KEY_SIZE = 1024;
+  public static final int DEFAULT_BLOCK_SIZE = 117;
+
+  private final int keySize, blockSize;
   private final File privateKeyFile;
   private final File publicKeyFile;
 
-  public SecuritySource_RSA_SHA256(int keySize, File privateKeyFile, File publicKeyFile) {
+  public SecuritySource_RSA_SHA256(int keySize, int blockSize, File privateKeyFile, File publicKeyFile) {
     this.keySize = keySize;
+    this.blockSize = blockSize;
     this.privateKeyFile = privateKeyFile;
     this.publicKeyFile = publicKeyFile;
+  }
+
+  public SecuritySource_RSA_SHA256(File privateKeyFile, File publicKeyFile) {
+    this(DEFAULT_KEY_SIZE, DEFAULT_BLOCK_SIZE, privateKeyFile, publicKeyFile);
   }
 
   private final Cipher cipher;
@@ -33,6 +40,11 @@ public class SecuritySource_RSA_SHA256 implements SecuritySource {
     } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public int getBlockSize() {
+    return blockSize;
   }
 
   @Override
@@ -59,6 +71,21 @@ public class SecuritySource_RSA_SHA256 implements SecuritySource {
   @Override
   public MessageDigest getMessageDigest() {
     return messageDigest;
+  }
+
+  private final SecureRandom random;
+
+  {
+    try {
+      random = SecureRandom.getInstance("SHA1PRNG");
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public Random getRandom() {
+    return random;
   }
 
   private final MessageDigest messageDigest;

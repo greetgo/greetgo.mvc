@@ -67,8 +67,8 @@ public class SecurityJettyServerLauncher {
       final File signaturePriKey = new File(dir + "signature.pri.key");
       final File signaturePubKey = new File(dir + "signature.pub.key");
 
-      final SecuritySource sessionSS = new SecuritySource_RSA_SHA256(1024, sessionPriKey, sessionPubKey);
-      final SecuritySource signatureSS = new SecuritySource_RSA_SHA256(1024, signaturePriKey, signaturePubKey);
+      final SecuritySource sessionSS = new SecuritySource_RSA_SHA256(sessionPriKey, sessionPubKey);
+      final SecuritySource signatureSS = new SecuritySource_RSA_SHA256(signaturePriKey, signaturePubKey);
 
       sessionCrypto = new SecurityCryptoBridge(sessionSS);
       signatureCrypto = new SecurityCryptoBridge(signatureSS);

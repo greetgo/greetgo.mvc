@@ -11,7 +11,7 @@ public class RedirectTest {
   public void addCookie() {
     //noinspection ThrowableResultOfMethodCallIgnored
     final Redirect redirect = Redirect.to("some reference")
-      .addCookie("asd", "asd value").addCookieObject("dsa", "dsa object value");
+      .addCookieStr("asd", "asd value").addCookie("dsa", "dsa object value");
 
     assertThat(redirect.reference).isEqualTo("some reference");
     assertThat(redirect.savingCookiesToResponse.get("asd")).isEqualTo("asd value");

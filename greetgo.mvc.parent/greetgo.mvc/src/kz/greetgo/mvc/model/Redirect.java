@@ -19,12 +19,12 @@ public class Redirect extends RuntimeException {
     this.reference = reference;
   }
 
-  public Redirect addCookieObject(String name, Object value) {
+  public Redirect addCookie(String name, Object value) {
     savingCookiesToResponse.put(name, CookieUtil.objectToStr(value));
     return this;
   }
 
-  public Redirect addCookie(String name, String value) {
+  public Redirect addCookieStr(String name, String value) {
     savingCookiesToResponse.put(name, value);
     return this;
   }
