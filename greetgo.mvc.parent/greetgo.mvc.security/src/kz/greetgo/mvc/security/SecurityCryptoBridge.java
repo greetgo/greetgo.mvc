@@ -105,8 +105,7 @@ public class SecurityCryptoBridge implements SecurityCrypto {
 
     final int blockListSize = blockList.size();
 
-    for (int i = 0; i < blockListSize; i++) {
-      final byte[] block = blockList.get(i);
+    for (final byte[] block : blockList) {
       final int blockLength = block.length;
       for (int j = 0; j < blockLength; j++) {
         block[j] ^= symmetricKey[j];
@@ -217,11 +216,11 @@ public class SecurityCryptoBridge implements SecurityCrypto {
 
       return true;
 
-    } catch (BadPaddingException e) {
+    } catch (BadPaddingException | IllegalBlockSizeException e) {
 
       return false;
 
-    } catch (InvalidKeyException | IllegalBlockSizeException e) {
+    } catch (InvalidKeyException e) {
       throw new RuntimeException(e);
     }
   }
