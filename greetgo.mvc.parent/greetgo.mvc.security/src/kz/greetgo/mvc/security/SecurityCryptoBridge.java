@@ -103,8 +103,6 @@ public class SecurityCryptoBridge implements SecurityCrypto {
   static byte[] readFromBlockList(List<byte[]> blockList, byte[] symmetricKey) {
     int bytesCount = 0;
 
-    final int blockListSize = blockList.size();
-
     for (final byte[] block : blockList) {
       final int blockLength = block.length;
       for (int j = 0; j < blockLength; j++) {
