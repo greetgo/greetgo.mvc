@@ -32,16 +32,6 @@ public class SecuritySource_RSA_SHA256 implements SecuritySource {
     this(DEFAULT_KEY_SIZE, DEFAULT_BLOCK_SIZE, privateKeyFile, publicKeyFile);
   }
 
-  private final Cipher cipher;
-
-  {
-    try {
-      cipher = Cipher.getInstance("RSA");
-    } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   @Override
   public int getBlockSize() {
     return blockSize;
@@ -49,7 +39,11 @@ public class SecuritySource_RSA_SHA256 implements SecuritySource {
 
   @Override
   public Cipher getCipher() {
-    return cipher;
+    try {
+      return Cipher.getInstance("RSA");
+    } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private PublicKey publicKey = null;
