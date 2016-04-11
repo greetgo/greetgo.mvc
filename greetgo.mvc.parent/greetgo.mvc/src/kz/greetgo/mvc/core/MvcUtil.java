@@ -71,9 +71,9 @@ public class MvcUtil {
   }
 
   private static final String[] SIMPLE_DATE_FORMATS = {
-    "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd",
-    "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy",
-    "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy",
+      "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd",
+      "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy",
+      "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy",
   };
 
   private static final Map<Class<?>, Converter> CONVERTERS;
@@ -89,6 +89,33 @@ public class MvcUtil {
       }
     });
 
+    {
+      Converter converter = new Converter() {
+        @Override
+        public Object convert(String str) {
+          if (str == null) return null;
+          str = str.trim().toLowerCase();
+          if (str.length() == 0) return false;
+
+          if ("true".equals(str)) return true;
+          if ("on".equals(str)) return true;
+
+          if ("false".equals(str)) return false;
+          if ("off".equals(str)) return false;
+
+          try {
+            int parseInt = Integer.parseInt(str);
+            return parseInt != 0;
+          } catch (NumberFormatException e) {
+            return false;
+          }
+
+
+        }
+      };
+      x.put(Boolean.TYPE, converter);
+      x.put(Boolean.class, converter);
+    }
     x.put(Integer.TYPE, new Converter() {
       @Override
       public Object convert(String str) {
