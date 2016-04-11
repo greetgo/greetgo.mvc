@@ -17,7 +17,7 @@ allprojects {
   apply plugin: 'eclipse'
   apply plugin: 'maven'
 
-  version = '0.0.1'
+  version = '0.0.2'
 
   sourceCompatibility = 1.7
 
@@ -62,7 +62,7 @@ subprojects {
       cp.entries.findAll { it.path.contains('JRE_CONTAINER') }.each {
 
         it.path += "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/" +
-          "JavaSE-$project.sourceCompatibility"
+            "JavaSE-$project.sourceCompatibility"
       }
     }
   }
@@ -70,8 +70,8 @@ subprojects {
   jar {
     manifest {
       attributes 'Implementation-Title': project.name,
-        'Implementation-Version': version, 'Implementation-Vendor': vendorName,
-        'Built-By': System.getProperty("user.name"), 'Built-At': nowFormattedDate
+          'Implementation-Version': version, 'Implementation-Vendor': vendorName,
+          'Built-By': System.getProperty("user.name"), 'Built-At': nowFormattedDate
     }
   }
 
