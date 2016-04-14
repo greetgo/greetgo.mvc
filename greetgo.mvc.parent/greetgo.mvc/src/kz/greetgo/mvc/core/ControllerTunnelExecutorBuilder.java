@@ -157,6 +157,8 @@ public class ControllerTunnelExecutorBuilder {
       }
     }
 
+    if (controllerMethodResult == null) return;
+
     views.defaultView(tunnel, controllerMethodResult, model, mappingResult);
   }
 }
