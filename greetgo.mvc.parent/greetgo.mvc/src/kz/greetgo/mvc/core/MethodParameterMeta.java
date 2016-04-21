@@ -1,9 +1,6 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.Par;
-import kz.greetgo.mvc.annotations.ParCookie;
-import kz.greetgo.mvc.annotations.ParPath;
-import kz.greetgo.mvc.annotations.RequestInput;
+import kz.greetgo.mvc.annotations.*;
 import kz.greetgo.mvc.errors.AsIsOnlyForString;
 import kz.greetgo.mvc.errors.CannotExtractParamValue;
 import kz.greetgo.mvc.errors.IDoNotKnowHowToConvertRequestContentToType;
@@ -32,7 +29,7 @@ public class MethodParameterMeta {
     final Type[] genericParameterTypes = method.getGenericParameterTypes();
     for (int i = 0, C = genericParameterTypes.length; i < C; i++) {
       final MethodParameterMeta methodParameterMeta = new MethodParameterMeta(
-        i, method, genericParameterTypes[i], parameterAnnotations[i]
+          i, method, genericParameterTypes[i], parameterAnnotations[i]
       );
       extractorList.add(methodParameterMeta.createExtractor());
     }
@@ -60,6 +57,8 @@ public class MethodParameterMeta {
 
   private ParCookie parCookie = null;
 
+  private boolean hasAnnotationJson = false;
+
   private void prepareAnnotations() {
     for (Annotation annotation : parameterAnnotation) {
       if (annotation instanceof Par) {
@@ -76,7 +75,10 @@ public class MethodParameterMeta {
       }
       if (annotation instanceof ParCookie) {
         parCookie = (ParCookie) annotation;
-        //noinspection UnnecessaryContinue
+        continue;
+      }
+      if (annotation instanceof Json) {
+        hasAnnotationJson = true;
         continue;
       }
     }
@@ -94,13 +96,22 @@ public class MethodParameterMeta {
       };
     }
 
-    if (parValue != null) return new MethodParamExtractor() {
-      @Override
-      public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) {
-        final String[] paramValues = tunnel.getParamValues(parValue);
-        return MvcUtil.convertStrsToType(paramValues, genericParameterType);
-      }
-    };
+    if (parValue != null) {
+      if (hasAnnotationJson) return new MethodParamExtractor() {
+        @Override
+        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) {
+          final String[] paramValues = tunnel.getParamValues(parValue);
+          return JsonUtil.convertStrsToType(paramValues, genericParameterType);
+        }
+      };
+      else return new MethodParamExtractor() {
+        @Override
+        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) {
+          final String[] paramValues = tunnel.getParamValues(parValue);
+          return MvcUtil.convertStrsToType(paramValues, genericParameterType);
+        }
+      };
+    }
 
     if (pathParValue != null) return new MethodParamExtractor() {
       @Override
@@ -124,12 +135,21 @@ public class MethodParameterMeta {
       };
     }
 
-    if (requestInput) return new MethodParamExtractor() {
-      @Override
-      public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-        return convertRequestContentToType(tunnel, genericParameterType);
-      }
-    };
+    if (requestInput) {
+      if (hasAnnotationJson) return new MethodParamExtractor() {
+        @Override
+        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
+          String content = MvcUtil.readAll(tunnel.getRequestReader());
+          return JsonUtil.convertStrToType(content, genericParameterType);
+        }
+      };
+      else return new MethodParamExtractor() {
+        @Override
+        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
+          return convertRequestContentToType(tunnel, genericParameterType);
+        }
+      };
+    }
 
     if (MvcModel.class == genericParameterType) return new MethodParamExtractor() {
       @Override
@@ -163,7 +183,9 @@ public class MethodParameterMeta {
     throw new IDoNotKnowHowToConvertRequestContentToType(type);
   }
 
-  private static Object convertRequestContentToParameterizedType(RequestTunnel tunnel, ParameterizedType type) throws Exception {
+  private static Object convertRequestContentToParameterizedType(
+      RequestTunnel tunnel, ParameterizedType type
+  ) throws Exception {
     final Type rawType = type.getRawType();
 
     if (rawType == List.class) {
@@ -183,16 +205,7 @@ public class MethodParameterMeta {
 
   private static Object convertRequestContentToClass(RequestTunnel tunnel, Class<?> aClass) throws Exception {
     if (String.class.equals(aClass)) {
-      StringBuilder sb = new StringBuilder();
-      char[] buffer = new char[1024];
-      try (BufferedReader reader = tunnel.getRequestReader()) {
-        while (true) {
-          final int count = reader.read(buffer);
-          if (count < 0) break;
-          sb.append(buffer, 0, count);
-        }
-      }
-      return sb.toString();
+      return MvcUtil.readAll(tunnel.getRequestReader());
     }
 
     if (byte[].class.equals(aClass)) {

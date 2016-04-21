@@ -5,6 +5,8 @@ import kz.greetgo.mvc.errors.IllegalChar;
 import kz.greetgo.mvc.errors.NoConverterFor;
 import kz.greetgo.mvc.model.Redirect;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.ParseException;
@@ -226,4 +228,28 @@ public class MvcUtil {
     if (Set.class.isAssignableFrom(collectionType)) return new HashSet();
     throw new IllegalArgumentException("Cannot create collection empty instance for " + collectionType);
   }
+
+  public static String readAll(Reader reader) {
+    try {
+
+      try {
+
+        StringBuilder sb = new StringBuilder();
+        char[] buffer = new char[1024];
+        while (true) {
+          final int count = reader.read(buffer);
+          if (count < 0) break;
+          sb.append(buffer, 0, count);
+        }
+        return sb.toString();
+
+      } finally {
+        reader.close();
+      }
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 }

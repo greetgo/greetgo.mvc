@@ -25,6 +25,8 @@ dependencies {
   //ext.jettyServerVersion = "9.0.0.RC0" // for 7
 
   compile "kz.greetgo:greetgo.util:${greetgoUtilVersion}"
+  compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+
 
   testCompile "org.eclipse.jetty:jetty-server:${jettyServerVersion}"
   testCompile "org.eclipse.jetty:jetty-servlet:${jettyServerVersion}"

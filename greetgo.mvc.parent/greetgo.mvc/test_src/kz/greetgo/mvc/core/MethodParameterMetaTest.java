@@ -267,8 +267,8 @@ public class MethodParameterMetaTest {
     TestTunnel tunnel = new TestTunnel();
 
     tunnel.setParam("param",
-        "[{'id':'id1','name':'name1'},{'id':'id2','name':'name2'}]",
-        "{'id':'id3','name':'name3'}"
+        "[{\"id\":\"id1\",\"name\":\"name1\"},{\"id\":\"id2\",\"name\":\"name2\"}]",
+        "{\"id\":\"id3\",\"name\":\"name3\"}"
     );
 
     final Object actualParamValue = e.extract(catchResult, tunnel, null);
@@ -297,9 +297,9 @@ public class MethodParameterMetaTest {
 
     TestTunnel tunnel = new TestTunnel();
 
-    String paramValue = "{'id':'id1','name':'name1'}";
+    String paramValue = "{\"id\":\"id1\",\"name\":\"name1\"}";
 
-    tunnel.setParam("param", paramValue, "left value");
+    tunnel.setParam("param", paramValue);
 
     final Object actualParamValue = e.extract(catchResult, tunnel, null);
 
@@ -322,8 +322,8 @@ public class MethodParameterMetaTest {
   @DataProvider
   public Object[][] forJsonStrRequestParam_Client_data() {
     return new Object[][]{
-        new Object[]{"[{'id':'id1','name':'name1'},{'id':'id2','name':'name2'}]"},
-        new Object[]{"{'id':'id1','name':'name1'}]"},
+        new Object[]{"[{\"id\":\"id1\",\"name\":\"name1\"},{\"id\":\"id2\",\"name\":\"name2\"}]"},
+        new Object[]{"{\"id\":\"id1\",\"name\":\"name1\"}]"},
     };
   }
 
@@ -406,8 +406,8 @@ public class MethodParameterMetaTest {
   @DataProvider
   public Object[][] requestInput_json_client_DataProvider() {
     return new Object[][]{
-        new Object[]{"{'id':'id1','name':'name1'}"},
-        new Object[]{"[{'id':'id1','name':'name1'},{'id':'id2','name':'name2'}]"},
+        new Object[]{"{\"id\":\"id1\",\"name\":\"name1\"}"},
+        new Object[]{"[{\"id\":\"id1\",\"name\":\"name1\"},{\"id\":\"id2\",\"name\":\"name2\"}]"},
     };
   }
 
@@ -450,14 +450,14 @@ public class MethodParameterMetaTest {
     }
   }
 
-  @Test(dataProvider = "requestInput_json_client_DataProvider")
-  public void requestInput_json_listClient(String requestContent) throws Exception {
+  @Test
+  public void requestInput_json_listClient() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_Json_ListClient.class, "forTest");
 
     final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
 
     TestTunnel tunnel = new TestTunnel();
-    tunnel.forGetRequestReader = requestContent;
+    tunnel.forGetRequestReader = "[{\"id\":\"id1\",\"name\":\"name1\"},{\"id\":\"id2\",\"name\":\"name2\"}]";
 
     final Object actualParamValue = e.extract(null, tunnel, null);
 
