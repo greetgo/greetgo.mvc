@@ -1,9 +1,6 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.Par;
-import kz.greetgo.mvc.annotations.ParCookie;
-import kz.greetgo.mvc.annotations.ParPath;
-import kz.greetgo.mvc.annotations.RequestInput;
+import kz.greetgo.mvc.annotations.*;
 import kz.greetgo.mvc.errors.AsIsOnlyForString;
 import kz.greetgo.mvc.interfaces.MethodParamExtractor;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
@@ -130,15 +127,15 @@ public class MethodParameterMetaTest {
   public Object[][] simpleDateFormats() {
     return new Object[][]{
 
-      new Object[]{"yyyy-MM-dd HH:mm:ss"},
-      new Object[]{"dd.MM.yyyy HH:mm:ss"},
-      new Object[]{"dd/MM/yyyy HH:mm:ss"},
-      new Object[]{"yyyy-MM-dd HH:mm"},
-      new Object[]{"dd.MM.yyyy HH:mm"},
-      new Object[]{"dd/MM/yyyy HH:mm"},
-      new Object[]{"yyyy-MM-dd"},
-      new Object[]{"dd.MM.yyyy"},
-      new Object[]{"dd/MM/yyyy"},
+        new Object[]{"yyyy-MM-dd HH:mm:ss"},
+        new Object[]{"dd.MM.yyyy HH:mm:ss"},
+        new Object[]{"dd/MM/yyyy HH:mm:ss"},
+        new Object[]{"yyyy-MM-dd HH:mm"},
+        new Object[]{"dd.MM.yyyy HH:mm"},
+        new Object[]{"dd/MM/yyyy HH:mm"},
+        new Object[]{"yyyy-MM-dd"},
+        new Object[]{"dd.MM.yyyy"},
+        new Object[]{"dd/MM/yyyy"},
 
     };
   }
@@ -249,6 +246,110 @@ public class MethodParameterMetaTest {
     }
   }
 
+  public static class Client {
+    public String id, name;
+  }
+
+  class ForJsonStrRequestParam_ClientList {
+    @SuppressWarnings({"unused", "EmptyMethod"})
+    public void forTest(@Par("param") @Json List<Client> param) {
+    }
+  }
+
+  @Test
+  public void forJsonStrRequestParam_ClientList_goList() throws Exception {
+    final Method method = TestUtil.getMethod(ForJsonStrRequestParam_ClientList.class, "forTest");
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+
+    final TestMappingResult catchResult = new TestMappingResult();
+
+    TestTunnel tunnel = new TestTunnel();
+
+    tunnel.setParam("param",
+        "[{'id':'id1','name':'name1'},{'id':'id2','name':'name2'}]",
+        "{'id':'id3','name':'name3'}"
+    );
+
+    final Object actualParamValue = e.extract(catchResult, tunnel, null);
+
+    assertThat(actualParamValue).isInstanceOf(List.class);
+
+    @SuppressWarnings("unchecked")
+    List<Client> actual = (List<Client>) actualParamValue;
+
+    assertThat(actual).hasSize(3);
+    assertThat(actual.get(0).id).isEqualTo("id1");
+    assertThat(actual.get(0).name).isEqualTo("name1");
+    assertThat(actual.get(1).id).isEqualTo("id2");
+    assertThat(actual.get(1).name).isEqualTo("name2");
+    assertThat(actual.get(2).id).isEqualTo("id3");
+    assertThat(actual.get(2).name).isEqualTo("name3");
+  }
+
+  @Test
+  public void forJsonStrRequestParam_ClientList_goOne() throws Exception {
+    final Method method = TestUtil.getMethod(ForJsonStrRequestParam_ClientList.class, "forTest");
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+
+    final TestMappingResult catchResult = new TestMappingResult();
+
+    TestTunnel tunnel = new TestTunnel();
+
+    String paramValue = "{'id':'id1','name':'name1'}";
+
+    tunnel.setParam("param", paramValue, "left value");
+
+    final Object actualParamValue = e.extract(catchResult, tunnel, null);
+
+    assertThat(actualParamValue).isInstanceOf(List.class);
+
+    @SuppressWarnings("unchecked")
+    List<Client> actual = (List<Client>) actualParamValue;
+
+    assertThat(actual).hasSize(1);
+    assertThat(actual.get(0).id).isEqualTo("id1");
+    assertThat(actual.get(0).name).isEqualTo("name1");
+  }
+
+  class ForJsonStrRequestParam_Client {
+    @SuppressWarnings({"unused", "EmptyMethod"})
+    public void forTest(@Par("param") @Json Client param) {
+    }
+  }
+
+  @DataProvider
+  public Object[][] forJsonStrRequestParam_Client_data() {
+    return new Object[][]{
+        new Object[]{"[{'id':'id1','name':'name1'},{'id':'id2','name':'name2'}]"},
+        new Object[]{"{'id':'id1','name':'name1'}]"},
+    };
+  }
+
+  @Test(dataProvider = "forJsonStrRequestParam_Client_data")
+  public void forJsonStrRequestParam_Client(String paramValue) throws Exception {
+    final Method method = TestUtil.getMethod(ForJsonStrRequestParam_Client.class, "forTest");
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+
+    final TestMappingResult catchResult = new TestMappingResult();
+
+    TestTunnel tunnel = new TestTunnel();
+
+    tunnel.setParam("param", paramValue, "left value");
+
+    final Object actualParamValue = e.extract(catchResult, tunnel, null);
+
+    assertThat(actualParamValue).isInstanceOf(Client.class);
+
+    @SuppressWarnings("unchecked")
+    Client actual = (Client) actualParamValue;
+
+    assertThat(actual.id).isEqualTo("id1");
+    assertThat(actual.name).isEqualTo("name1");
+  }
+
   @SuppressWarnings("unused")
   class ForStrPathParam {
     @SuppressWarnings({"unused", "EmptyMethod"})
@@ -293,6 +394,100 @@ public class MethodParameterMetaTest {
 
     assertThat(actualParamValue).isInstanceOf(String.class);
     assertThat(actualParamValue).isEqualTo(tunnel.forGetRequestReader);
+  }
+
+  @SuppressWarnings("unused")
+  class ForRequestInput_Json_Client {
+    @SuppressWarnings({"unused", "EmptyMethod"})
+    public void forTest(@RequestInput @Json Client content) {
+    }
+  }
+
+  @DataProvider
+  public Object[][] requestInput_json_client_DataProvider() {
+    return new Object[][]{
+        new Object[]{"{'id':'id1','name':'name1'}"},
+        new Object[]{"[{'id':'id1','name':'name1'},{'id':'id2','name':'name2'}]"},
+    };
+  }
+
+  @Test(dataProvider = "requestInput_json_client_DataProvider")
+  public void requestInput_json_client(String requestContent) throws Exception {
+    final Method method = TestUtil.getMethod(ForRequestInput_Json_Client.class, "forTest");
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.forGetRequestReader = requestContent;
+
+    final Object actualParamValue = e.extract(null, tunnel, null);
+
+    assertThat(actualParamValue).isInstanceOf(Client.class);
+
+    Client actual = (Client) actualParamValue;
+    assertThat(actual.id).isEqualTo("id1");
+    assertThat(actual.name).isEqualTo("name1");
+  }
+
+  @Test
+  public void requestInput_json_client_noRequestContent() throws Exception {
+    final Method method = TestUtil.getMethod(ForRequestInput_Json_Client.class, "forTest");
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.forGetRequestReader = "";
+
+    final Object actualParamValue = e.extract(null, tunnel, null);
+
+    assertThat(actualParamValue).isNull();
+  }
+
+  @SuppressWarnings("unused")
+  class ForRequestInput_Json_ListClient {
+    @SuppressWarnings({"unused", "EmptyMethod"})
+    public void forTest(@RequestInput @Json List<Client> content) {
+    }
+  }
+
+  @Test(dataProvider = "requestInput_json_client_DataProvider")
+  public void requestInput_json_listClient(String requestContent) throws Exception {
+    final Method method = TestUtil.getMethod(ForRequestInput_Json_ListClient.class, "forTest");
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.forGetRequestReader = requestContent;
+
+    final Object actualParamValue = e.extract(null, tunnel, null);
+
+    assertThat(actualParamValue).isInstanceOf(List.class);
+
+    @SuppressWarnings("unchecked")
+    List<Client> actual = (List<Client>) actualParamValue;
+    assertThat(actual).hasSize(2);
+    assertThat(actual.get(0).id).isEqualTo("id1");
+    assertThat(actual.get(0).name).isEqualTo("name1");
+    assertThat(actual.get(1).id).isEqualTo("id2");
+    assertThat(actual.get(1).name).isEqualTo("name2");
+  }
+
+  @Test
+  public void requestInput_json_listClient_NoRequestContent() throws Exception {
+    final Method method = TestUtil.getMethod(ForRequestInput_Json_ListClient.class, "forTest");
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.forGetRequestReader = "";
+
+    final Object actualParamValue = e.extract(null, tunnel, null);
+
+    assertThat(actualParamValue).isInstanceOf(List.class);
+
+    @SuppressWarnings("unchecked")
+    List<Client> actual = (List<Client>) actualParamValue;
+    assertThat(actual).isEmpty();
   }
 
   @SuppressWarnings("unused")
@@ -397,7 +592,7 @@ public class MethodParameterMetaTest {
   @DataProvider
   public Object[][] methodsIn_ForRequestInput_BufferedReader() {
     return new Object[][]{
-      new Object[]{"forTest1"}, new Object[]{"forTest2"},
+        new Object[]{"forTest1"}, new Object[]{"forTest2"},
     };
   }
 
@@ -556,12 +751,12 @@ public class MethodParameterMetaTest {
     tunnel.eventBeforeCompleteHeaders().fire();
 
     assertThat(tunnel.testCookies.calls)
-      .containsExactly("saveToResponseStr asd asd_value", "removeFromResponse dsa");
+        .containsExactly("saveToResponseStr asd asd_value", "removeFromResponse dsa");
 
     ex.removeFromResponse("pom");
 
     assertThat(tunnel.testCookies.calls).containsExactly(
-      "saveToResponseStr asd asd_value", "removeFromResponse dsa", "removeFromResponse pom"
+        "saveToResponseStr asd asd_value", "removeFromResponse dsa", "removeFromResponse pom"
     );
   }
 
@@ -634,10 +829,10 @@ public class MethodParameterMetaTest {
     public String toString() {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
       return "SomeObject{" +
-        "intField=" + intField +
-        ", strField='" + strField + '\'' +
-        ", dateField=" + (dateField == null ? "null" : sdf.format(dateField)) +
-        '}';
+          "intField=" + intField +
+          ", strField='" + strField + '\'' +
+          ", dateField=" + (dateField == null ? "null" : sdf.format(dateField)) +
+          '}';
     }
   }
 
