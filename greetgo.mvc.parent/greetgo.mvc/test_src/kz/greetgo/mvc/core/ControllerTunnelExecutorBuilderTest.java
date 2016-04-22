@@ -21,6 +21,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.Map;
 
+import static kz.greetgo.mvc.core.RequestMethod.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ControllerTunnelExecutorBuilderTest {
@@ -73,9 +74,9 @@ public class ControllerTunnelExecutorBuilderTest {
       calledReturnRedirect = true;
       //noinspection ThrowableResultOfMethodCallIgnored
       return Redirect.to(RETURN_REDIRECT_TO)
-        .addCookieStr(COOKIE_KEY1, COOKIE_VALUE1)
-        .addCookie(COOKIE_KEY2, COOKIE_VALUE2)
-        ;
+          .addCookieStr(COOKIE_KEY1, COOKIE_VALUE1)
+          .addCookie(COOKIE_KEY2, COOKIE_VALUE2)
+          ;
     }
 
     public boolean calledThrowRedirect = false;
@@ -85,9 +86,9 @@ public class ControllerTunnelExecutorBuilderTest {
       calledThrowRedirect = true;
       //noinspection ThrowableResultOfMethodCallIgnored
       throw Redirect.to(THROW_REDIRECT_TO)
-        .addCookieStr(COOKIE_KEY1, COOKIE_VALUE1)
-        .addCookie(COOKIE_KEY2, COOKIE_VALUE2)
-        ;
+          .addCookieStr(COOKIE_KEY1, COOKIE_VALUE1)
+          .addCookie(COOKIE_KEY2, COOKIE_VALUE2)
+          ;
     }
 
   }
@@ -523,22 +524,22 @@ public class ControllerTunnelExecutorBuilderTest {
   public Object[][] dataFor_getUploadInfo_amountFormats() {
     return new Object[][]{
 
-      new Object[]{"forTest1", 22745L},
-      new Object[]{"forTest2", 22745L},
-      new Object[]{"forTest_k", 22745L * 1024L},
-      new Object[]{"forTest_K", 22745L * 1024L},
-      new Object[]{"forTest_Kb", 22745L * 1024L},
-      new Object[]{"forTest_KB", 22745L * 1024L},
-      new Object[]{"forTest_kb", 22745L * 1024L},
-      new Object[]{"forTest_kB", 22745L * 1024L},
-      new Object[]{"forTest_M", 711L * 1024L * 1024L},
-      new Object[]{"forTest_Mb", 711L * 1024L * 1024L},
-      new Object[]{"forTest_MB", 711L * 1024L * 1024L},
-      new Object[]{"forTest_G", 317L * 1024L * 1024L * 1024L},
-      new Object[]{"forTest_Gb", 317L * 1024L * 1024L * 1024L},
-      new Object[]{"forTest_GB", 317L * 1024L * 1024L * 1024L},
-      new Object[]{"forTest_m1", -1L},
-      new Object[]{"forTest_zero", 0L},
+        new Object[]{"forTest1", 22745L},
+        new Object[]{"forTest2", 22745L},
+        new Object[]{"forTest_k", 22745L * 1024L},
+        new Object[]{"forTest_K", 22745L * 1024L},
+        new Object[]{"forTest_Kb", 22745L * 1024L},
+        new Object[]{"forTest_KB", 22745L * 1024L},
+        new Object[]{"forTest_kb", 22745L * 1024L},
+        new Object[]{"forTest_kB", 22745L * 1024L},
+        new Object[]{"forTest_M", 711L * 1024L * 1024L},
+        new Object[]{"forTest_Mb", 711L * 1024L * 1024L},
+        new Object[]{"forTest_MB", 711L * 1024L * 1024L},
+        new Object[]{"forTest_G", 317L * 1024L * 1024L * 1024L},
+        new Object[]{"forTest_Gb", 317L * 1024L * 1024L * 1024L},
+        new Object[]{"forTest_GB", 317L * 1024L * 1024L * 1024L},
+        new Object[]{"forTest_m1", -1L},
+        new Object[]{"forTest_zero", 0L},
 
     };
   }
@@ -1080,4 +1081,69 @@ public class ControllerTunnelExecutorBuilderTest {
     //
   }
 
+  public static class TestController2 {
+
+    public int forGet_callCount = 0;
+
+    @Mapping("/commonTarget")
+    @MethodFilter(GET)
+    public void forGet() {
+      forGet_callCount++;
+    }
+
+    public int forPutPost_callCount = 0;
+
+    @Mapping("/commonTarget")
+    @MethodFilter({PUT, POST})
+    public void forPutPost() {
+      forPutPost_callCount++;
+    }
+
+    public int neverCalled_callCount = 0;
+
+    @Mapping("/commonTarget")
+    @MethodFilter({})
+    public void neverCalled() {
+      neverCalled_callCount++;
+    }
+  }
+
+  @Test
+  public void methodFilter() throws Exception {
+
+    TestController2 c = new TestController2();
+
+    //
+    //
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
+    //
+    //
+
+    TestTunnel tunnel = new TestTunnel();
+    tunnel.target = "/commonTarget";
+    tunnel.requestMethod = GET;
+
+    assertThat(handleFirst(handlerGetterList, tunnel)).isTrue();
+    assertThat(c.forGet_callCount).isEqualTo(1);
+    assertThat(c.forPutPost_callCount).isEqualTo(0);
+
+    tunnel.requestMethod = PUT;
+
+    assertThat(handleFirst(handlerGetterList, tunnel)).isTrue();
+    assertThat(c.forGet_callCount).isEqualTo(1);
+    assertThat(c.forPutPost_callCount).isEqualTo(1);
+
+    tunnel.requestMethod = POST;
+
+    assertThat(handleFirst(handlerGetterList, tunnel)).isTrue();
+    assertThat(c.forGet_callCount).isEqualTo(1);
+    assertThat(c.forPutPost_callCount).isEqualTo(2);
+
+    tunnel.requestMethod = DELETE;
+
+    assertThat(handleFirst(handlerGetterList, tunnel)).isFalse();
+
+    assertThat(c.neverCalled_callCount).isEqualTo(0);
+
+  }
 }
