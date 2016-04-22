@@ -881,4 +881,29 @@ public class MethodParameterMetaTest {
 
     MethodParameterMeta.create(method);
   }
+
+  private class ForRequestMethod {
+    @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
+    public void forTest(RequestMethod requestMethod) {
+    }
+  }
+
+  @Test
+  public void forRequestMethod() throws Exception {
+    final Method method = TestUtil.getMethod(ForRequestMethod.class, "forTest");
+
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    MethodParamExtractor e = ee.get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+
+    String value = RND.str(10);
+
+    tunnel.requestMethod = RND.someEnum(RequestMethod.values());
+
+    final Object extractedValue = e.extract(null, tunnel, null);
+
+    assertThat(extractedValue).isEqualTo(tunnel.requestMethod);
+  }
+
 }

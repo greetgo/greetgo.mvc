@@ -172,6 +172,15 @@ public class MethodParameterMeta {
       }
     };
 
+    if (genericParameterType == RequestMethod.class) {
+      return new MethodParamExtractor() {
+        @Override
+        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
+          return tunnel.getRequestMethod();
+        }
+      };
+    }
+
     throw new CannotExtractParamValue(parameterIndex, method);
   }
 
