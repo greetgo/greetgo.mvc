@@ -1,7 +1,9 @@
 package kz.greetgo.mvc.core;
 
+import kz.greetgo.mvc.annotations.MethodFilter;
 import kz.greetgo.mvc.errors.NoPathParam;
 import kz.greetgo.mvc.interfaces.MappingResult;
+import kz.greetgo.mvc.interfaces.RequestTunnel;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -11,8 +13,10 @@ public class TargetMapper {
 
   private final List<String> namesForGroups;
   private final Pattern mappingPattern;
+  private final MethodFilter methodFilter;
 
-  public TargetMapper(String targetMapping) {
+  public TargetMapper(String targetMapping, MethodFilter methodFilter) {
+    this.methodFilter = methodFilter;
     //  EXAMPLE: targetMapping =  /asd/{clientId}/cool-phase/{phone}
 
     StringBuilder pattern = new StringBuilder();
@@ -81,10 +85,12 @@ public class TargetMapper {
     }
   };
 
-  public MappingResult mapTarget(String target) {
+  public MappingResult mapTarget(RequestTunnel tunnel) {
 
-    final Matcher matcher = mappingPattern.matcher(target);
+    final Matcher matcher = mappingPattern.matcher(tunnel.getTarget());
     if (!matcher.matches()) return UNMAPPED_RESULT;
+
+    if (!isMethodCorrect(tunnel.getRequestMethod())) return UNMAPPED_RESULT;
 
     Map<String, String> params = new HashMap<>();
 
@@ -106,5 +112,15 @@ public class TargetMapper {
         throw new NoPathParam(name, unmodifiableParams);
       }
     };
+  }
+
+  private boolean isMethodCorrect(RequestMethod method) {
+    if (methodFilter == null) return true;
+
+    for (RequestMethod rm : methodFilter.value()) {
+      if (rm == method) return true;
+    }
+
+    return false;
   }
 }

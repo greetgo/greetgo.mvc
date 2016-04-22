@@ -1,6 +1,7 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.Mapping;
+import kz.greetgo.mvc.annotations.MethodFilter;
 import kz.greetgo.mvc.annotations.ToJson;
 import kz.greetgo.mvc.annotations.ToXml;
 import kz.greetgo.mvc.interfaces.*;
@@ -63,14 +64,15 @@ public class ControllerTunnelExecutorBuilder {
 
     localUploadInfoGetter.assembleAnnotationFromMethod(method);
 
-    final TargetMapper targetMapper = new TargetMapper(parentMapping + mapping.value());
+    final TargetMapper targetMapper = new TargetMapper
+        (parentMapping + mapping.value(), method.getAnnotation(MethodFilter.class));
 
     final List<MethodParamExtractor> extractorList = MethodParameterMeta.create(method);
 
     result.add(new TunnelExecutorGetter() {
       @Override
       public TunnelExecutor getTunnelExecutor(final RequestTunnel tunnel) {
-        final MappingResult mappingResult = targetMapper.mapTarget(tunnel.getTarget());
+        final MappingResult mappingResult = targetMapper.mapTarget(tunnel);
         if (!mappingResult.ok()) return null;
 
         return new TunnelExecutor() {
