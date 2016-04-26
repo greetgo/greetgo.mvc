@@ -30,4 +30,9 @@ public class ProbeViews implements Views {
       error.printStackTrace(pr);
     }
   }
+
+  @Override
+  public long controllerMethodSlowTime() {
+    return 0;
+  }
 }
