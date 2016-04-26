@@ -12,4 +12,6 @@ public interface Views {
   void defaultView(RequestTunnel tunnel, Object returnValue, MvcModel model, MappingResult mappingResult) throws Exception;
 
   void errorView(RequestTunnel tunnel, String target, Exception error) throws Exception;
+
+  long controllerMethodSlowTime();
 }

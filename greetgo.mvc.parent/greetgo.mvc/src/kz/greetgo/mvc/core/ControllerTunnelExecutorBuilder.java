@@ -88,6 +88,11 @@ public class ControllerTunnelExecutorBuilder {
                 paramValues[i] = e.extract(mappingResult, tunnel, model);
               }
 
+              if (views != null) {
+                long slowTime = views.controllerMethodSlowTime();
+                if (slowTime > 0) Thread.sleep(slowTime);
+              }
+
               final Object result = method.invoke(controller, paramValues);
 
               executeView(result, model, tunnel, mappingResult, method);

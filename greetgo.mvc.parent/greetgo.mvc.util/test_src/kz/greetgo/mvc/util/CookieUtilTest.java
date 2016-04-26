@@ -16,9 +16,9 @@ public class CookieUtilTest {
 
     assertThat(str).isNotNull();
 
-    assertThat(CookieUtil.strToObject("")).isNull();
-    assertThat(CookieUtil.strToObject("ЮЮЮЯЯЯ")).isNull();
-    assertThat(CookieUtil.strToObject(null)).isNull();
+    assertThat(CookieUtil.<Object>strToObject("")).isNull();
+    assertThat(CookieUtil.<Object>strToObject("ЮЮЮЯЯЯ")).isNull();
+    assertThat(CookieUtil.<Object>strToObject(null)).isNull();
 
     Object object = CookieUtil.strToObject(str);
 
