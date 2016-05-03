@@ -49,4 +49,9 @@ public class TestViews implements Views {
       throw new RuntimeException(e);
     }
   }
+
+  @Override
+  public long controllerMethodSlowTime() {
+    return 0;
+  }
 }

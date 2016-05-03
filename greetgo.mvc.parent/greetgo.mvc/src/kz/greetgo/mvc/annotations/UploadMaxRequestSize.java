@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UploadMaxRequestSize {
   /**
-   * <table><tr><td colspan="2">
+   * <table summary=""><tr><td colspan="2">
    * Examples:
    * </td></tr>
    * <tr><td>10_000</td><td>--&gt;</td><td> 10000 байт</td></tr>
