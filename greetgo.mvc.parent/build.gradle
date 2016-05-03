@@ -2,22 +2,13 @@ def nowDate = new Date()
 def nowFormattedDate = nowDate.format("yyyy-MM-dd/HH:mm:ss")
 def vendorName = "greetgo!"
 
-buildscript {
-  repositories {
-    maven { url System.getenv('GG_REPO') }
-  }
-  dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.0-beta-1103"
-  }
-}
-
 allprojects {
   apply plugin: 'java'
   apply plugin: 'idea'
   apply plugin: 'eclipse'
   apply plugin: 'maven'
 
-  version = '0.0.8'
+  version = '0.0.9'
 
   sourceCompatibility = 1.7
 
@@ -41,7 +32,7 @@ subprojects {
   dependencies {
     //ext.jettyVersion = '8.0+'
     ext.jettyVersion = '9.2+'
-    ext.greetgoUtilVersion = '0.0.22'
+    ext.greetgoUtilVersion = '0.0.25'
     ext.servletApiVersion = '3.1.0'
     ext.jacksonVersion = '2.7.3'
 
