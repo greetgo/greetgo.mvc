@@ -20,19 +20,31 @@ import java.io.*;
 public class WarRequestTunnel implements RequestTunnel {
   public final HttpServletRequest request;
   public final HttpServletResponse response;
-  private final HttpServletTunnelCookies cookies;
   private final EventTunnelCookies cookiesReturn;
   private volatile boolean executed = false;
+  private final String targetSubContext;
 
-  public WarRequestTunnel(ServletRequest request, ServletResponse response) {
+  public WarRequestTunnel(ServletRequest request, ServletResponse response, String targetSubContext) {
     this.request = (HttpServletRequest) request;
     this.response = (HttpServletResponse) response;
-    cookies = new HttpServletTunnelCookies(this.request, this.response);
+    this.targetSubContext = targetSubContext;
+    HttpServletTunnelCookies cookies = new HttpServletTunnelCookies(this.request, this.response);
     cookiesReturn = new EventTunnelCookies(cookies, beforeCompleteHeaders);
+  }
+
+  public WarRequestTunnel(ServletRequest request, ServletResponse response) {
+    this(request, response, null);
   }
 
   @Override
   public String getTarget() {
+    String topTarget = getTopTarget();
+    if (targetSubContext == null) return topTarget;
+    if (targetSubContext.length() == 0) return topTarget;
+    return topTarget.substring(targetSubContext.length());
+  }
+
+  private String getTopTarget() {
     final String requestURI = request.getRequestURI();
     if (requestURI == null) return "";
     final String contextPath = request.getContextPath();

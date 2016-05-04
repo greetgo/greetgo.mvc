@@ -37,7 +37,7 @@ public abstract class AppServlet extends GenericServlet {
 
     final ServletRegistration.Dynamic registration = ctx.addServlet(getAddingServletName(), this);
     {
-      if (mappingBase == null) mappingBase = "/*";
+      if (mappingBase == null) mappingBase = getTargetSubContext() + "/*";
       registration.addMapping(mappingBase);
     }
 
@@ -45,9 +45,13 @@ public abstract class AppServlet extends GenericServlet {
       UploadInfo ui = getUploadInfo();
       if (ui != null) {
         registration.setMultipartConfig(new MultipartConfigElement(ui.location, ui.maxFileSize,
-          ui.maxRequestSize, ui.fileSizeThreshold));
+            ui.maxRequestSize, ui.fileSizeThreshold));
       }
     }
+  }
+
+  public void register(ServletContext ctx) {
+    register(ctx, null);
   }
 
   private TunnelExecutor getTunnelExecutor(RequestTunnel tunnel) {
@@ -82,6 +86,10 @@ public abstract class AppServlet extends GenericServlet {
       if (tunnelFromAttribute != null) return (RequestTunnel) tunnelFromAttribute;
     }
 
-    return new WarRequestTunnel(req, res);
+    return new WarRequestTunnel(req, res, getTargetSubContext());
+  }
+
+  protected String getTargetSubContext() {
+    return "";
   }
 }
