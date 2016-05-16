@@ -155,6 +155,7 @@ public class ControllerTunnelExecutorBuilder {
       try (final PrintWriter writer = tunnel.getResponseWriter()) {
         writer.print(content);
       }
+      return;
     }
 
     if (method.getAnnotation(ToXml.class) != null) {
@@ -162,6 +163,7 @@ public class ControllerTunnelExecutorBuilder {
       try (final PrintWriter writer = tunnel.getResponseWriter()) {
         writer.print(content);
       }
+      return;
     }
 
     if (controllerMethodResult == null) return;
