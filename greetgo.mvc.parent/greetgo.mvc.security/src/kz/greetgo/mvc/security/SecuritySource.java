@@ -4,6 +4,7 @@ import javax.crypto.Cipher;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.util.Random;
 
 public interface SecuritySource {
@@ -15,7 +16,7 @@ public interface SecuritySource {
 
   MessageDigest getMessageDigest();
 
-  Random getRandom();
+  SecureRandom getRandom();
 
   int getBlockSize();
 }

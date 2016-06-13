@@ -29,7 +29,7 @@ public class SecurityCryptoBridgeTest {
   }
 
   private SecurityCrypto createOn(File privateFile, File publicFile) {
-    final SecuritySource_RSA_SHA256 ss = new SecuritySource_RSA_SHA256(privateFile, publicFile);
+    final SecuritySourceOnFiles ss = new SecuritySourceOnFiles(privateFile, publicFile);
     return new SecurityCryptoBridge(ss);
   }
 

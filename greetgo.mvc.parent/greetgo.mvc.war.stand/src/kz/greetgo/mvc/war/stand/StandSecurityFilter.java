@@ -16,13 +16,13 @@ public class StandSecurityFilter extends SecurityFilter {
     {
       File privateKeyFile = new File(securityDir + "/session.private.key");
       File publicKeyFile = new File(securityDir + "/session.public.key");
-      SecuritySource_RSA_SHA256 ss = new SecuritySource_RSA_SHA256(privateKeyFile, publicKeyFile);
+      SecuritySourceOnFiles ss = new SecuritySourceOnFiles(privateKeyFile, publicKeyFile);
       sessionCrypto = new SecurityCryptoBridge(ss);
     }
     {
       File privateKeyFile = new File(securityDir + "/signature.private.key");
       File publicKeyFile = new File(securityDir + "/signature.public.key");
-      SecuritySource_RSA_SHA256 ss = new SecuritySource_RSA_SHA256(privateKeyFile, publicKeyFile);
+      SecuritySourceOnFiles ss = new SecuritySourceOnFiles(privateKeyFile, publicKeyFile);
       signatureCrypto = new SecurityCryptoBridge(ss);
     }
   }

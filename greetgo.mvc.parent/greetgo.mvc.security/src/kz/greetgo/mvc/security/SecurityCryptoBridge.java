@@ -89,7 +89,6 @@ public class SecurityCryptoBridge implements SecurityCrypto {
       encryptedSymmetricKey = encryptBlock(symmetricKey, securitySource);
 
       writeToBlockList(blockList, symmetricKey, bytes);
-
     }
 
     @Override
