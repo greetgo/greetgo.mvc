@@ -72,7 +72,7 @@ public class ControllerTunnelExecutorBuilder {
     result.add(new TunnelExecutorGetter() {
       @Override
       public String infoStr() {
-        return "Controller method " + method;
+        return method.getClass().getSimpleName() + "." + method.getName() + " : " + targetMapper.infoStr();
       }
 
       @Override

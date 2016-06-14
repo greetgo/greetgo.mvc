@@ -13,9 +13,11 @@ public class TargetMapper {
 
   private final List<String> namesForGroups;
   private final Pattern mappingPattern;
+  private String targetMapping;
   private final MethodFilter methodFilter;
 
   public TargetMapper(String targetMapping, MethodFilter methodFilter) {
+    this.targetMapping = targetMapping;
     this.methodFilter = methodFilter;
     //  EXAMPLE: targetMapping =  /asd/{clientId}/cool-phase/{phone}
 
@@ -56,6 +58,23 @@ public class TargetMapper {
 
     this.namesForGroups = Collections.unmodifiableList(namesForGroups);
     this.mappingPattern = Pattern.compile(pattern.toString());
+  }
+
+  public String infoStr() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(targetMapping);
+    if (methodFilter != null) {
+      if (methodFilter.value().length == 0) {
+        sb.append(", BLOCKED (empty method list)");
+      } else {
+        sb.append(", only for ");
+        for (RequestMethod requestMethod : methodFilter.value()) {
+          sb.append(requestMethod).append(", ");
+        }
+        sb.setLength(sb.length() - 2);
+      }
+    }
+    return sb.toString();
   }
 
   private static StringBuilder quote(String str) {
