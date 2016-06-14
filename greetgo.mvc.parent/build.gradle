@@ -8,7 +8,7 @@ allprojects {
   apply plugin: 'eclipse'
   apply plugin: 'maven'
 
-  version = '0.0.15'
+  version = '0.0.16'
 
   sourceCompatibility = 1.7
 

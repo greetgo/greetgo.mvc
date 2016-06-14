@@ -88,7 +88,11 @@ public abstract class AppServlet extends GenericServlet {
 
     {
       final Object tunnelFromAttribute = req.getAttribute(SecurityFilter.ATTRIBUTE_TUNNEL);
-      if (tunnelFromAttribute != null) return (RequestTunnel) tunnelFromAttribute;
+      if (tunnelFromAttribute != null) {
+        WarRequestTunnel tunnel = (WarRequestTunnel) tunnelFromAttribute;
+        tunnel.targetSubContext = getTargetSubContext();
+        return tunnel;
+      }
     }
 
     return new WarRequestTunnel(req, res, getTargetSubContext());

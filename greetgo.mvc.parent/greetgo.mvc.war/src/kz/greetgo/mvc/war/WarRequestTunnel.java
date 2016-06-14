@@ -22,7 +22,7 @@ public class WarRequestTunnel implements RequestTunnel {
   public final HttpServletResponse response;
   private final EventTunnelCookies cookiesReturn;
   private volatile boolean executed = false;
-  private final String targetSubContext;
+  public String targetSubContext;
 
   public WarRequestTunnel(ServletRequest request, ServletResponse response, String targetSubContext) {
     this.request = (HttpServletRequest) request;
