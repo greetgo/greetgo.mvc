@@ -23,7 +23,7 @@ public abstract class AppServlet extends GenericServlet {
 
   protected abstract UploadInfo getUploadInfo();
 
-  private final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
+  protected final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
 
   protected String getAddingServletName() {
     return "appServlet";
@@ -48,6 +48,11 @@ public abstract class AppServlet extends GenericServlet {
             ui.maxRequestSize, ui.fileSizeThreshold));
       }
     }
+
+    afterRegister();
+  }
+
+  protected void afterRegister() {
   }
 
   public void register(ServletContext ctx) {

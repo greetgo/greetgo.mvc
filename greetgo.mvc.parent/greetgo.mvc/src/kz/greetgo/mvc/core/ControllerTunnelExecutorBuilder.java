@@ -71,6 +71,11 @@ public class ControllerTunnelExecutorBuilder {
 
     result.add(new TunnelExecutorGetter() {
       @Override
+      public String infoStr() {
+        return "Controller method " + method;
+      }
+
+      @Override
       public TunnelExecutor getTunnelExecutor(final RequestTunnel tunnel) {
         final MappingResult mappingResult = targetMapper.mapTarget(tunnel);
         if (!mappingResult.ok()) return null;
@@ -113,7 +118,7 @@ public class ControllerTunnelExecutorBuilder {
               {
 
                 try {
-                  views.errorView(tunnel, tunnel.getTarget(), e);
+                  if (views != null) views.errorView(tunnel, tunnel.getTarget(), e);
                 } catch (Exception e1) {
                   throw new RuntimeException(e1);
                 }
@@ -129,6 +134,8 @@ public class ControllerTunnelExecutorBuilder {
           }
         };
       }
+
+
     });
   }
 

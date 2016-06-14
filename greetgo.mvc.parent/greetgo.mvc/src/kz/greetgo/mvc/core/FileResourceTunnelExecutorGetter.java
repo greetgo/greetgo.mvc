@@ -47,6 +47,11 @@ public class FileResourceTunnelExecutorGetter implements TunnelExecutorGetter {
     return null;
   }
 
+  @Override
+  public String infoStr() {
+    return "File resource on dirs: " + resourceDirList;
+  }
+
   private TunnelExecutor executorForDir(File dir, RequestTunnel tunnel) {
     if (!dir.exists()) return null;
 
