@@ -3,7 +3,7 @@ package kz.greetgo.mvc.annotations;
 import java.lang.annotation.*;
 
 /**
- * Указывает, что данный параметр соответствует входящему потоку запроса
+ * Indicates that this parameter takes request input stream
  */
 @Documented
 @Target({ElementType.PARAMETER})

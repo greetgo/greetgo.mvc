@@ -5,16 +5,16 @@ import kz.greetgo.mvc.core.RequestMethod;
 import java.lang.annotation.*;
 
 /**
- * Устанавливает фильтр по методам
+ * Controller method filter
  */
 @Documented
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MethodFilter {
   /**
-   * Список методов, которым соответствует фильтр. Пустой список приведёт к блокировки метода (метод вызываться не будет)
+   * List of HTTP-methods to perform. Empty list is blocking access to this controller method.
    *
-   * @return список методов
+   * @return list of HTTP-methods
    */
   RequestMethod[] value();
 }

@@ -3,7 +3,7 @@ package kz.greetgo.mvc.annotations;
 import java.lang.annotation.*;
 
 /**
- * Указывает, что возвращённый этим методом объект должен быть преобразован в XML и положен в ответ запроса
+ * Shows that method returning object converts to XML
  */
 @Documented
 @Target({ElementType.TYPE, ElementType.METHOD})

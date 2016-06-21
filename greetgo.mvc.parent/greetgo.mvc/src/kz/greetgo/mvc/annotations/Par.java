@@ -3,16 +3,14 @@ package kz.greetgo.mvc.annotations;
 import java.lang.annotation.*;
 
 /**
- * Заполняет параметр значением из параметров запроса
+ * Indicate request parameter following to parameter of controller method
  */
 @Documented
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Par {
   /**
-   * Указывает имя параметра запроса
-   *
-   * @return имя параметра запроса
+   * @return request parameter name
    */
   String value();
 }

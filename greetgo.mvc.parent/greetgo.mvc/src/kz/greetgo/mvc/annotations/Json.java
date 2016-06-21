@@ -3,7 +3,7 @@ package kz.greetgo.mvc.annotations;
 import java.lang.annotation.*;
 
 /**
- * Показывает что передаётся JSON-формат
+ * Shows that parameter value converts from JSON
  */
 @Documented
 @Target({ElementType.PARAMETER})
