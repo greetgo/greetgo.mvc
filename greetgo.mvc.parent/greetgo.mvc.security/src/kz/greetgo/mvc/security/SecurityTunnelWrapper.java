@@ -5,6 +5,7 @@ import kz.greetgo.mvc.interfaces.TunnelHandler;
 import kz.greetgo.util.events.EventHandler;
 import kz.greetgo.util.events.HandlerKiller;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import static kz.greetgo.mvc.util.Base64Util.base64ToBytes;
@@ -71,7 +72,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
         performed = true;
 
         byte[] bytes = sessionStorage.getSessionBytes();
-        if (Objects.equals(bytesInStorage, bytes)) return;
+        if (Arrays.equals(bytesInStorage, bytes)) return;
 
         if (bytes == null) {
           tunnel.cookies().removeFromResponse(provider.cookieKeySession());
