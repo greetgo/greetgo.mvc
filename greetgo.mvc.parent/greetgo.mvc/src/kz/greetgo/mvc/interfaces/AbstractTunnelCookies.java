@@ -3,19 +3,19 @@ package kz.greetgo.mvc.interfaces;
 import kz.greetgo.mvc.util.CookieUtil;
 
 public abstract class AbstractTunnelCookies implements TunnelCookies {
-  public abstract String getFromRequestStr(String name);
-
-  public abstract void saveToResponseStr(String name, String value);
-
-  public abstract void removeFromResponse(String name);
 
   @Override
-  public <T> T getFromRequest(String name) {
-    return CookieUtil.strToObject(getFromRequestStr(name));
+  public void saveToResponse(String name, String value) {
+    saveToResponse(name, -1, value);
   }
 
   @Override
-  public void saveToResponse(String name, Object object) {
-    saveToResponseStr(name, CookieUtil.objectToStr(object));
+  public <T> T getFromRequestObject(String name) {
+    return CookieUtil.strToObject(getFromRequest(name));
+  }
+
+  @Override
+  public void saveToResponseObject(String name, Object object) {
+    saveToResponse(name, CookieUtil.objectToStr(object));
   }
 }

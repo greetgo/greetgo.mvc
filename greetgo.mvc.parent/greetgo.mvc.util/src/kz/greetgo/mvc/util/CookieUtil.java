@@ -21,15 +21,14 @@ public class CookieUtil {
   public static void removeCookie(HttpServletResponse response, String name) {
     final Cookie cookie = new Cookie(name, null);
     cookie.setMaxAge(0);
-//    cookie.setHttpOnly(true);
     cookie.setPath("/");
     cookie.setSecure(false);
     response.addCookie(cookie);
   }
 
-  public static void addCookie(HttpServletResponse response, String cookieName, String cookieValue) {
+  public static void addCookie(HttpServletResponse response, int maxAge, String cookieName, String cookieValue) {
     final Cookie cookie = new Cookie(cookieName, cookieValue);
-    cookie.setMaxAge(60 * 60 * 24);
+    cookie.setMaxAge(maxAge);
     cookie.setSecure(false);
     cookie.setPath("/");
     response.addCookie(cookie);

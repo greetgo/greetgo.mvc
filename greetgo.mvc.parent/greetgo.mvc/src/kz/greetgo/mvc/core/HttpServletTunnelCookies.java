@@ -16,18 +16,17 @@ public class HttpServletTunnelCookies extends AbstractTunnelCookies {
   }
 
   @Override
-  public String getFromRequestStr(String name) {
+  public String getFromRequest(String name) {
     return CookieUtil.getCookieValue(request, name);
   }
 
   @Override
-  public void saveToResponseStr(String name, String value) {
-    CookieUtil.addCookie(response, name, value);
+  public void saveToResponse(String name, int maxAge, String value) {
+    CookieUtil.addCookie(response, maxAge, name, value);
   }
 
   @Override
   public void removeFromResponse(String name) {
     CookieUtil.removeCookie(response, name);
   }
-
 }

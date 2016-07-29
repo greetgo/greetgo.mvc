@@ -128,7 +128,7 @@ public class MethodParameterMeta {
       return new MethodParamExtractor() {
         @Override
         public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-          final String str = tunnel.cookies().getFromRequestStr(parCookie.value());
+          final String str = tunnel.cookies().getFromRequest(parCookie.value());
           if (parCookie.asIs()) return str;
           return CookieUtil.strToObject(str);
         }

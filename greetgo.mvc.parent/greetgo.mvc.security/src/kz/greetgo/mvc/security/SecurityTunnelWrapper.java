@@ -6,7 +6,6 @@ import kz.greetgo.util.events.EventHandler;
 import kz.greetgo.util.events.HandlerKiller;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import static kz.greetgo.mvc.util.Base64Util.base64ToBytes;
 import static kz.greetgo.mvc.util.Base64Util.bytesToBase64;
@@ -45,7 +44,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
     final byte[] bytesInStorage;
 
     {
-      final String sessionBase64 = tunnel.cookies().getFromRequestStr(provider.cookieKeySession());
+      final String sessionBase64 = tunnel.cookies().getFromRequest(provider.cookieKeySession());
       byte[] bytes = base64ToBytes(sessionBase64);
 
       if (sessionCrypto != null) {
@@ -53,7 +52,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
       }
 
       if (underSecurityUmbrella && bytes != null && signatureCrypto != null) {
-        String signatureBase64 = tunnel.cookies().getFromRequestStr(provider.cookieKeySignature());
+        String signatureBase64 = tunnel.cookies().getFromRequest(provider.cookieKeySignature());
         byte[] signature = base64ToBytes(signatureBase64);
         if (!signatureCrypto.verifySignature(bytes, signature)) {
           bytes = null;
@@ -82,7 +81,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
           if (signatureCrypto != null) {
             byte[] signature = signatureCrypto.sign(bytes);
             final String signatureBase64 = bytesToBase64(signature);
-            tunnel.cookies().saveToResponseStr(provider.cookieKeySignature(), signatureBase64);
+            tunnel.cookies().saveToResponse(provider.cookieKeySignature(), signatureBase64);
           }
 
           if (sessionCrypto != null) {
@@ -90,7 +89,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
           }
 
           final String bytesBase64 = bytesToBase64(bytes);
-          tunnel.cookies().saveToResponseStr(provider.cookieKeySession(), bytesBase64);
+          tunnel.cookies().saveToResponse(provider.cookieKeySession(), bytesBase64);
 
         }
 

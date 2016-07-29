@@ -740,10 +740,10 @@ public class MethodParameterMetaTest {
     tunnel.testCookies.getRequestCookieValue_return = RND.str(10);
 
     String name = RND.str(10);
-    assertThat(ex.getFromRequestStr(name)).isEqualTo(tunnel.testCookies.getRequestCookieValue_return);
+    assertThat(ex.getFromRequest(name)).isEqualTo(tunnel.testCookies.getRequestCookieValue_return);
     assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo(name);
 
-    ex.saveToResponseStr("asd", "asd_value");
+    ex.saveToResponse("asd", "asd_value");
     ex.removeFromResponse("dsa");
 
     assertThat(tunnel.testCookies.calls).isEmpty();

@@ -17,8 +17,8 @@ public class EventTunnelCookies extends AbstractTunnelCookies implements EventHa
   }
 
   @Override
-  public String getFromRequestStr(String name) {
-    return cookies.getFromRequestStr(name);
+  public String getFromRequest(String name) {
+    return cookies.getFromRequest(name);
   }
 
   interface Command {
@@ -29,25 +29,27 @@ public class EventTunnelCookies extends AbstractTunnelCookies implements EventHa
 
   class Save implements Command {
     private final String name;
+    private final int maxAge;
     private final String value;
 
-    public Save(String name, String value) {
+    public Save(String name, int maxAge, String value) {
       this.name = name;
+      this.maxAge = maxAge;
       this.value = value;
     }
 
     @Override
     public void apply() {
-      cookies.saveToResponseStr(name, value);
+      cookies.saveToResponse(name, maxAge, value);
     }
   }
 
   @Override
-  public void saveToResponseStr(String name, String value) {
+  public void saveToResponse(String name, int maxAge, String value) {
     if (commandList == null) {
-      cookies.saveToResponseStr(name, value);
+      cookies.saveToResponse(name, maxAge, value);
     } else {
-      commandList.add(new Save(name, value));
+      commandList.add(new Save(name, maxAge, value));
     }
   }
 
