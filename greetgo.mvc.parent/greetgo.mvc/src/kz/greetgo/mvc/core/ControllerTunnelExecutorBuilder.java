@@ -1,9 +1,6 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.Mapping;
-import kz.greetgo.mvc.annotations.MethodFilter;
-import kz.greetgo.mvc.annotations.ToJson;
-import kz.greetgo.mvc.annotations.ToXml;
+import kz.greetgo.mvc.annotations.*;
 import kz.greetgo.mvc.interfaces.*;
 import kz.greetgo.mvc.model.DefaultMvcModel;
 import kz.greetgo.mvc.model.MvcModel;
@@ -15,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static kz.greetgo.util.ServerUtil.getAnnotation;
 
 public class ControllerTunnelExecutorBuilder {
   public static List<TunnelExecutorGetter> build(Object controller, Views views) {
@@ -157,7 +156,8 @@ public class ControllerTunnelExecutorBuilder {
       return;
     }
 
-    if (method.getAnnotation(ToJson.class) != null) {
+
+    if (getAnnotation(method, ToJson.class) != null) {
       final String content = views.toJson(controllerMethodResult);
       try (final PrintWriter writer = tunnel.getResponseWriter()) {
         writer.print(content);
@@ -165,10 +165,25 @@ public class ControllerTunnelExecutorBuilder {
       return;
     }
 
-    if (method.getAnnotation(ToXml.class) != null) {
+    if (getAnnotation(method, ToXml.class) != null) {
       final String content = views.toXml(controllerMethodResult);
       try (final PrintWriter writer = tunnel.getResponseWriter()) {
         writer.print(content);
+      }
+      return;
+    }
+
+    if (getAnnotation(method, AsIs.class) != null) {
+      String resultStr;
+      if (controllerMethodResult == null) {
+        resultStr = "";
+      } else if (controllerMethodResult instanceof String) {
+        resultStr = (String) controllerMethodResult;
+      } else {
+        resultStr = controllerMethodResult.toString();
+      }
+      try (final PrintWriter writer = tunnel.getResponseWriter()) {
+        writer.print(resultStr);
       }
       return;
     }
