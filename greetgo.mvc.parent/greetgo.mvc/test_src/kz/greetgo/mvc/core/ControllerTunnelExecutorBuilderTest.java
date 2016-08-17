@@ -74,7 +74,7 @@ public class ControllerTunnelExecutorBuilderTest {
       calledReturnRedirect = true;
       //noinspection ThrowableResultOfMethodCallIgnored
       return Redirect.to(RETURN_REDIRECT_TO)
-          .addCookieStr(COOKIE_KEY1, COOKIE_VALUE1)
+          .addCookie(COOKIE_KEY1, COOKIE_VALUE1)
           .addCookie(COOKIE_KEY2, COOKIE_VALUE2)
           ;
     }
@@ -86,7 +86,7 @@ public class ControllerTunnelExecutorBuilderTest {
       calledThrowRedirect = true;
       //noinspection ThrowableResultOfMethodCallIgnored
       throw Redirect.to(THROW_REDIRECT_TO)
-          .addCookieStr(COOKIE_KEY1, COOKIE_VALUE1)
+          .addCookie(COOKIE_KEY1, COOKIE_VALUE1)
           .addCookie(COOKIE_KEY2, COOKIE_VALUE2)
           ;
     }
