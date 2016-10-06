@@ -59,7 +59,6 @@ public abstract class AbstractSecuritySource implements SecuritySource {
     return privateKey;
   }
 
-
   private SecureRandom random = null;
 
   @Override

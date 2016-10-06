@@ -1,5 +1,7 @@
 package kz.greetgo.mvc.security;
 
+import kz.greetgo.mvc.interfaces.MvcTrace;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -10,12 +12,13 @@ import java.util.List;
 
 public class SecurityCryptoBridge implements SecurityCrypto {
 
+  public static MvcTrace trace = null;
+
   private final SecuritySource securitySource;
 
   public SecurityCryptoBridge(SecuritySource securitySource) {
     this.securitySource = securitySource;
   }
-
 
   private static byte[] encryptBlock(byte[] bytes, SecuritySource securitySource) {
     try {
@@ -23,6 +26,7 @@ public class SecurityCryptoBridge implements SecurityCrypto {
       cipher.init(Cipher.ENCRYPT_MODE, securitySource.getPublicKey());
       return cipher.doFinal(bytes);
     } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+      if (trace != null) trace.trace("CP g5hg6v756v54", e);
       throw new RuntimeException(e);
     }
   }
@@ -35,8 +39,10 @@ public class SecurityCryptoBridge implements SecurityCrypto {
       return cipher.doFinal(encryptedBytes);
 
     } catch (BadPaddingException | IllegalBlockSizeException e) {
+      if (trace != null) trace.trace("CP beg5btne3j", e);
       return null;
     } catch (InvalidKeyException e) {
+      if (trace != null) trace.trace("CP geg3y5hbeh", e);
       throw new RuntimeException(e);
     }
   }
@@ -152,6 +158,7 @@ public class SecurityCryptoBridge implements SecurityCrypto {
     try (ObjectOutputStream oos = new ObjectOutputStream(bOut)) {
       oos.writeObject(encryptedData);
     } catch (IOException e) {
+      if (trace != null) trace.trace("CP qw3h54htjfi", e);
       throw new RuntimeException(e);
     }
 
@@ -171,6 +178,7 @@ public class SecurityCryptoBridge implements SecurityCrypto {
       return encryptedData.decryptAndGet(securitySource);
 
     } catch (IOException | ClassNotFoundException | ClassCastException e) {
+      if (trace != null) trace.trace("CP wbrjdftdshs", e);
       return null;
     }
 
@@ -189,6 +197,7 @@ public class SecurityCryptoBridge implements SecurityCrypto {
       return cipher.doFinal(hash1);
 
     } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+      if (trace != null) trace.trace("CP s2htvfyhdtew", e);
       throw new RuntimeException(e);
     }
   }
@@ -214,10 +223,12 @@ public class SecurityCryptoBridge implements SecurityCrypto {
       return true;
 
     } catch (BadPaddingException | IllegalBlockSizeException | ArrayIndexOutOfBoundsException e) {
+      if (trace != null) trace.trace("CP w48shr3434e", e);
 
       return false;
 
     } catch (InvalidKeyException e) {
+      if (trace != null) trace.trace("CP q23hrbwh4g5", e);
       throw new RuntimeException(e);
     }
   }
