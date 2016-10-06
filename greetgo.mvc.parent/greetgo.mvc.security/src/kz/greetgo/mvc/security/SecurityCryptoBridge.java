@@ -213,7 +213,7 @@ public class SecurityCryptoBridge implements SecurityCrypto {
 
       return true;
 
-    } catch (BadPaddingException | IllegalBlockSizeException e) {
+    } catch (BadPaddingException | IllegalBlockSizeException | ArrayIndexOutOfBoundsException e) {
 
       return false;
 
