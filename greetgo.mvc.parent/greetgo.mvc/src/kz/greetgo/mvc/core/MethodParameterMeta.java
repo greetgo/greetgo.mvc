@@ -1,17 +1,30 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.*;
+import kz.greetgo.mvc.annotations.Json;
+import kz.greetgo.mvc.annotations.Par;
+import kz.greetgo.mvc.annotations.ParCookie;
+import kz.greetgo.mvc.annotations.ParPath;
+import kz.greetgo.mvc.annotations.RequestInput;
 import kz.greetgo.mvc.errors.AsIsOnlyForString;
 import kz.greetgo.mvc.errors.CannotExtractParamValue;
+import kz.greetgo.mvc.errors.DoNotSetContentTypeAfterOut;
+import kz.greetgo.mvc.errors.DoNotSetFilenameAfterOut;
 import kz.greetgo.mvc.errors.IDoNotKnowHowToConvertRequestContentToType;
+import kz.greetgo.mvc.errors.IllegalCallSequence;
 import kz.greetgo.mvc.errors.NoAnnotationParInUploadParam;
-import kz.greetgo.mvc.interfaces.*;
+import kz.greetgo.mvc.interfaces.BinResponse;
+import kz.greetgo.mvc.interfaces.MappingResult;
+import kz.greetgo.mvc.interfaces.MethodParamExtractor;
+import kz.greetgo.mvc.interfaces.RequestTunnel;
+import kz.greetgo.mvc.interfaces.TunnelCookies;
+import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.util.CookieUtil;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -29,7 +42,7 @@ public class MethodParameterMeta {
     final Type[] genericParameterTypes = method.getGenericParameterTypes();
     for (int i = 0, C = genericParameterTypes.length; i < C; i++) {
       final MethodParameterMeta methodParameterMeta = new MethodParameterMeta(
-          i, method, genericParameterTypes[i], parameterAnnotations[i]
+        i, method, genericParameterTypes[i], parameterAnnotations[i]
       );
       extractorList.add(methodParameterMeta.createExtractor());
     }
@@ -88,95 +101,98 @@ public class MethodParameterMeta {
     if (Upload.class == genericParameterType) {
       if (parValue == null) throw new NoAnnotationParInUploadParam(parameterIndex, method);
 
-      return new MethodParamExtractor() {
-        @Override
-        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-          return tunnel.getUpload(parValue);
-        }
-      };
+      return (mappingResult, tunnel, model) -> tunnel.getUpload(parValue);
     }
 
     if (parValue != null) {
-      if (hasAnnotationJson) return new MethodParamExtractor() {
-        @Override
-        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) {
-          final String[] paramValues = tunnel.getParamValues(parValue);
-          return JsonUtil.convertStrsToType(paramValues, genericParameterType);
-        }
+      if (hasAnnotationJson) return (mappingResult, tunnel, model) -> {
+        final String[] paramValues = tunnel.getParamValues(parValue);
+        return JsonUtil.convertStrsToType(paramValues, genericParameterType);
       };
-      else return new MethodParamExtractor() {
-        @Override
-        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) {
-          final String[] paramValues = tunnel.getParamValues(parValue);
-          return MvcUtil.convertStrsToType(paramValues, genericParameterType);
-        }
+      else return (mappingResult, tunnel, model) -> {
+        final String[] paramValues = tunnel.getParamValues(parValue);
+        return MvcUtil.convertStrsToType(paramValues, genericParameterType);
       };
     }
 
-    if (pathParValue != null) return new MethodParamExtractor() {
-      @Override
-      public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) {
-        final String paramValue = mappingResult.getParam(pathParValue);
-        return MvcUtil.convertStrToType(paramValue, genericParameterType);
-      }
+    if (pathParValue != null) return (mappingResult, tunnel, model) -> {
+      final String paramValue = mappingResult.getParam(pathParValue);
+      return MvcUtil.convertStrToType(paramValue, genericParameterType);
     };
 
     if (parCookie != null) {
       if (parCookie.asIs() && String.class != genericParameterType) {
         throw new AsIsOnlyForString(parameterIndex, method);
       }
-      return new MethodParamExtractor() {
-        @Override
-        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-          final String str = tunnel.cookies().getFromRequest(parCookie.value());
-          if (parCookie.asIs()) return str;
-          return CookieUtil.strToObject(str);
-        }
+      return (mappingResult, tunnel, model) -> {
+        final String str = tunnel.cookies().getFromRequest(parCookie.value());
+        if (parCookie.asIs()) return str;
+        return CookieUtil.strToObject(str);
       };
     }
 
     if (requestInput) {
-      if (hasAnnotationJson) return new MethodParamExtractor() {
-        @Override
-        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-          String content = MvcUtil.readAll(tunnel.getRequestReader());
-          return JsonUtil.convertStrToType(content, genericParameterType);
-        }
+      if (hasAnnotationJson) return (mappingResult, tunnel, model) -> {
+        String content = MvcUtil.readAll(tunnel.getRequestReader());
+        return JsonUtil.convertStrToType(content, genericParameterType);
       };
-      else return new MethodParamExtractor() {
-        @Override
-        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-          return convertRequestContentToType(tunnel, genericParameterType);
-        }
-      };
+      else return (mappingResult, tunnel, model) -> convertRequestContentToType(tunnel, genericParameterType);
     }
 
-    if (MvcModel.class == genericParameterType) return new MethodParamExtractor() {
-      @Override
-      public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-        return model;
-      }
-    };
+    if (MvcModel.class == genericParameterType) return (mappingResult, tunnel, model) -> model;
 
-    if (RequestTunnel.class == genericParameterType) return new MethodParamExtractor() {
-      @Override
-      public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-        return tunnel;
-      }
-    };
+    if (RequestTunnel.class == genericParameterType) return (mappingResult, tunnel, model) -> tunnel;
 
-    if (TunnelCookies.class == genericParameterType) return new MethodParamExtractor() {
-      @Override
-      public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-        return tunnel.cookies();
-      }
-    };
+    if (TunnelCookies.class == genericParameterType) return (mappingResult, tunnel, model) -> tunnel.cookies();
 
     if (genericParameterType == RequestMethod.class) {
+      return (mappingResult, tunnel, model) -> tunnel.getRequestMethod();
+    }
+
+    if (genericParameterType == BinResponse.class) {
       return new MethodParamExtractor() {
         @Override
         public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
-          return tunnel.getRequestMethod();
+          return new BinResponse() {
+            String filename = null;
+
+            @Override
+            public void setFilename(String filename) {
+              if (out != null) throw new DoNotSetFilenameAfterOut();
+              this.filename = filename;
+              tunnel.setResponseHeader(
+                "Content-Disposition",
+                "attachment; filename=\"" + filename + "\""
+              );
+            }
+
+            @Override
+            public void setContentType(String contentType) {
+              if (out != null) throw new DoNotSetContentTypeAfterOut();
+              tunnel.setResponseContentType(contentType);
+            }
+
+            @Override
+            public void setContentTypeByFilenameExtension() {
+              if (filename == null) throw new IllegalCallSequence(
+                "setContentTypeByFilenameExtension must be called after call setFilename"
+              );
+              setContentType(MimeUtil.mimeTypeFromFilename(filename));
+            }
+
+            private OutputStream out = null;
+
+            @Override
+            public OutputStream out() {
+              if (out == null) out = tunnel.getResponseOutputStream();
+              return out;
+            }
+
+            @Override
+            public void flushBuffers() {
+              tunnel.flushBuffer();
+            }
+          };
         }
       };
     }
@@ -193,7 +209,7 @@ public class MethodParameterMeta {
   }
 
   private static Object convertRequestContentToParameterizedType(
-      RequestTunnel tunnel, ParameterizedType type
+    RequestTunnel tunnel, ParameterizedType type
   ) throws Exception {
     final Type rawType = type.getRawType();
 

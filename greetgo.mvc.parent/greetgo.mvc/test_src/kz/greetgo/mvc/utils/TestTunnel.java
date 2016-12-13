@@ -156,15 +156,18 @@ public class TestTunnel implements RequestTunnel {
     return beforeCompleteHeaders;
   }
 
-  boolean flushBuffersCalled = false;
+  public boolean flushBuffersCalled = false;
 
   @Override
   public void flushBuffer() {
     flushBuffersCalled = true;
   }
 
+  public String responseContentType = null;
+
   @Override
   public void setResponseContentType(String contentType) {
+    responseContentType = contentType;
   }
 
   @Override
@@ -177,9 +180,11 @@ public class TestTunnel implements RequestTunnel {
     throw new RuntimeException();
   }
 
+  public final Map<String, String> responseHeaders = new HashMap<>();
+
   @Override
   public void setResponseHeader(String headerName, String headerValue) {
-    throw new RuntimeException();
+    responseHeaders.put(headerName, headerValue);
   }
 
   @Override
