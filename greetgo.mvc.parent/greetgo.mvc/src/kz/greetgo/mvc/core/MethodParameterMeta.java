@@ -4,6 +4,7 @@ import kz.greetgo.mvc.annotations.Json;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.annotations.ParCookie;
 import kz.greetgo.mvc.annotations.ParPath;
+import kz.greetgo.mvc.annotations.ParamsTo;
 import kz.greetgo.mvc.annotations.RequestInput;
 import kz.greetgo.mvc.errors.AsIsOnlyForString;
 import kz.greetgo.mvc.errors.CannotExtractParamValue;
@@ -20,6 +21,11 @@ import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.util.CookieUtil;
+import kz.greetgo.mvc.util.JsonUtil;
+import kz.greetgo.mvc.util.MimeUtil;
+import kz.greetgo.mvc.util.MvcUtil;
+import kz.greetgo.mvc.util.setters.FieldSetters;
+import kz.greetgo.mvc.util.setters.FieldSettersStorage;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -72,6 +78,8 @@ public class MethodParameterMeta {
 
   private boolean hasAnnotationJson = false;
 
+  private ParamsTo paramsTo = null;
+
   private void prepareAnnotations() {
     for (Annotation annotation : parameterAnnotation) {
       if (annotation instanceof Par) {
@@ -92,6 +100,10 @@ public class MethodParameterMeta {
       }
       if (annotation instanceof Json) {
         hasAnnotationJson = true;
+        continue;
+      }
+      if (annotation instanceof ParamsTo) {
+        paramsTo = (ParamsTo) annotation;
         continue;
       }
     }
@@ -136,7 +148,26 @@ public class MethodParameterMeta {
         String content = MvcUtil.readAll(tunnel.getRequestReader());
         return JsonUtil.convertStrToType(content, genericParameterType);
       };
-      else return (mappingResult, tunnel, model) -> convertRequestContentToType(tunnel, genericParameterType);
+
+      return (mappingResult, tunnel, model) -> convertRequestContentToType(tunnel, genericParameterType);
+    }
+
+    if (paramsTo != null) {
+
+      Class<Object> parameterClass = MvcUtil.typeToClass(genericParameterType);
+      final FieldSetters fieldSetters = FieldSettersStorage.getFor(parameterClass);
+
+      return (mappingResult, tunnel, model) -> {
+
+        Object ret = parameterClass.newInstance();
+
+        for (String name : fieldSetters.names()) {
+          String[] values = tunnel.getParamValues(name);
+          if (values != null) fieldSetters.get(name).setFromStrs(ret, values);
+        }
+
+        return ret;
+      };
     }
 
     if (MvcModel.class == genericParameterType) return (mappingResult, tunnel, model) -> model;

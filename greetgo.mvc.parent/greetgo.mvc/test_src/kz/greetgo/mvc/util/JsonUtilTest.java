@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.core;
+package kz.greetgo.mvc.util;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -32,10 +32,10 @@ public class JsonUtilTest {
   @DataProvider
   public Object[][] convertStrsToType_client_DataSource() {
     return new Object[][]{
-        new Object[]{"{\"id\":\"id1\",\"name\":\"name1\"}", "left param"},
-        new Object[]{"[{\"id\":\"id1\",\"name\":\"name1\"},{\"id\":\"id2\",\"name\":\"name2\"}]", "left param"},
-        new Object[]{null, null},
-        new Object[]{"", null},
+      new Object[]{"{\"id\":\"id1\",\"name\":\"name1\"}", "left param"},
+      new Object[]{"[{\"id\":\"id1\",\"name\":\"name1\"},{\"id\":\"id2\",\"name\":\"name2\"}]", "left param"},
+      new Object[]{null, null},
+      new Object[]{"", null},
     };
   }
 

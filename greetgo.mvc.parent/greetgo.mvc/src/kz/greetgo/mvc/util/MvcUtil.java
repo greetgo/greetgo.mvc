@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.core;
+package kz.greetgo.mvc.util;
 
 import kz.greetgo.mvc.errors.CannotConvertToDate;
 import kz.greetgo.mvc.errors.IllegalChar;
@@ -11,7 +11,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.unmodifiableMap;
 
@@ -68,14 +75,25 @@ public class MvcUtil {
     return (int) amountBytesToLong(amountBytes);
   }
 
+  public static <T> Class<T> typeToClass(Type type) {
+    if (type instanceof Class<?>) return castType(type);
+    if (type instanceof ParameterizedType) return castType(((ParameterizedType) type).getRawType());
+    throw new IllegalArgumentException("Cannot convert type " + type + " to class");
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> Class<T> castType(Type type) {
+    return (Class<T>) type;
+  }
+
   private interface Converter {
     Object convert(String str);
   }
 
   private static final String[] SIMPLE_DATE_FORMATS = {
-      "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd",
-      "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy",
-      "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy",
+    "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd",
+    "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy",
+    "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy",
   };
 
   private static final Map<Class<?>, Converter> CONVERTERS;
@@ -223,7 +241,7 @@ public class MvcUtil {
     throw new IllegalArgumentException("Cannot convert str [[" + str + "]] to " + type);
   }
 
-  private static Collection createEmptyInstanceFor(Class<?> collectionType) {
+  public static Collection createEmptyInstanceFor(Class<?> collectionType) {
     if (List.class.isAssignableFrom(collectionType)) return new ArrayList();
     if (Set.class.isAssignableFrom(collectionType)) return new HashSet();
     throw new IllegalArgumentException("Cannot create collection empty instance for " + collectionType);

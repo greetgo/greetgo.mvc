@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.core;
+package kz.greetgo.mvc.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;

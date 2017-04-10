@@ -1,6 +1,7 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.interfaces.GetterLong;
+import kz.greetgo.mvc.util.MvcUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

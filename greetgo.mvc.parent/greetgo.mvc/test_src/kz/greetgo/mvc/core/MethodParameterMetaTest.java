@@ -4,7 +4,9 @@ import kz.greetgo.mvc.annotations.Json;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.annotations.ParCookie;
 import kz.greetgo.mvc.annotations.ParPath;
+import kz.greetgo.mvc.annotations.ParamsTo;
 import kz.greetgo.mvc.annotations.RequestInput;
+import kz.greetgo.mvc.annotations.SkipParameter;
 import kz.greetgo.mvc.errors.AsIsOnlyForString;
 import kz.greetgo.mvc.errors.DoNotSetContentTypeAfterOut;
 import kz.greetgo.mvc.errors.DoNotSetFilenameAfterOut;
@@ -21,7 +23,9 @@ import kz.greetgo.mvc.utils.TestTunnel;
 import kz.greetgo.mvc.utils.TestUpload;
 import kz.greetgo.mvc.utils.TestUtil;
 import kz.greetgo.util.RND;
+import org.fest.assertions.api.Assertions;
 import org.fest.assertions.data.MapEntry;
+import org.fest.util.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -34,6 +38,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -984,5 +989,150 @@ public class MethodParameterMetaTest {
     binResponse.out();
 
     binResponse.setFilename("asd");
+  }
+
+  public static class TestParamsDatesAcceptor {
+    public Date date1, date2, date3 = null;
+
+    @SkipParameter
+    public Date date4 = null, date6 = null;
+
+    private boolean date2SetterCalled = false;
+
+    @SuppressWarnings("unused")
+    public void setDate2(Date date2) {
+      this.date2 = date2;
+      date2SetterCalled = true;
+    }
+
+    @SuppressWarnings("unused")
+    @SkipParameter
+    public void setDate5(Date ignore) {
+      Assertions.fail("date5 must not be set because @SkipParameter");
+    }
+
+    public void asserts() {
+      assertThat(date2SetterCalled).describedAs("date2 must be set with setter").isTrue();
+    }
+
+    @SuppressWarnings("unused")
+    public void setDate6(Date date6) {
+      this.date6 = date6;
+    }
+  }
+
+  private class ForParamsToWithDates {
+    @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
+    public void forTest(@ParamsTo TestParamsDatesAcceptor argument) {
+    }
+  }
+
+  @Test
+  public void forParamsToWithDates() throws Exception {
+    final Method method = TestUtil.getMethod(ForParamsToWithDates.class, "forTest");
+
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    MethodParamExtractor e1 = ee.get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+
+    final Date date1 = RND.dateYears(-100, 0);
+    final SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    final String dateStr1 = sdf1.format(date1);
+    tunnel.setParam("date1", dateStr1, "left value");
+
+    final Date date2 = RND.dateYears(-100, 0);
+    final SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    final String dateStr2 = sdf2.format(date2);
+    tunnel.setParam("date2", dateStr2, "left value");
+
+    final Date date4 = RND.dateYears(-100, 0);
+    final SimpleDateFormat sdf4 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    final String dateStr4 = sdf4.format(date4);
+    tunnel.setParam("date4", dateStr4, "left value");
+    tunnel.setParam("date5", dateStr4, "left value");
+    tunnel.setParam("date6", dateStr4, "left value");
+
+    final Object actualArgument = e1.extract(null, tunnel, null);
+    assertThat(actualArgument).isInstanceOf(TestParamsDatesAcceptor.class);
+    TestParamsDatesAcceptor argument = (TestParamsDatesAcceptor) actualArgument;
+    argument.asserts();
+    assertThat(sdf1.format(argument.date1)).isEqualTo(dateStr1);
+    assertThat(sdf2.format(argument.date2)).isEqualTo(dateStr2);
+    assertThat(argument.date3).isNull();
+    assertThat(argument.date4).isNull();
+    assertThat(argument.date6).describedAs("date6 must be skipped because of annotation @SkipParameter").isNull();
+  }
+
+  public static class TestParamsStrsAcceptor {
+    public String str1, str2;
+
+    @SkipParameter
+    public String str3;
+    public String str4;
+    @SkipParameter
+    public String str5;
+
+    public List<String> strs1 = new ArrayList<>();
+
+    @SuppressWarnings("unused")
+    public void setStr2(String str2) {
+      this.str2 = str2 + " from setter";
+    }
+
+    @SuppressWarnings("unused")
+    @SkipParameter
+    public void setStr4(String str4) {
+      Assertions.fail("str4 must not be set because @SkipParameter");
+    }
+
+    @SuppressWarnings("unused")
+    public void setStr5(String str5) {
+      Assertions.fail("str5 must not be set because @SkipParameter");
+    }
+
+    @SuppressWarnings("unused")
+    public void setStr6(String str6) {
+      Assertions.fail("no str6 in parameters, and it must not be set");
+    }
+  }
+
+  private class ForParamsToWithStrs {
+    @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
+    public void forTest(@ParamsTo TestParamsStrsAcceptor argument) {
+    }
+  }
+
+  @Test
+  public void forParamsToWithStrs() throws Exception {
+    final Method method = TestUtil.getMethod(ForParamsToWithStrs.class, "forTest");
+
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    MethodParamExtractor e1 = ee.get(0);
+
+    TestTunnel tunnel = new TestTunnel();
+
+    final String str1 = RND.str(10);
+    tunnel.setParam("str1", str1, "left value");
+
+    final String str2 = RND.str(10);
+    tunnel.setParam("str2", str2, "left value");
+
+    tunnel.setParam("str3", "asd");
+    tunnel.setParam("str4", "asd");
+    tunnel.setParam("str5", "asd");
+
+    final String strs1_1 = RND.str(10), strs1_2 = RND.str(10), strs1_3 = RND.str(10);
+    tunnel.setParam("strs1", strs1_1, strs1_2, strs1_3);
+
+    final Object actualArgument = e1.extract(null, tunnel, null);
+    assertThat(actualArgument).isInstanceOf(TestParamsStrsAcceptor.class);
+    TestParamsStrsAcceptor argument = (TestParamsStrsAcceptor) actualArgument;
+    assertThat(argument.str1).isEqualTo(str1);
+    assertThat(argument.str2).isEqualTo(str2 + " from setter");
+    assertThat(argument.str3).isNull();
+    assertThat(argument.str4).isNull();
+    assertThat(argument.str5).isNull();
+    assertThat(argument.strs1).isEqualTo(Lists.newArrayList(strs1_1, strs1_2, strs1_3));
   }
 }

@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.core;
+package kz.greetgo.mvc.util;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
