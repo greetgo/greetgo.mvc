@@ -7,9 +7,14 @@ import kz.greetgo.mvc.core.ControllerTunnelExecutorBuilder;
 import kz.greetgo.mvc.core.ExecutorListHandler;
 import kz.greetgo.mvc.core.TunnelHandlerList;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
+import kz.greetgo.mvc.security.SecurityCrypto;
+import kz.greetgo.mvc.security.SecurityCryptoBridge;
+import kz.greetgo.mvc.security.SecurityProvider;
+import kz.greetgo.mvc.security.SecuritySource;
+import kz.greetgo.mvc.security.SecuritySourceOnFiles;
+import kz.greetgo.mvc.security.SecurityTunnelWrapper;
 import kz.greetgo.mvc.utils.ProbeViews;
 import kz.greetgo.mvc.utils.UserDetailsStorage;
-import kz.greetgo.mvc.security.*;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -54,7 +59,7 @@ public class SecurityJettyServerLauncher {
     {
       final ProbeViews views = new ProbeViews();
       LoginController loginController = new LoginController(userDetailsStorage);
-      final List<TunnelExecutorGetter> executorList = ControllerTunnelExecutorBuilder.build(loginController, views);
+      final List<TunnelExecutorGetter> executorList = ControllerTunnelExecutorBuilder.build(loginController, views, null);
       tunnelHandlerList.list.add(new ExecutorListHandler(executorList));
     }
 

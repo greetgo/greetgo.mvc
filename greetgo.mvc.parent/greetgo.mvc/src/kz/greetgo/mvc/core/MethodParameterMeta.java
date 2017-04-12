@@ -4,6 +4,7 @@ import kz.greetgo.mvc.annotations.Json;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.annotations.ParCookie;
 import kz.greetgo.mvc.annotations.ParPath;
+import kz.greetgo.mvc.annotations.ParSession;
 import kz.greetgo.mvc.annotations.ParamsTo;
 import kz.greetgo.mvc.annotations.RequestInput;
 import kz.greetgo.mvc.errors.AsIsOnlyForString;
@@ -17,6 +18,7 @@ import kz.greetgo.mvc.interfaces.BinResponse;
 import kz.greetgo.mvc.interfaces.MappingResult;
 import kz.greetgo.mvc.interfaces.MethodParamExtractor;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
+import kz.greetgo.mvc.interfaces.SessionParameterGetter;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.MvcModel;
@@ -41,14 +43,14 @@ import java.util.List;
 
 public class MethodParameterMeta {
 
-  public static List<MethodParamExtractor> create(Method method) {
+  public static List<MethodParamExtractor> create(Method method, SessionParameterGetter sessionParameterGetter) {
     final List<MethodParamExtractor> extractorList = new ArrayList<>();
 
     final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
     final Type[] genericParameterTypes = method.getGenericParameterTypes();
     for (int i = 0, C = genericParameterTypes.length; i < C; i++) {
       final MethodParameterMeta methodParameterMeta = new MethodParameterMeta(
-        i, method, genericParameterTypes[i], parameterAnnotations[i]
+        i, method, genericParameterTypes[i], parameterAnnotations[i], sessionParameterGetter
       );
       extractorList.add(methodParameterMeta.createExtractor());
     }
@@ -60,34 +62,43 @@ public class MethodParameterMeta {
   private final Method method;
   private final Type genericParameterType;
   private final Annotation[] parameterAnnotation;
+  private final SessionParameterGetter sessionParameterGetter;
 
   private MethodParameterMeta(int parameterIndex, Method method,
-                              Type genericParameterType, Annotation[] parameterAnnotation) {
+                              Type genericParameterType, Annotation[] parameterAnnotation,
+                              SessionParameterGetter sessionParameterGetter) {
     this.parameterIndex = parameterIndex;
     this.method = method;
     this.genericParameterType = genericParameterType;
     this.parameterAnnotation = parameterAnnotation;
+    this.sessionParameterGetter = sessionParameterGetter;
     prepareAnnotations();
   }
 
-  private String parValue = null, pathParValue = null;
+  private Par par;
+  private ParPath parPath;
+  private ParSession parSession;
 
   private boolean requestInput = false;
 
   private ParCookie parCookie = null;
 
-  private boolean hasAnnotationJson = false;
+  private Json annotationJson = null;
 
   private ParamsTo paramsTo = null;
 
   private void prepareAnnotations() {
     for (Annotation annotation : parameterAnnotation) {
       if (annotation instanceof Par) {
-        parValue = ((Par) annotation).value();
+        par = (Par) annotation;
+        continue;
+      }
+      if (annotation instanceof ParSession) {
+        parSession = (ParSession) annotation;
         continue;
       }
       if (annotation instanceof ParPath) {
-        pathParValue = ((ParPath) annotation).value();
+        parPath = (ParPath) annotation;
         continue;
       }
       if (annotation instanceof RequestInput) {
@@ -99,7 +110,7 @@ public class MethodParameterMeta {
         continue;
       }
       if (annotation instanceof Json) {
-        hasAnnotationJson = true;
+        annotationJson = (Json) annotation;
         continue;
       }
       if (annotation instanceof ParamsTo) {
@@ -111,24 +122,24 @@ public class MethodParameterMeta {
 
   private MethodParamExtractor createExtractor() {
     if (Upload.class == genericParameterType) {
-      if (parValue == null) throw new NoAnnotationParInUploadParam(parameterIndex, method);
+      if (par == null) throw new NoAnnotationParInUploadParam(parameterIndex, method);
 
-      return (mappingResult, tunnel, model) -> tunnel.getUpload(parValue);
+      return (mappingResult, tunnel, model) -> tunnel.getUpload(par.value());
     }
 
-    if (parValue != null) {
-      if (hasAnnotationJson) return (mappingResult, tunnel, model) -> {
-        final String[] paramValues = tunnel.getParamValues(parValue);
+    if (par != null) {
+      if (annotationJson != null) return (mappingResult, tunnel, model) -> {
+        final String[] paramValues = tunnel.getParamValues(par.value());
         return JsonUtil.convertStrsToType(paramValues, genericParameterType);
       };
       else return (mappingResult, tunnel, model) -> {
-        final String[] paramValues = tunnel.getParamValues(parValue);
+        final String[] paramValues = tunnel.getParamValues(par.value());
         return MvcUtil.convertStrsToType(paramValues, genericParameterType);
       };
     }
 
-    if (pathParValue != null) return (mappingResult, tunnel, model) -> {
-      final String paramValue = mappingResult.getParam(pathParValue);
+    if (parPath != null) return (mappingResult, tunnel, model) -> {
+      final String paramValue = mappingResult.getParam(parPath.value());
       return MvcUtil.convertStrToType(paramValue, genericParameterType);
     };
 
@@ -143,8 +154,29 @@ public class MethodParameterMeta {
       };
     }
 
+    if (parSession != null) {
+      if (sessionParameterGetter == null) throw new NullPointerException("sessionParameterGetter == null");
+      final SessionParameterGetter.ParameterContext context = new SessionParameterGetter.ParameterContext() {
+        @Override
+        public String parameterName() {
+          return parSession.value();
+        }
+
+        @Override
+        public Type expectedReturnType() {
+          return genericParameterType;
+        }
+
+        @Override
+        public Json json() {
+          return annotationJson;
+        }
+      };
+      return (mappingResult, tunnel, model) -> sessionParameterGetter.getSessionParameter(context, tunnel);
+    }
+
     if (requestInput) {
-      if (hasAnnotationJson) return (mappingResult, tunnel, model) -> {
+      if (annotationJson != null) return (mappingResult, tunnel, model) -> {
         String content = MvcUtil.readAll(tunnel.getRequestReader());
         return JsonUtil.convertStrToType(content, genericParameterType);
       };

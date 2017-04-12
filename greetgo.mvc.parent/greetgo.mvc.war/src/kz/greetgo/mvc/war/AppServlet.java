@@ -3,19 +3,28 @@ package kz.greetgo.mvc.war;
 import kz.greetgo.mvc.core.ControllerTunnelExecutorBuilder;
 import kz.greetgo.mvc.core.FileResourceTunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
+import kz.greetgo.mvc.interfaces.SessionParameterGetter;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.UploadInfo;
 
-import javax.servlet.*;
+import javax.servlet.GenericServlet;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AppServlet extends GenericServlet {
 
-  protected abstract FileResourceTunnelExecutorGetter getFileResourceTunnelExecutorGetter();
+  protected FileResourceTunnelExecutorGetter getFileResourceTunnelExecutorGetter() {
+    return null;
+  }
 
   protected abstract List<Object> getControllerList();
 
@@ -23,16 +32,22 @@ public abstract class AppServlet extends GenericServlet {
 
   protected abstract UploadInfo getUploadInfo();
 
+  protected SessionParameterGetter getSessionParameterGetter() {
+    return null;
+  }
+
   protected final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
 
   protected String getAddingServletName() {
     return "appServlet";
   }
 
+  @SuppressWarnings("SameParameterValue")
   public void register(ServletContext ctx, String mappingBase) {
     final Views views = getViews();
+    final SessionParameterGetter sessionParameterGetter = getSessionParameterGetter();
     for (Object controller : getControllerList()) {
-      tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
+      tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views, sessionParameterGetter));
     }
 
     final ServletRegistration.Dynamic registration = ctx.addServlet(getAddingServletName(), this);
@@ -45,7 +60,7 @@ public abstract class AppServlet extends GenericServlet {
       UploadInfo ui = getUploadInfo();
       if (ui != null) {
         registration.setMultipartConfig(new MultipartConfigElement(ui.location, ui.maxFileSize,
-            ui.maxRequestSize, ui.fileSizeThreshold));
+          ui.maxRequestSize, ui.fileSizeThreshold));
       }
     }
 
@@ -78,10 +93,15 @@ public abstract class AppServlet extends GenericServlet {
 
     final TunnelExecutor te = getTunnelExecutor(tunnel);
 
-    if (te == null) throw new RuntimeException("Unknown target = " + tunnel.getTarget());
+    if (te == null) {
+      missedTarget(tunnel);
+    } else {
+      te.execute();
+    }
+  }
 
-    te.execute();
-
+  protected void missedTarget(RequestTunnel tunnel) {
+    getViews().missedView(tunnel);
   }
 
   private RequestTunnel getTunnel(ServletRequest req, ServletResponse res) {

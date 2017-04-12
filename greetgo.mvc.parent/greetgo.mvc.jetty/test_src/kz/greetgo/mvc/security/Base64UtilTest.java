@@ -68,6 +68,7 @@ public class Base64UtilTest {
     //
     //
 
+    //noinspection ConstantConditions
     assertThat(bytes).isNull();
   }
 
@@ -79,7 +80,7 @@ public class Base64UtilTest {
     //
     //
 
+    //noinspection ConstantConditions
     assertThat(str).isNull();
   }
-
 }

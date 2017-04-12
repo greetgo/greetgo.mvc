@@ -15,7 +15,7 @@ public class Base64Util {
       if (ret == null) return null;
       if (ret.length == 0) return null;
       return ret;
-    } catch (ArrayIndexOutOfBoundsException e) {
+    } catch (Exception e) {
       return null;
     }
   }

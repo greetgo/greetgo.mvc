@@ -2,10 +2,9 @@ package kz.greetgo.mvc.utils;
 
 import kz.greetgo.mvc.interfaces.MappingResult;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
-import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.interfaces.Views;
+import kz.greetgo.mvc.model.MvcModelData;
 
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 public class TestViews implements Views {
@@ -20,11 +19,11 @@ public class TestViews implements Views {
   }
 
   public Object returnValue = null;
-  public MvcModel model = null;
+  public MvcModelData model = null;
   public MappingResult mappingResult = null;
 
   @Override
-  public void defaultView(RequestTunnel tunnel, Object returnValue, MvcModel model, MappingResult mappingResult) {
+  public void defaultView(RequestTunnel tunnel, Object returnValue, MvcModelData model, MappingResult mappingResult) {
 
     this.returnValue = returnValue;
     this.model = model;

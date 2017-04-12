@@ -1,8 +1,19 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.*;
-import kz.greetgo.mvc.interfaces.*;
-import kz.greetgo.mvc.model.DefaultMvcModel;
+import kz.greetgo.mvc.annotations.AsIs;
+import kz.greetgo.mvc.annotations.Mapping;
+import kz.greetgo.mvc.annotations.MethodFilter;
+import kz.greetgo.mvc.annotations.ToJson;
+import kz.greetgo.mvc.annotations.ToXml;
+import kz.greetgo.mvc.interfaces.MappingResult;
+import kz.greetgo.mvc.interfaces.MethodParamExtractor;
+import kz.greetgo.mvc.interfaces.RequestTunnel;
+import kz.greetgo.mvc.interfaces.SessionParameterGetter;
+import kz.greetgo.mvc.interfaces.TunnelCookies;
+import kz.greetgo.mvc.interfaces.TunnelExecutor;
+import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
+import kz.greetgo.mvc.interfaces.Views;
+import kz.greetgo.mvc.model.MvcModelData;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.model.UploadInfo;
@@ -17,8 +28,8 @@ import java.util.Map;
 import static kz.greetgo.util.ServerUtil.getAnnotation;
 
 public class ControllerTunnelExecutorBuilder {
-  public static List<TunnelExecutorGetter> build(Object controller, Views views) {
-    final ControllerTunnelExecutorBuilder builder = new ControllerTunnelExecutorBuilder(controller, views);
+  public static List<TunnelExecutorGetter> build(Object controller, Views views, SessionParameterGetter sessionParameterGetter) {
+    final ControllerTunnelExecutorBuilder builder = new ControllerTunnelExecutorBuilder(controller, views, sessionParameterGetter);
 
     builder.build();
 
@@ -31,10 +42,12 @@ public class ControllerTunnelExecutorBuilder {
   final List<TunnelExecutorGetter> result = new ArrayList<>();
 
   final Class<?> controllerClass;
+  private final SessionParameterGetter sessionParameterGetter;
 
-  private ControllerTunnelExecutorBuilder(Object controller, Views views) {
+  private ControllerTunnelExecutorBuilder(Object controller, Views views, SessionParameterGetter sessionParameterGetter) {
     this.controller = controller;
     this.views = views;
+    this.sessionParameterGetter = sessionParameterGetter;
 
     controllerClass = controller.getClass();
   }
@@ -65,9 +78,9 @@ public class ControllerTunnelExecutorBuilder {
     localUploadInfoGetter.assembleAnnotationFromMethod(method);
 
     final TargetMapper targetMapper = new TargetMapper
-        (parentMapping + mapping.value(), method.getAnnotation(MethodFilter.class));
+      (parentMapping + mapping.value(), method.getAnnotation(MethodFilter.class));
 
-    final List<MethodParamExtractor> extractorList = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> extractorList = MethodParameterMeta.create(method, sessionParameterGetter);
 
     result.add(new TunnelExecutorGetter() {
       @Override
@@ -85,7 +98,7 @@ public class ControllerTunnelExecutorBuilder {
           public void execute() {
             try {
 
-              DefaultMvcModel model = new DefaultMvcModel();
+              MvcModelData model = new MvcModelData();
 
               Object[] paramValues = new Object[extractorList.size()];
               for (int i = 0, n = extractorList.size(); i < n; i++) {
@@ -113,16 +126,16 @@ public class ControllerTunnelExecutorBuilder {
                 }
               }
 
-              e.printStackTrace();
-
-              {
-
+              if (views != null) {
                 try {
-                  if (views != null) views.errorView(tunnel, tunnel.getTarget(), e);
+                  views.errorView(tunnel, tunnel.getTarget(), e);
                 } catch (Exception e1) {
                   throw new RuntimeException(e1);
                 }
-
+              } else if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+              } else {
+                throw new RuntimeException(e);
               }
 
             }
@@ -146,7 +159,7 @@ public class ControllerTunnelExecutorBuilder {
   }
 
 
-  private void executeView(Object controllerMethodResult, MvcModel model,
+  private void executeView(Object controllerMethodResult, MvcModelData model,
                            RequestTunnel tunnel, MappingResult mappingResult,
                            Method method) throws Exception {
 
@@ -188,8 +201,6 @@ public class ControllerTunnelExecutorBuilder {
       }
       return;
     }
-
-    if (controllerMethodResult == null) return;
 
     views.defaultView(tunnel, controllerMethodResult, model, mappingResult);
   }

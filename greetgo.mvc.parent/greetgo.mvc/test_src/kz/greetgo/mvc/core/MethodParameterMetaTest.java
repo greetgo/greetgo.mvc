@@ -4,6 +4,7 @@ import kz.greetgo.mvc.annotations.Json;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.annotations.ParCookie;
 import kz.greetgo.mvc.annotations.ParPath;
+import kz.greetgo.mvc.annotations.ParSession;
 import kz.greetgo.mvc.annotations.ParamsTo;
 import kz.greetgo.mvc.annotations.RequestInput;
 import kz.greetgo.mvc.annotations.SkipParameter;
@@ -15,7 +16,7 @@ import kz.greetgo.mvc.interfaces.MethodParamExtractor;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
-import kz.greetgo.mvc.model.DefaultMvcModel;
+import kz.greetgo.mvc.model.MvcModelData;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.util.CookieUtil;
 import kz.greetgo.mvc.utils.TestMappingResult;
@@ -58,7 +59,7 @@ public class MethodParameterMetaTest {
   public void strRequestParam() throws Exception {
     final Method method = TestUtil.getMethod(ForStrRequestParam.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     final TestMappingResult catchResult = new TestMappingResult();
 
@@ -84,7 +85,7 @@ public class MethodParameterMetaTest {
   public void longRequestParam() throws Exception {
     final Method method = TestUtil.getMethod(ForLongRequestParam.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e1 = ee.get(0);
     MethodParamExtractor e2 = ee.get(1);
 
@@ -118,7 +119,7 @@ public class MethodParameterMetaTest {
   public void intRequestParam() throws Exception {
     final Method method = TestUtil.getMethod(ForIntRequestParam.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e1 = ee.get(0);
     MethodParamExtractor e2 = ee.get(1);
 
@@ -166,7 +167,7 @@ public class MethodParameterMetaTest {
   public void dateRequestParam(String sdfFormat) throws Exception {
     final Method method = TestUtil.getMethod(ForDateRequestParam.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e1 = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -198,7 +199,7 @@ public class MethodParameterMetaTest {
   public void listRequestParam() throws Exception {
     final Method method = TestUtil.getMethod(ForStrListRequestParam.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -236,7 +237,7 @@ public class MethodParameterMetaTest {
   public void setRequestParam() throws Exception {
     final Method method = TestUtil.getMethod(ForStrSetRequestParam.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -277,7 +278,7 @@ public class MethodParameterMetaTest {
   public void forJsonStrRequestParam_ClientList_goList() throws Exception {
     final Method method = TestUtil.getMethod(ForJsonStrRequestParam_ClientList.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     final TestMappingResult catchResult = new TestMappingResult();
 
@@ -307,7 +308,7 @@ public class MethodParameterMetaTest {
   public void forJsonStrRequestParam_ClientList_goOne() throws Exception {
     final Method method = TestUtil.getMethod(ForJsonStrRequestParam_ClientList.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     final TestMappingResult catchResult = new TestMappingResult();
 
@@ -346,7 +347,7 @@ public class MethodParameterMetaTest {
   public void forJsonStrRequestParam_Client(String paramValue) throws Exception {
     final Method method = TestUtil.getMethod(ForJsonStrRequestParam_Client.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     final TestMappingResult catchResult = new TestMappingResult();
 
@@ -376,7 +377,7 @@ public class MethodParameterMetaTest {
   public void strPathParam() throws Exception {
     final Method method = TestUtil.getMethod(ForStrPathParam.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     final TestMappingResult catchResult = new TestMappingResult();
 
@@ -400,7 +401,7 @@ public class MethodParameterMetaTest {
   public void requestInput_String() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_String.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
     tunnel.forGetRequestReader = RND.str(10);
@@ -429,7 +430,7 @@ public class MethodParameterMetaTest {
   public void requestInput_json_client(String requestContent) throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_Json_Client.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
     tunnel.forGetRequestReader = requestContent;
@@ -447,7 +448,7 @@ public class MethodParameterMetaTest {
   public void requestInput_json_client_noRequestContent() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_Json_Client.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
     tunnel.forGetRequestReader = "";
@@ -468,7 +469,7 @@ public class MethodParameterMetaTest {
   public void requestInput_json_listClient() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_Json_ListClient.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
     tunnel.forGetRequestReader = "[{\"id\":\"id1\",\"name\":\"name1\"},{\"id\":\"id2\",\"name\":\"name2\"}]";
@@ -490,7 +491,7 @@ public class MethodParameterMetaTest {
   public void requestInput_json_listClient_NoRequestContent() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_Json_ListClient.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
     tunnel.forGetRequestReader = "";
@@ -515,7 +516,7 @@ public class MethodParameterMetaTest {
   public void requestInput_StringList() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_StringList.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     String line1 = RND.str(10);
     String line2 = RND.str(10);
@@ -543,7 +544,7 @@ public class MethodParameterMetaTest {
   public void requestInput_byteArray() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_byteArray.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
     tunnel.forGetRequestInputStream = RND.byteArray(100);
@@ -566,7 +567,7 @@ public class MethodParameterMetaTest {
   public void requestInput_InputStream() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_InputStream.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
     tunnel.forGetRequestInputStream = RND.byteArray(100);
@@ -611,7 +612,7 @@ public class MethodParameterMetaTest {
   @Test(dataProvider = "methodsIn_ForRequestInput_BufferedReader")
   public void requestInput_BufferedReader(String methodName) throws Exception {
     final Method method1 = TestUtil.getMethod(ForRequestInput_BufferedReader.class, methodName);
-    final MethodParamExtractor e1 = MethodParameterMeta.create(method1).get(0);
+    final MethodParamExtractor e1 = MethodParameterMeta.create(method1, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
     tunnel.forGetRequestReader = RND.str(100);
@@ -647,7 +648,7 @@ public class MethodParameterMetaTest {
   public void requestInput_RequestTunnel() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestInput_RequestTunnel.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
 
@@ -669,7 +670,7 @@ public class MethodParameterMetaTest {
   public void nakedRequestTunnel() throws Exception {
     final Method method = TestUtil.getMethod(NakedRequestTunnel.class, "forTest");
 
-    final MethodParamExtractor e = MethodParameterMeta.create(method).get(0);
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
     TestTunnel tunnel = new TestTunnel();
 
@@ -691,10 +692,10 @@ public class MethodParameterMetaTest {
   public void mvcModel() throws Exception {
     final Method method = TestUtil.getMethod(ForMvcModel.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     final MethodParamExtractor e = ee.get(0);
 
-    DefaultMvcModel model = new DefaultMvcModel();
+    MvcModelData model = new MvcModelData();
 
     final Object actualParamValue = e.extract(null, null, model);
 
@@ -712,7 +713,7 @@ public class MethodParameterMetaTest {
   public void upload() throws Exception {
     final Method method = TestUtil.getMethod(ForUpload.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     final MethodParamExtractor e = ee.get(0);
 
     TestUpload abra = new TestUpload("abra");
@@ -738,7 +739,7 @@ public class MethodParameterMetaTest {
   public void tunnelCookies() throws Exception {
     final Method method = TestUtil.getMethod(ForTunnelCookies.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     final MethodParamExtractor e = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -782,7 +783,7 @@ public class MethodParameterMetaTest {
   public void forParCookie_str() throws Exception {
     final Method method = TestUtil.getMethod(ForParCookie.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -812,7 +813,7 @@ public class MethodParameterMetaTest {
   public void forParCookie_asIs() throws Exception {
     final Method method = TestUtil.getMethod(ForParCookie_asIs.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -855,7 +856,7 @@ public class MethodParameterMetaTest {
   public void forParCookie_SomeObject() throws Exception {
     final Method method = TestUtil.getMethod(ForParCookie_SomeObject.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
     SomeObject original = new SomeObject();
@@ -888,7 +889,7 @@ public class MethodParameterMetaTest {
   public void forParCookie_AsIsOnlyForString() throws Exception {
     final Method method = TestUtil.getMethod(ForParCookie_AsIsOnlyForString.class, "forTest");
 
-    MethodParameterMeta.create(method);
+    MethodParameterMeta.create(method, null);
   }
 
   private class ForRequestMethod {
@@ -901,7 +902,7 @@ public class MethodParameterMetaTest {
   public void forRequestMethod() throws Exception {
     final Method method = TestUtil.getMethod(ForRequestMethod.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -923,7 +924,7 @@ public class MethodParameterMetaTest {
   public void forBinResponse() throws Exception {
     final Method method = TestUtil.getMethod(ForBinResponse.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -955,7 +956,7 @@ public class MethodParameterMetaTest {
   public void forBinResponse_DoNotSetContentTypeAfterOut() throws Exception {
     final Method method = TestUtil.getMethod(ForBinResponse.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -975,7 +976,7 @@ public class MethodParameterMetaTest {
   public void forBinResponse_DoNotSetFilenameTypeAfterOut() throws Exception {
     final Method method = TestUtil.getMethod(ForBinResponse.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -1031,7 +1032,7 @@ public class MethodParameterMetaTest {
   public void forParamsToWithDates() throws Exception {
     final Method method = TestUtil.getMethod(ForParamsToWithDates.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e1 = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -1107,7 +1108,7 @@ public class MethodParameterMetaTest {
   public void forParamsToWithStrs() throws Exception {
     final Method method = TestUtil.getMethod(ForParamsToWithStrs.class, "forTest");
 
-    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method);
+    final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e1 = ee.get(0);
 
     TestTunnel tunnel = new TestTunnel();
@@ -1134,5 +1135,60 @@ public class MethodParameterMetaTest {
     assertThat(argument.str4).isNull();
     assertThat(argument.str5).isNull();
     assertThat(argument.strs1).isEqualTo(Lists.newArrayList(strs1_1, strs1_2, strs1_3));
+  }
+
+  class ForParSession {
+    @SuppressWarnings({"unused", "EmptyMethod"})
+    public void forTest(@ParSession("strParamAsd") String strParam) {
+    }
+  }
+
+  @Test
+  public void parSession() throws Exception {
+    final Method method = TestUtil.getMethod(ForParSession.class, "forTest");
+
+    final String paramValue = RND.str(10);
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method, (context, tunnel) -> {
+      assertThat(context.expectedReturnType()).isEqualTo(String.class);
+      assertThat(context.json()).isNull();
+      assertThat(context.parameterName()).isEqualTo("strParamAsd");
+      return paramValue;
+    }).get(0);
+
+    final TestMappingResult catchResult = new TestMappingResult();
+
+    TestTunnel tunnel = new TestTunnel();
+
+    final Object actualParamValue = e.extract(catchResult, tunnel, null);
+
+    assertThat(actualParamValue).isEqualTo(paramValue);
+  }
+
+  class ForParSessionWithJson {
+    @SuppressWarnings({"unused", "EmptyMethod"})
+    public void forTest(@ParSession("strParamHello") @Json String strParam) {
+    }
+  }
+
+  @Test
+  public void parSessionWithJson() throws Exception {
+    final Method method = TestUtil.getMethod(ForParSessionWithJson.class, "forTest");
+
+    final String paramValue = RND.str(10);
+
+    TestTunnel tunnel = new TestTunnel();
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method, (context, handlerTunnel) -> {
+      assertThat(context.expectedReturnType()).isEqualTo(String.class);
+      assertThat(context.json()).isNotNull();
+      assertThat(context.parameterName()).isEqualTo("strParamHello");
+      assertThat(handlerTunnel).isSameAs(tunnel);
+      return paramValue;
+    }).get(0);
+
+    final Object actualParamValue = e.extract(null, tunnel, null);
+
+    assertThat(actualParamValue).isSameAs(paramValue);
   }
 }

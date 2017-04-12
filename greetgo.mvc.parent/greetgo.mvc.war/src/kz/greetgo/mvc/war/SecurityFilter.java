@@ -46,21 +46,18 @@ public abstract class SecurityFilter implements Filter {
   public void doFilter(final ServletRequest request, final ServletResponse response,
                        final FilterChain chain) throws IOException, ServletException {
 
-    if (trace != null) trace.trace("SF hewjbds344h");
+    if (trace != null) trace.trace("SF hew3jbd6s344h");
 
     final WarRequestTunnel tunnel = new WarRequestTunnel(request, response);
 
-    final TunnelHandler chainHandler = new TunnelHandler() {
-      @Override
-      public void handleTunnel(RequestTunnel tunnel) {
-        try {
-          if (trace != null) trace.trace("SF kdmsdeurt");
-          request.setAttribute(ATTRIBUTE_TUNNEL, tunnel);
-          chain.doFilter(request, response);
-        } catch (ServletException | IOException e) {
-          if (trace != null) trace.trace("SF gdsvghewg", e);
-          throw new ExceptionWrapper(e);
-        }
+    final TunnelHandler chainHandler = handlerTunnel -> {
+      try {
+        if (trace != null) trace.trace("SF kdm4sde1urt");
+        request.setAttribute(ATTRIBUTE_TUNNEL, handlerTunnel);
+        chain.doFilter(request, response);
+      } catch (ServletException | IOException e) {
+        if (trace != null) trace.trace("SF gds5vgh4ewg", e);
+        throw new ExceptionWrapper(e);
       }
     };
 
@@ -70,7 +67,7 @@ public abstract class SecurityFilter implements Filter {
     try {
       stw.handleTunnel(tunnel);
     } catch (ExceptionWrapper e) {
-      if (trace != null) trace.trace("SF dbhsbewr456e", e);
+      if (trace != null) trace.trace("SF dbh1sbe2wr456e", e);
 
       if (e.wrappedException instanceof IOException) throw (IOException) e.wrappedException;
       if (e.wrappedException instanceof ServletException) throw (ServletException) e.wrappedException;
