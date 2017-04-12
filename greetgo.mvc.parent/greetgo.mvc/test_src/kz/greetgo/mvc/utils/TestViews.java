@@ -31,7 +31,6 @@ public class TestViews implements Views {
 
     try (PrintStream pr = new PrintStream(tunnel.getResponseOutputStream(), false, "UTF-8")) {
       pr.print("view of " + returnValue);
-      pr.flush();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

@@ -14,7 +14,6 @@ import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.MvcModelData;
-import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.mvc.util.MvcUtil;
@@ -163,13 +162,14 @@ public class ControllerTunnelExecutorBuilder {
                            RequestTunnel tunnel, MappingResult mappingResult,
                            Method method) throws Exception {
 
+    if (model.statusCode != null) tunnel.setResponseStatus(model.statusCode);
+
     if (controllerMethodResult instanceof Redirect) {
       Redirect redirect = (Redirect) controllerMethodResult;
       copyCookies(redirect, tunnel.cookies());
       tunnel.sendRedirect(redirect.reference);
       return;
     }
-
 
     if (getAnnotation(method, ToJson.class) != null) {
       final String content = views.toJson(controllerMethodResult);

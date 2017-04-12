@@ -10,6 +10,13 @@ public class MvcModelData implements MvcModel {
     data.put(name, value);
   }
 
+  public Integer statusCode = null;
+
+  @Override
+  public void setStatus(int statusCode) {
+    this.statusCode = statusCode;
+  }
+
   @Override
   public String toString() {
     return data.toString();

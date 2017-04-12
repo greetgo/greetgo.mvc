@@ -175,9 +175,11 @@ public class TestTunnel implements RequestTunnel {
     throw new RuntimeException();
   }
 
+  public Integer responseStatus = null;
+
   @Override
   public void setResponseStatus(int statusCode) {
-    throw new RuntimeException();
+    responseStatus = statusCode;
   }
 
   public final Map<String, String> responseHeaders = new HashMap<>();
