@@ -161,7 +161,7 @@ public class ControllerTunnelExecutorBuilder {
     }
 
     if (getAnnotation(method, ToJson.class) != null) {
-      final String content = views.toJson(controllerMethodResult, tunnel);
+      final String content = views.toJson(controllerMethodResult, tunnel, method);
       try (final PrintWriter writer = tunnel.getResponseWriter()) {
         writer.print(content);
       }
@@ -169,7 +169,7 @@ public class ControllerTunnelExecutorBuilder {
     }
 
     if (getAnnotation(method, ToXml.class) != null) {
-      final String content = views.toXml(controllerMethodResult, tunnel);
+      final String content = views.toXml(controllerMethodResult, tunnel, method);
       try (final PrintWriter writer = tunnel.getResponseWriter()) {
         writer.print(content);
       }

@@ -5,9 +5,9 @@ import kz.greetgo.mvc.model.MvcModelData;
 import java.lang.reflect.Method;
 
 public interface Views {
-  String toJson(Object object, RequestTunnel tunnel) throws Exception;
+  String toJson(Object object, RequestTunnel tunnel, Method method) throws Exception;
 
-  String toXml(Object object, RequestTunnel tunnel) throws Exception;
+  String toXml(Object object, RequestTunnel tunnel, Method method) throws Exception;
 
   void defaultView(RequestTunnel tunnel, Object returnValue,
                    MvcModelData modelData, MappingResult mappingResult) throws Exception;

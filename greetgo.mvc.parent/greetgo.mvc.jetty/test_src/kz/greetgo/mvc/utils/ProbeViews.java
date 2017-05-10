@@ -10,12 +10,12 @@ import java.lang.reflect.Method;
 
 public class ProbeViews implements Views {
   @Override
-  public String toJson(Object object, RequestTunnel tunnel) {
+  public String toJson(Object object, RequestTunnel tunnel, Method method) {
     return "JSON" + object;
   }
 
   @Override
-  public String toXml(Object object, RequestTunnel tunnel) {
+  public String toXml(Object object, RequestTunnel tunnel, Method method) {
     return "XML" + object;
   }
 
