@@ -1,18 +1,7 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.AsIs;
-import kz.greetgo.mvc.annotations.Mapping;
-import kz.greetgo.mvc.annotations.MethodFilter;
-import kz.greetgo.mvc.annotations.ToJson;
-import kz.greetgo.mvc.annotations.ToXml;
-import kz.greetgo.mvc.interfaces.MappingResult;
-import kz.greetgo.mvc.interfaces.MethodParamExtractor;
-import kz.greetgo.mvc.interfaces.RequestTunnel;
-import kz.greetgo.mvc.interfaces.SessionParameterGetter;
-import kz.greetgo.mvc.interfaces.TunnelCookies;
-import kz.greetgo.mvc.interfaces.TunnelExecutor;
-import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
-import kz.greetgo.mvc.interfaces.Views;
+import kz.greetgo.mvc.annotations.*;
+import kz.greetgo.mvc.interfaces.*;
 import kz.greetgo.mvc.model.MvcModelData;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.model.UploadInfo;
@@ -77,7 +66,7 @@ public class ControllerTunnelExecutorBuilder {
     localUploadInfoGetter.assembleAnnotationFromMethod(method);
 
     final TargetMapper targetMapper = new TargetMapper
-      (parentMapping + mapping.value(), method.getAnnotation(MethodFilter.class));
+        (parentMapping + mapping.value(), method.getAnnotation(MethodFilter.class));
 
     final List<MethodParamExtractor> extractorList = MethodParameterMeta.create(method, sessionParameterGetter);
 
@@ -127,7 +116,7 @@ public class ControllerTunnelExecutorBuilder {
 
               if (views != null) {
                 try {
-                  views.errorView(tunnel, tunnel.getTarget(), e);
+                  views.errorView(tunnel, tunnel.getTarget(), method, e);
                 } catch (Exception e1) {
                   throw new RuntimeException(e1);
                 }
@@ -172,7 +161,7 @@ public class ControllerTunnelExecutorBuilder {
     }
 
     if (getAnnotation(method, ToJson.class) != null) {
-      final String content = views.toJson(controllerMethodResult);
+      final String content = views.toJson(controllerMethodResult, tunnel);
       try (final PrintWriter writer = tunnel.getResponseWriter()) {
         writer.print(content);
       }
@@ -180,7 +169,7 @@ public class ControllerTunnelExecutorBuilder {
     }
 
     if (getAnnotation(method, ToXml.class) != null) {
-      final String content = views.toXml(controllerMethodResult);
+      final String content = views.toXml(controllerMethodResult, tunnel);
       try (final PrintWriter writer = tunnel.getResponseWriter()) {
         writer.print(content);
       }

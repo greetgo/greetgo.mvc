@@ -6,15 +6,16 @@ import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.MvcModelData;
 
 import java.io.PrintStream;
+import java.lang.reflect.Method;
 
 public class ProbeViews implements Views {
   @Override
-  public String toJson(Object object) {
+  public String toJson(Object object, RequestTunnel tunnel) {
     return "JSON" + object;
   }
 
   @Override
-  public String toXml(Object object) {
+  public String toXml(Object object, RequestTunnel tunnel) {
     return "XML" + object;
   }
 
@@ -24,7 +25,7 @@ public class ProbeViews implements Views {
   }
 
   @Override
-  public void errorView(RequestTunnel tunnel, String target, Exception error) throws Exception {
+  public void errorView(RequestTunnel tunnel, String target, Method method, Exception error) throws Exception {
     try (final PrintStream pr = new PrintStream(tunnel.getResponseOutputStream(), false, "UTF-8")) {
       error.printStackTrace(pr);
     }

@@ -2,15 +2,17 @@ package kz.greetgo.mvc.interfaces;
 
 import kz.greetgo.mvc.model.MvcModelData;
 
-public interface Views {
-  String toJson(Object object) throws Exception;
+import java.lang.reflect.Method;
 
-  String toXml(Object object) throws Exception;
+public interface Views {
+  String toJson(Object object, RequestTunnel tunnel) throws Exception;
+
+  String toXml(Object object, RequestTunnel tunnel) throws Exception;
 
   void defaultView(RequestTunnel tunnel, Object returnValue,
                    MvcModelData modelData, MappingResult mappingResult) throws Exception;
 
-  void errorView(RequestTunnel tunnel, String target, Exception error) throws Exception;
+  void errorView(RequestTunnel tunnel, String target, Method method, Exception error) throws Exception;
 
   long controllerMethodSlowTime();
 
