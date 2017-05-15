@@ -7,6 +7,8 @@ import kz.greetgo.mvc.model.Redirect;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.ParseException;
@@ -236,9 +238,24 @@ public class MvcUtil {
   }
 
   public static Object convertStrToType(String str, Type type) {
-    if (type instanceof Class) return convertStrToClass(str, (Class<?>) type);
+    if (type instanceof Class) {
+      Class<?> aClass = (Class<?>) type;
+      if (aClass.isEnum()) return convertStrToEnum(str, aClass);
+      return convertStrToClass(str, aClass);
+    }
 
     throw new IllegalArgumentException("Cannot convert str [[" + str + "]] to " + type);
+  }
+
+  private static Object convertStrToEnum(String str, Class<?> enumClass) {
+    if (str == null) return null;
+    if (str.isEmpty()) return null;
+    try {
+      Method valueOfMethod = enumClass.getMethod("valueOf", String.class);
+      return valueOfMethod.invoke(null, str);
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public static Collection createEmptyInstanceFor(Class<?> collectionType) {
