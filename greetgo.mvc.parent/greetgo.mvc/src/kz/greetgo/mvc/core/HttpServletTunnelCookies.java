@@ -22,7 +22,7 @@ public class HttpServletTunnelCookies extends AbstractTunnelCookies {
 
   @Override
   public void saveToResponse(String name, int maxAge, String value) {
-    CookieUtil.addCookie(response, maxAge, name, value);
+    CookieUtil.addCookie(response, maxAge, request.getContextPath(), name, value);
   }
 
   @Override

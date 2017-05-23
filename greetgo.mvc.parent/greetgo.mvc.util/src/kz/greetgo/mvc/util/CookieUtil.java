@@ -27,10 +27,14 @@ public class CookieUtil {
   }
 
   public static void addCookie(HttpServletResponse response, int maxAge, String cookieName, String cookieValue) {
+    addCookie(response, maxAge, "/", cookieName, cookieValue);
+  }
+
+  public static void addCookie(HttpServletResponse response, int maxAge, String path, String cookieName, String cookieValue) {
     final Cookie cookie = new Cookie(cookieName, cookieValue);
     cookie.setMaxAge(maxAge);
     cookie.setSecure(false);
-    cookie.setPath("/");
+    cookie.setPath(path);
     response.addCookie(cookie);
   }
 
