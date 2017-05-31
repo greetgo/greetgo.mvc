@@ -3,7 +3,11 @@ package kz.greetgo.mvc.util;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class CookieUtil {
 
@@ -71,7 +75,8 @@ public class CookieUtil {
    * </p>
    *
    * @param str base64-string stores serialized object
-   * @return deserialized object
+   * @param <T> result type
+   * @return deserialization result object
    */
   public static <T> T strToObject(String str) {
 

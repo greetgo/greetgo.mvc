@@ -3,7 +3,7 @@ package kz.greetgo.mvc.util;
 import java.util.Base64;
 
 public class Base64Util {
-  private static final char slash = ',';
+  private static final char slash = '$';
   private static final char equal = '_';
   private static final char plus = '.';
   
