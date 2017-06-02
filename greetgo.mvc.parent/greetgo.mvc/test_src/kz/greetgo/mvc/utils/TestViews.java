@@ -1,6 +1,8 @@
 package kz.greetgo.mvc.utils;
 
 import kz.greetgo.mvc.interfaces.MappingResult;
+import kz.greetgo.mvc.interfaces.MethodInvoker;
+import kz.greetgo.mvc.interfaces.MethodInvokedResult;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.MvcModelData;
@@ -23,34 +25,34 @@ public class TestViews implements Views {
   public MvcModelData model = null;
   public MappingResult mappingResult = null;
 
-  @Override
-  public void defaultView(RequestTunnel tunnel, Object returnValue, MvcModelData model, MappingResult mappingResult) {
-
-    this.returnValue = returnValue;
-    this.model = model;
-    this.mappingResult = mappingResult;
-
-    try (PrintStream pr = new PrintStream(tunnel.getResponseOutputStream(), false, "UTF-8")) {
-      pr.print("view of " + returnValue);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   public String errorTarget = null;
 
   @Override
-  public void errorView(RequestTunnel tunnel, String target, Method method, Throwable error) {
-    errorTarget = target;
-    try (PrintStream pr = new PrintStream(tunnel.getResponseOutputStream(), false, "UTF-8")) {
-      error.printStackTrace(pr);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+  public void performRequest(MethodInvoker methodInvoker) {
+    MethodInvokedResult invokingResult = methodInvoker.invoke();
+    if (invokingResult.tryDefaultRender()) return;
 
-  @Override
-  public long controllerMethodSlowTime() {
-    return 0;
+    if (invokingResult.error() == null) {
+
+      this.returnValue = invokingResult.returnedValue();
+      this.model = methodInvoker.model();
+      this.mappingResult = methodInvoker.mappingResult();
+
+      try (PrintStream pr = new PrintStream(methodInvoker.tunnel().getResponseOutputStream(), false, "UTF-8")) {
+        pr.print("view of " + returnValue);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+
+    } else {
+      errorTarget = methodInvoker.tunnel().getTarget();
+
+      try (PrintStream pr = new PrintStream(methodInvoker.tunnel().getResponseOutputStream(), false, "UTF-8")) {
+        invokingResult.error().printStackTrace(pr);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+
+    }
   }
 }

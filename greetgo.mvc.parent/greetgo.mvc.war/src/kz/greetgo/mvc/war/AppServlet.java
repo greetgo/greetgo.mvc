@@ -3,7 +3,6 @@ package kz.greetgo.mvc.war;
 import kz.greetgo.mvc.core.ControllerTunnelExecutorBuilder;
 import kz.greetgo.mvc.core.FileResourceTunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
-import kz.greetgo.mvc.interfaces.SessionParameterGetter;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
@@ -19,6 +18,8 @@ import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static kz.greetgo.mvc.util.MvcUtil.executeExecutor;
 
 public abstract class AppServlet extends GenericServlet {
 
@@ -91,7 +92,7 @@ public abstract class AppServlet extends GenericServlet {
     if (te == null) {
       missedTarget(tunnel);
     } else {
-      te.execute();
+      executeExecutor(te);
     }
   }
 

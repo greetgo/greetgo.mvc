@@ -18,6 +18,7 @@ public class ExecutorListHandler implements TunnelHandler {
 
   public ExecutorListHandler() {
   }
+
   public ExecutorListHandler(Collection<TunnelExecutorGetter> tunnelExecutorGetters) {
     this.tunnelExecutorGetters.addAll(tunnelExecutorGetters);
   }
@@ -41,6 +42,9 @@ public class ExecutorListHandler implements TunnelHandler {
     try {
       tunnelExecutor.execute();
       tunnel.setExecuted(true);
+    } catch (Exception e) {
+      if (e instanceof RuntimeException) throw (RuntimeException) e;
+      throw new RuntimeException(e);
     } finally {
 
       if (multipartRequest) {

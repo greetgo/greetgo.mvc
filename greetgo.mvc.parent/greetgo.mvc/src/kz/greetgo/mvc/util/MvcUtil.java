@@ -3,8 +3,10 @@ package kz.greetgo.mvc.util;
 import kz.greetgo.mvc.errors.CannotConvertToDate;
 import kz.greetgo.mvc.errors.IllegalChar;
 import kz.greetgo.mvc.errors.NoConverterFor;
+import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.model.Redirect;
 
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
@@ -287,4 +289,14 @@ public class MvcUtil {
     }
   }
 
+  public static void executeExecutor(TunnelExecutor tunnelExecutor) throws ServletException, IOException {
+    try {
+      tunnelExecutor.execute();
+    } catch (Exception e) {
+      if (e instanceof ServletException) throw (ServletException) e;
+      if (e instanceof IOException) throw (IOException) e;
+      if (e instanceof RuntimeException) throw (RuntimeException) e;
+      throw new RuntimeException(e);
+    }
+  }
 }

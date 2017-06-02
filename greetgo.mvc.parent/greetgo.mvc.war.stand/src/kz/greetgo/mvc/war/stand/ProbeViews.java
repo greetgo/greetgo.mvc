@@ -1,9 +1,9 @@
 package kz.greetgo.mvc.war.stand;
 
-import kz.greetgo.mvc.interfaces.MappingResult;
+import kz.greetgo.mvc.interfaces.MethodInvoker;
+import kz.greetgo.mvc.interfaces.MethodInvokedResult;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.Views;
-import kz.greetgo.mvc.model.MvcModelData;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;
@@ -20,19 +20,13 @@ public class ProbeViews implements Views {
   }
 
   @Override
-  public void defaultView(RequestTunnel tunnel, Object returnValue, MvcModelData model, MappingResult mappingResult) {
-
-  }
-
-  @Override
-  public void errorView(RequestTunnel tunnel, String target, Method method, Throwable error) throws Exception {
-    try (final PrintStream pr = new PrintStream(tunnel.getResponseOutputStream(), false, "UTF-8")) {
-      error.printStackTrace(pr);
+  public void performRequest(MethodInvoker methodInvoker) throws Exception {
+    MethodInvokedResult invokedResult = methodInvoker.invoke();
+    if (invokedResult.tryDefaultRender()) return;
+    if (invokedResult.error() != null) {
+      try (final PrintStream pr = new PrintStream(methodInvoker.tunnel().getResponseOutputStream(), false, "UTF-8")) {
+        invokedResult.error().printStackTrace(pr);
+      }
     }
-  }
-
-  @Override
-  public long controllerMethodSlowTime() {
-    return 0;
   }
 }

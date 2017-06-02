@@ -104,7 +104,7 @@ public class ControllerTunnelExecutorBuilderTest {
   private static final String RETURN_REDIRECT_TO = RND.str(10);
   private static final String THROW_REDIRECT_TO = RND.str(10);
 
-  private static boolean handleFirst(List<TunnelExecutorGetter> handlerGetterList, TestTunnel tunnel) {
+  private static boolean handleFirst(List<TunnelExecutorGetter> handlerGetterList, TestTunnel tunnel) throws Exception {
     for (TunnelExecutorGetter tunnelExecutorGetter : handlerGetterList) {
       final TunnelExecutor tunnelExecutor = tunnelExecutorGetter.getTunnelExecutor(tunnel);
       if (tunnelExecutor != null) {
@@ -117,7 +117,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_return_redirect() {
+  public void create_handleTunnel_return_redirect() throws Exception {
 
     final TestViews views = new TestViews();
 
@@ -149,7 +149,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_throw_redirect() {
+  public void create_handleTunnel_throw_redirect() throws Exception {
 
     final TestViews views = new TestViews();
 
@@ -180,7 +180,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_notHandled() {
+  public void create_handleTunnel_notHandled() throws Exception {
 
     final TestViews views = new TestViews();
 
@@ -206,7 +206,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_to_json() {
+  public void create_handleTunnel_to_json() throws Exception {
 
     final TestViews views = new TestViews();
 
@@ -235,7 +235,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_to_xml() {
+  public void create_handleTunnel_to_xml() throws Exception {
 
     final TestViews views = new TestViews();
 
@@ -264,7 +264,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test
-  public void create_handleTunnel_default_str() {
+  public void create_handleTunnel_default_str() throws Exception {
 
     final TestViews views = new TestViews();
 

@@ -6,6 +6,8 @@ import kz.greetgo.mvc.annotations.MethodFilter;
 import kz.greetgo.mvc.annotations.ToJson;
 import kz.greetgo.mvc.annotations.ToXml;
 import kz.greetgo.mvc.interfaces.MappingResult;
+import kz.greetgo.mvc.interfaces.MethodInvokedResult;
+import kz.greetgo.mvc.interfaces.MethodInvoker;
 import kz.greetgo.mvc.interfaces.MethodParamExtractor;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
@@ -18,6 +20,7 @@ import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.mvc.util.MvcUtil;
 
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -92,57 +95,140 @@ public class ControllerTunnelExecutorBuilder {
 
         return new TunnelExecutor() {
           @Override
-          public void execute() {
-            try {
-
-              MvcModelData model = new MvcModelData();
-
-              Object[] paramValues = new Object[extractorList.size()];
-              for (int i = 0, n = extractorList.size(); i < n; i++) {
-                final MethodParamExtractor e = extractorList.get(i);
-                paramValues[i] = e.extract(mappingResult, tunnel, model);
+          public void execute() throws Exception {
+            views.performRequest(new MethodInvoker() {
+              @Override
+              public RequestTunnel tunnel() {
+                return tunnel;
               }
 
-              if (views != null) {
-                long slowTime = views.controllerMethodSlowTime();
-                if (slowTime > 0) Thread.sleep(slowTime);
+              @Override
+              public Method method() {
+                return method;
               }
 
-              final Object result = method.invoke(controller, paramValues);
-
-              executeView(result, model, tunnel, mappingResult, method);
-
-            } catch (Exception e) {
-
-              Throwable err = e;
-
-              if (e instanceof InvocationTargetException) {
-                err = ((InvocationTargetException)err).getTargetException();
+              @Override
+              public MappingResult mappingResult() {
+                return mappingResult;
               }
 
-              {
-                //noinspection ThrowableResultOfMethodCallIgnored
-                final Redirect redirect = MvcUtil.extractRedirect(err, 4);
-                if (redirect != null) {
-                  copyCookies(redirect, tunnel.cookies());
-                  tunnel.sendRedirect(redirect.reference);
-                  return;
-                }
+              @Override
+              public <T extends Annotation> T getMethodAnnotation(Class<T> annotation) {
+                return getAnnotation(method, annotation);
               }
 
-              if (views != null) {
+              final MvcModelData model = new MvcModelData();
+
+              @Override
+              public MvcModelData model() {
+                return model;
+              }
+
+              @Override
+              public Object controller() {
+                return controller;
+              }
+
+              @Override
+              public MethodInvokedResult invoke() {
+
+                Throwable error = null;
+                Object returnedValue = null;
+
                 try {
-                  views.errorView(tunnel, tunnel.getTarget(), method, err);
-                } catch (Exception e1) {
-                  throw new RuntimeException(e1);
-                }
-              } else if (err instanceof RuntimeException) {
-                throw (RuntimeException) err;
-              } else {
-                throw new RuntimeException(err);
-              }
 
-            }
+                  Object[] paramValues = new Object[extractorList.size()];
+                  for (int i = 0, n = extractorList.size(); i < n; i++) {
+                    final MethodParamExtractor e = extractorList.get(i);
+                    paramValues[i] = e.extract(mappingResult, tunnel, model);
+                  }
+
+                  returnedValue = method.invoke(controller, paramValues);
+
+                } catch (Throwable e) {
+                  error = e;
+                  if (error instanceof InvocationTargetException) {
+                    error = ((InvocationTargetException) error).getTargetException();
+                  }
+                }
+
+                {
+                  final Throwable finalError = error;
+                  final Object finalReturnedValue = returnedValue;
+                  return new MethodInvokedResult() {
+                    @Override
+                    public Object returnedValue() {
+                      return finalReturnedValue;
+                    }
+
+                    @Override
+                    public Throwable error() {
+                      return finalError;
+                    }
+
+                    @Override
+                    public boolean tryDefaultRender() {
+                      if (model.statusCode != null) tunnel.setResponseStatus(model.statusCode);
+
+                      if (finalError != null) {
+                        final Redirect redirect = MvcUtil.extractRedirect(finalError, 4);
+                        if (redirect != null) {
+                          copyCookies(redirect, tunnel.cookies());
+                          tunnel.sendRedirect(redirect.reference);
+                          return true;
+                        }
+                      }
+
+                      if (finalReturnedValue instanceof Redirect) {
+                        final Redirect redirect = (Redirect) finalReturnedValue;
+                        copyCookies(redirect, tunnel.cookies());
+                        tunnel.sendRedirect(redirect.reference);
+                        return true;
+                      }
+
+                      if (getAnnotation(method, ToJson.class) != null) try {
+                        final String content = views.toJson(finalReturnedValue, tunnel, method);
+                        try (final PrintWriter writer = tunnel.getResponseWriter()) {
+                          writer.print(content);
+                        }
+                        return true;
+                      } catch (Exception e) {
+                        if (e instanceof RuntimeException) throw (RuntimeException) e;
+                        throw new RuntimeException(e);
+                      }
+
+                      if (getAnnotation(method, ToXml.class) != null) try {
+                        final String content = views.toXml(finalReturnedValue, tunnel, method);
+                        try (final PrintWriter writer = tunnel.getResponseWriter()) {
+                          writer.print(content);
+                        }
+                        return true;
+                      } catch (Exception e) {
+                        if (e instanceof RuntimeException) throw (RuntimeException) e;
+                        throw new RuntimeException(e);
+                      }
+
+                      if (getAnnotation(method, AsIs.class) != null) {
+                        String resultStr;
+                        if (finalReturnedValue == null) {
+                          resultStr = "";
+                        } else if (finalReturnedValue instanceof String) {
+                          resultStr = (String) finalReturnedValue;
+                        } else {
+                          resultStr = finalReturnedValue.toString();
+                        }
+                        try (final PrintWriter writer = tunnel.getResponseWriter()) {
+                          writer.print(resultStr);
+                        }
+                        return true;
+                      }
+
+                      return false;
+                    }
+                  };
+                }
+              }
+            });
           }
 
           @Override
@@ -160,54 +246,6 @@ public class ControllerTunnelExecutorBuilder {
     for (Map.Entry<String, String> e : redirect.savingCookiesToResponse.entrySet()) {
       cookies.saveToResponse(e.getKey(), e.getValue());
     }
-  }
-
-
-  private void executeView(Object controllerMethodResult, MvcModelData model,
-                           RequestTunnel tunnel, MappingResult mappingResult,
-                           Method method) throws Exception {
-
-    if (model.statusCode != null) tunnel.setResponseStatus(model.statusCode);
-
-    if (controllerMethodResult instanceof Redirect) {
-      Redirect redirect = (Redirect) controllerMethodResult;
-      copyCookies(redirect, tunnel.cookies());
-      tunnel.sendRedirect(redirect.reference);
-      return;
-    }
-
-    if (getAnnotation(method, ToJson.class) != null) {
-      final String content = views.toJson(controllerMethodResult, tunnel, method);
-      try (final PrintWriter writer = tunnel.getResponseWriter()) {
-        writer.print(content);
-      }
-      return;
-    }
-
-    if (getAnnotation(method, ToXml.class) != null) {
-      final String content = views.toXml(controllerMethodResult, tunnel, method);
-      try (final PrintWriter writer = tunnel.getResponseWriter()) {
-        writer.print(content);
-      }
-      return;
-    }
-
-    if (getAnnotation(method, AsIs.class) != null) {
-      String resultStr;
-      if (controllerMethodResult == null) {
-        resultStr = "";
-      } else if (controllerMethodResult instanceof String) {
-        resultStr = (String) controllerMethodResult;
-      } else {
-        resultStr = controllerMethodResult.toString();
-      }
-      try (final PrintWriter writer = tunnel.getResponseWriter()) {
-        writer.print(resultStr);
-      }
-      return;
-    }
-
-    views.defaultView(tunnel, controllerMethodResult, model, mappingResult);
   }
 }
 

@@ -1,20 +1,17 @@
 package kz.greetgo.mvc.interfaces;
 
-import kz.greetgo.mvc.model.MvcModelData;
-
 import java.lang.reflect.Method;
 
 public interface Views extends SessionParameterGetter {
-  String toJson(Object object, RequestTunnel tunnel, Method method) throws Exception;
+  default String toJson(Object object, RequestTunnel tunnel, Method method) throws Exception {
+    throw new UnsupportedOperationException("Conversion to JSON has been not implemented");
+  }
 
-  String toXml(Object object, RequestTunnel tunnel, Method method) throws Exception;
+  default String toXml(Object object, RequestTunnel tunnel, Method method) throws Exception {
+    throw new UnsupportedOperationException("Conversion to XML has been not implemented");
+  }
 
-  void defaultView(RequestTunnel tunnel, Object returnValue,
-                   MvcModelData modelData, MappingResult mappingResult) throws Exception;
-
-  void errorView(RequestTunnel tunnel, String target, Method method, Throwable error) throws Exception;
-
-  long controllerMethodSlowTime();
+  void performRequest(MethodInvoker methodInvoker) throws Exception;
 
   class MissedView extends RuntimeException {
     public final RequestTunnel tunnel;

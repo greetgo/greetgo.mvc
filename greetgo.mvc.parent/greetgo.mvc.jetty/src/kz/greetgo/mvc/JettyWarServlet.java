@@ -2,7 +2,6 @@ package kz.greetgo.mvc;
 
 import kz.greetgo.mvc.core.ControllerTunnelExecutorBuilder;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
-import kz.greetgo.mvc.interfaces.SessionParameterGetter;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
@@ -21,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static kz.greetgo.mvc.util.MvcUtil.executeExecutor;
 
 public abstract class JettyWarServlet extends DefaultServlet {
 
@@ -75,7 +76,7 @@ public abstract class JettyWarServlet extends DefaultServlet {
     if (te == null) {
       targetMissed(tunnel, req, resp);
     } else {
-      te.execute();
+      executeExecutor(te);
     }
   }
 
