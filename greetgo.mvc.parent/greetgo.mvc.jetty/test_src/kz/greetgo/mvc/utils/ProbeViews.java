@@ -20,12 +20,10 @@ public class ProbeViews implements Views {
   }
 
   @Override
-  public void defaultView(RequestTunnel tunnel, Object returnValue, MvcModelData model, MappingResult mappingResult) {
-
-  }
+  public void defaultView(RequestTunnel tunnel, Object returnValue, MvcModelData model, MappingResult mappingResult) {}
 
   @Override
-  public void errorView(RequestTunnel tunnel, String target, Method method, Exception error) throws Exception {
+  public void errorView(RequestTunnel tunnel, String target, Method method, Throwable error) throws Exception {
     try (final PrintStream pr = new PrintStream(tunnel.getResponseOutputStream(), false, "UTF-8")) {
       error.printStackTrace(pr);
     }

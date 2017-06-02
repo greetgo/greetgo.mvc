@@ -59,7 +59,7 @@ public class SecurityJettyServerLauncher {
     {
       final ProbeViews views = new ProbeViews();
       LoginController loginController = new LoginController(userDetailsStorage);
-      final List<TunnelExecutorGetter> executorList = ControllerTunnelExecutorBuilder.build(loginController, views, null);
+      final List<TunnelExecutorGetter> executorList = ControllerTunnelExecutorBuilder.build(loginController, views);
       tunnelHandlerList.list.add(new ExecutorListHandler(executorList));
     }
 

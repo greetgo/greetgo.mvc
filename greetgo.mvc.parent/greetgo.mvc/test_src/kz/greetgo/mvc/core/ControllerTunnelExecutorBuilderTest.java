@@ -1,6 +1,16 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.*;
+import kz.greetgo.mvc.annotations.Mapping;
+import kz.greetgo.mvc.annotations.MethodFilter;
+import kz.greetgo.mvc.annotations.Par;
+import kz.greetgo.mvc.annotations.ToJson;
+import kz.greetgo.mvc.annotations.ToXml;
+import kz.greetgo.mvc.annotations.UploadFileSizeThreshold;
+import kz.greetgo.mvc.annotations.UploadInfoFromMethod;
+import kz.greetgo.mvc.annotations.UploadLocationFromMethod;
+import kz.greetgo.mvc.annotations.UploadMaxFileSize;
+import kz.greetgo.mvc.annotations.UploadMaxFileSizeFromMethod;
+import kz.greetgo.mvc.annotations.UploadMaxRequestSize;
 import kz.greetgo.mvc.errors.AmbiguousMaxFileSize;
 import kz.greetgo.mvc.errors.InconsistentUploadAnnotationsUnderClass;
 import kz.greetgo.mvc.errors.InconsistentUploadAnnotationsUnderMethod;
@@ -19,7 +29,10 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.Map;
 
-import static kz.greetgo.mvc.core.RequestMethod.*;
+import static kz.greetgo.mvc.core.RequestMethod.DELETE;
+import static kz.greetgo.mvc.core.RequestMethod.GET;
+import static kz.greetgo.mvc.core.RequestMethod.POST;
+import static kz.greetgo.mvc.core.RequestMethod.PUT;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ControllerTunnelExecutorBuilderTest {
@@ -112,7 +125,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -144,7 +157,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -175,7 +188,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -201,7 +214,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -230,7 +243,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -259,7 +272,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
     //
     //
 
@@ -296,7 +309,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -344,7 +357,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -395,7 +408,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -542,7 +555,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -578,7 +591,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -615,7 +628,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -651,7 +664,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -688,7 +701,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -724,7 +737,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -761,7 +774,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -804,7 +817,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -850,7 +863,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -888,7 +901,7 @@ public class ControllerTunnelExecutorBuilderTest {
     TestInconsistentUploadAnnotationsUnderClass c = new TestInconsistentUploadAnnotationsUnderClass();
     //
     //
-    ControllerTunnelExecutorBuilder.build(c, null, null);
+    ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
   }
@@ -908,7 +921,7 @@ public class ControllerTunnelExecutorBuilderTest {
     TestInconsistentUploadAnnotationsUnderMethod c = new TestInconsistentUploadAnnotationsUnderMethod();
     //
     //
-    ControllerTunnelExecutorBuilder.build(c, null, null);
+    ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
   }
@@ -936,7 +949,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -982,7 +995,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -1028,7 +1041,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
 
@@ -1069,7 +1082,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    ControllerTunnelExecutorBuilder.build(c, null, null);
+    ControllerTunnelExecutorBuilder.build(c, null);
     //
     //
   }
@@ -1111,7 +1124,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     //
     //
-    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, views, null);
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(c, views);
     //
     //
 

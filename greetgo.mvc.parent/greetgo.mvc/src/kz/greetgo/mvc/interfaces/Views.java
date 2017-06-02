@@ -4,7 +4,7 @@ import kz.greetgo.mvc.model.MvcModelData;
 
 import java.lang.reflect.Method;
 
-public interface Views {
+public interface Views extends SessionParameterGetter {
   String toJson(Object object, RequestTunnel tunnel, Method method) throws Exception;
 
   String toXml(Object object, RequestTunnel tunnel, Method method) throws Exception;
@@ -12,7 +12,7 @@ public interface Views {
   void defaultView(RequestTunnel tunnel, Object returnValue,
                    MvcModelData modelData, MappingResult mappingResult) throws Exception;
 
-  void errorView(RequestTunnel tunnel, String target, Method method, Exception error) throws Exception;
+  void errorView(RequestTunnel tunnel, String target, Method method, Throwable error) throws Exception;
 
   long controllerMethodSlowTime();
 
@@ -29,4 +29,7 @@ public interface Views {
     throw new MissedView(tunnel);
   }
 
+  default Object getSessionParameter(ParameterContext context, RequestTunnel tunnel) {
+    throw new UnsupportedOperationException("Reading of a session parameters has been not implemented");
+  }
 }

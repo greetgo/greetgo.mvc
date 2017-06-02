@@ -32,10 +32,6 @@ public abstract class AppServlet extends GenericServlet {
 
   protected abstract UploadInfo getUploadInfo();
 
-  protected SessionParameterGetter getSessionParameterGetter() {
-    return null;
-  }
-
   protected final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
 
   protected String getAddingServletName() {
@@ -45,9 +41,8 @@ public abstract class AppServlet extends GenericServlet {
   @SuppressWarnings("SameParameterValue")
   public void register(ServletContext ctx, String mappingBase) {
     final Views views = getViews();
-    final SessionParameterGetter sessionParameterGetter = getSessionParameterGetter();
     for (Object controller : getControllerList()) {
-      tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views, sessionParameterGetter));
+      tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
     }
 
     final ServletRegistration.Dynamic registration = ctx.addServlet(getAddingServletName(), this);

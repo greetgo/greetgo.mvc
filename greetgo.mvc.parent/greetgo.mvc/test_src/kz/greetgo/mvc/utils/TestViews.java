@@ -40,7 +40,7 @@ public class TestViews implements Views {
   public String errorTarget = null;
 
   @Override
-  public void errorView(RequestTunnel tunnel, String target, Method method, Exception error) {
+  public void errorView(RequestTunnel tunnel, String target, Method method, Throwable error) {
     errorTarget = target;
     try (PrintStream pr = new PrintStream(tunnel.getResponseOutputStream(), false, "UTF-8")) {
       error.printStackTrace(pr);

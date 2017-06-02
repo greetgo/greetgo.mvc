@@ -40,8 +40,8 @@ public class JettyLauncherWithMvc {
 
       final JettyControllerHandler controllerHandler = new JettyControllerHandler();
 
-      controllerHandler.tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(c1, views, null));
-      controllerHandler.tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(c2, views, null));
+      controllerHandler.tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(c1, views));
+      controllerHandler.tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(c2, views));
 
       handlerList.addHandler(controllerHandler);
     }

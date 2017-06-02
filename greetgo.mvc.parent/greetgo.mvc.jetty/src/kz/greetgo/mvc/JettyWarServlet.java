@@ -28,10 +28,6 @@ public abstract class JettyWarServlet extends DefaultServlet {
 
   protected abstract Views getViews();
 
-  protected SessionParameterGetter getSessionParameterGetter() {
-    return null;
-  }
-
   protected final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
 
   private TunnelExecutor getTunnelExecutor(RequestTunnel tunnel) {
@@ -46,10 +42,9 @@ public abstract class JettyWarServlet extends DefaultServlet {
   public void registerTo(WebAppContext webAppContext) {
 
     final Views views = getViews();
-    final SessionParameterGetter sessionParameterGetter = getSessionParameterGetter();
 
     for (Object controller : getControllerList()) {
-      tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views, sessionParameterGetter));
+      tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
     }
 
     webAppContext.addServlet(new ServletHolder(this), mappingBase());
