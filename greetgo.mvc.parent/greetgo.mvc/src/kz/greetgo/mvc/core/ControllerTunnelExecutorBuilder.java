@@ -177,6 +177,8 @@ public class ControllerTunnelExecutorBuilder {
                           tunnel.sendRedirect(redirect.reference);
                           return true;
                         }
+
+                        return false;
                       }
 
                       if (finalReturnedValue instanceof Redirect) {

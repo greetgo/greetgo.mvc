@@ -11,12 +11,12 @@ import java.lang.reflect.Method;
  */
 public interface MethodInvoker {
   /**
-   * Возвращает тунель запроса
+   * @return Возвращает тунель запроса
    */
   RequestTunnel tunnel();
 
   /**
-   * Возвращает метод контроллера
+   * @return Возвращает метод контроллера
    */
   Method method();
 
@@ -30,17 +30,17 @@ public interface MethodInvoker {
   <T extends Annotation> T getMethodAnnotation(Class<T> annotation);
 
   /**
-   * Возвращает модель данных для рендеринга страницы запроса
+   * @return Возвращает модель данных для рендеринга страницы запроса
    */
   MvcModelData model();
 
   /**
-   * Возвращает результат мапинга запроса
+   * @return Возвращает результат мапинга запроса
    */
   MappingResult mappingResult();
 
   /**
-   * Возвращает ссылку на сам контроллер
+   * @return Возвращает ссылку на сам контроллер
    */
   Object controller();
 
