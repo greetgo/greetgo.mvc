@@ -53,10 +53,10 @@ public abstract class AbstractSecuritySource implements SecuritySource {
   private final ThreadLocal<PrivateKey> privateKey = new ThreadLocal<>();
 
   private void prepareKeys() {
-    if (privateKey.get() != null && publicKey.get() != null) return;
+    if (privateKey.get() != null || publicKey.get() != null) return;
 
     synchronized (this) {
-      if (privateKey.get() != null && publicKey.get() != null) return;
+      if (privateKey.get() != null || publicKey.get() != null) return;
       doPrepareKeys();
     }
   }
@@ -109,7 +109,7 @@ public abstract class AbstractSecuritySource implements SecuritySource {
     e.printStackTrace();
   }
 
-  private void doPrepareKeys() {
+  protected void doPrepareKeys() {
     if (hasKeys()) {
       try {
         readKeysFromFiles();
@@ -124,7 +124,7 @@ public abstract class AbstractSecuritySource implements SecuritySource {
     }
   }
 
-  private void saveKeys() {
+  protected void saveKeys() {
     {
       final PKCS8EncodedKeySpec privateKetSpec = new PKCS8EncodedKeySpec(privateKey.get()
         .getEncoded());
@@ -136,7 +136,7 @@ public abstract class AbstractSecuritySource implements SecuritySource {
     }
   }
 
-  private void generateKeys() {
+  protected void generateKeys() {
     try {
 
       final KeyPairGenerator kpg = KeyPairGenerator.getInstance(conf().keyPairGeneratorAlgorithm());
@@ -153,8 +153,7 @@ public abstract class AbstractSecuritySource implements SecuritySource {
     }
   }
 
-  private void readKeysFromFiles() throws NoSuchAlgorithmException, InvalidKeySpecException {
-
+  protected void readKeysFromFiles() throws NoSuchAlgorithmException, InvalidKeySpecException {
 
     final PKCS8EncodedKeySpec keySpecPrivate = new PKCS8EncodedKeySpec(getPrivateKeyBytes());
     final X509EncodedKeySpec keySpecPublic = new X509EncodedKeySpec(getPublicKeyBytes());
