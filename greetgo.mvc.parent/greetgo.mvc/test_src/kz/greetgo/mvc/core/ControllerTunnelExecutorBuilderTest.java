@@ -339,8 +339,7 @@ public class ControllerTunnelExecutorBuilderTest {
   class UploadInfoFromMethod1 {
     @SuppressWarnings("EmptyMethod")
     @Mapping("tmp")
-    public void forTest() {
-    }
+    public void forTest() {}
 
     final String location = RND.str(10);
 

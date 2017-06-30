@@ -16,8 +16,8 @@ import kz.greetgo.mvc.interfaces.MethodParamExtractor;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
-import kz.greetgo.mvc.model.MvcModelData;
 import kz.greetgo.mvc.model.MvcModel;
+import kz.greetgo.mvc.model.MvcModelData;
 import kz.greetgo.mvc.util.CookieUtil;
 import kz.greetgo.mvc.utils.TestMappingResult;
 import kz.greetgo.mvc.utils.TestTunnel;
@@ -51,8 +51,7 @@ public class MethodParameterMetaTest {
 
   class ForStrRequestParam {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@Par("strParam") String strParam) {
-    }
+    public void forTest(@Par("strParam") String strParam) {}
   }
 
   @Test
@@ -77,8 +76,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForLongRequestParam {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@Par("param1") long param1, @Par("param2") Long param2) {
-    }
+    public void forTest(@Par("param1") long param1, @Par("param2") Long param2) {}
   }
 
   @Test
@@ -111,8 +109,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForIntRequestParam {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@Par("param1") int param1, @Par("param2") Integer param2) {
-    }
+    public void forTest(@Par("param1") int param1, @Par("param2") Integer param2) {}
   }
 
   @Test
@@ -159,8 +156,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForDateRequestParam {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@Par("param") Date param) {
-    }
+    public void forTest(@Par("param") Date param) {}
   }
 
   @Test(dataProvider = "simpleDateFormats")
@@ -191,8 +187,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForStrListRequestParam {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@Par("param") List<String> param) {
-    }
+    public void forTest(@Par("param") List<String> param) {}
   }
 
   @Test
@@ -229,8 +224,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForStrSetRequestParam {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@Par("param") Set<String> param) {
-    }
+    public void forTest(@Par("param") Set<String> param) {}
   }
 
   @Test
@@ -270,8 +264,7 @@ public class MethodParameterMetaTest {
 
   class ForJsonStrRequestParam_ClientList {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@Par("param") @Json List<Client> param) {
-    }
+    public void forTest(@Par("param") @Json List<Client> param) {}
   }
 
   @Test
@@ -332,8 +325,7 @@ public class MethodParameterMetaTest {
 
   class ForJsonStrRequestParam_Client {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@Par("param") @Json Client param) {
-    }
+    public void forTest(@Par("param") @Json Client param) {}
   }
 
   @DataProvider
@@ -367,15 +359,14 @@ public class MethodParameterMetaTest {
   }
 
   @SuppressWarnings("unused")
-  class ForStrPathParam {
+  class ForParPathStr {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@ParPath("param") String param) {
-    }
+    public void forTest(@ParPath("param") String param) {}
   }
 
   @Test
-  public void strPathParam() throws Exception {
-    final Method method = TestUtil.getMethod(ForStrPathParam.class, "forTest");
+  public void parPathStr() throws Exception {
+    final Method method = TestUtil.getMethod(ForParPathStr.class, "forTest");
 
     final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
 
@@ -391,10 +382,38 @@ public class MethodParameterMetaTest {
   }
 
   @SuppressWarnings("unused")
+  class ForParPathStringsJson {
+    @SuppressWarnings({"unused", "EmptyMethod"})
+    public void forTest(@ParPath("param") @Json List<String> param) {}
+  }
+
+  @Test
+  public void parPathStringsJson() throws Exception {
+    final Method method = TestUtil.getMethod(ForParPathStringsJson.class, "forTest");
+
+    final MethodParamExtractor e = MethodParameterMeta.create(method, null).get(0);
+
+    final TestMappingResult catchResult = new TestMappingResult();
+
+    String arg1 = RND.str(10);
+    String arg2 = RND.str(10);
+
+    catchResult.params.put("param", ("['" + arg1 + "', '" + arg2 + "']").replace('\'', '"'));
+
+    final Object actualParamValue = e.extract(catchResult, null, null);
+
+    assertThat(actualParamValue).isInstanceOf(List.class);
+    List list = (List) actualParamValue;
+    //noinspection unchecked
+    assertThat(list).hasSize(2);
+    assertThat(list.get(0)).isEqualTo(arg1);
+    assertThat(list.get(1)).isEqualTo(arg2);
+  }
+
+  @SuppressWarnings("unused")
   class ForRequestInput_String {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@RequestInput String content) {
-    }
+    public void forTest(@RequestInput String content) {}
   }
 
   @Test
@@ -415,8 +434,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForRequestInput_Json_Client {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@RequestInput @Json Client content) {
-    }
+    public void forTest(@RequestInput @Json Client content) {}
   }
 
   @DataProvider
@@ -461,8 +479,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForRequestInput_Json_ListClient {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@RequestInput @Json List<Client> content) {
-    }
+    public void forTest(@RequestInput @Json List<Client> content) {}
   }
 
   @Test
@@ -508,8 +525,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForRequestInput_StringList {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@RequestInput List<String> contentLines) {
-    }
+    public void forTest(@RequestInput List<String> contentLines) {}
   }
 
   @Test
@@ -536,8 +552,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForRequestInput_byteArray {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@RequestInput byte[] content) {
-    }
+    public void forTest(@RequestInput byte[] content) {}
   }
 
   @Test
@@ -559,8 +574,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForRequestInput_InputStream {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@RequestInput InputStream requestContentInputStream) {
-    }
+    public void forTest(@RequestInput InputStream requestContentInputStream) {}
   }
 
   @Test
@@ -595,12 +609,10 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForRequestInput_BufferedReader {
     @SuppressWarnings({"EmptyMethod", "unused"})
-    public void forTest1(@RequestInput BufferedReader requestContentReader) {
-    }
+    public void forTest1(@RequestInput BufferedReader requestContentReader) {}
 
     @SuppressWarnings({"EmptyMethod", "unused"})
-    public void forTest2(@RequestInput Reader requestContentReader) {
-    }
+    public void forTest2(@RequestInput Reader requestContentReader) {}
   }
 
   @SuppressWarnings("unused")
@@ -640,8 +652,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForRequestInput_RequestTunnel {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@RequestInput RequestTunnel requestTunnel) {
-    }
+    public void forTest(@RequestInput RequestTunnel requestTunnel) {}
   }
 
   @Test
@@ -662,8 +673,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class NakedRequestTunnel {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(RequestTunnel requestTunnel) {
-    }
+    public void forTest(RequestTunnel requestTunnel) {}
   }
 
   @Test
@@ -684,8 +694,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   class ForMvcModel {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(MvcModel model) {
-    }
+    public void forTest(MvcModel model) {}
   }
 
   @Test
@@ -705,8 +714,7 @@ public class MethodParameterMetaTest {
 
   class ForUpload {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@Par("abra") Upload upload) {
-    }
+    public void forTest(@Par("abra") Upload upload) {}
   }
 
   @Test
@@ -731,8 +739,7 @@ public class MethodParameterMetaTest {
   @SuppressWarnings("unused")
   private class ForTunnelCookies {
     @SuppressWarnings({"EmptyMethod", "UnusedParameters"})
-    public void forTest(TunnelCookies cookies) {
-    }
+    public void forTest(TunnelCookies cookies) {}
   }
 
   @Test
@@ -775,8 +782,7 @@ public class MethodParameterMetaTest {
 
   private class ForParCookie {
     @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
-    public void forTest(@ParCookie("asd") String asd) {
-    }
+    public void forTest(@ParCookie("asd") String asd) {}
   }
 
   @Test
@@ -805,8 +811,7 @@ public class MethodParameterMetaTest {
 
   private class ForParCookie_asIs {
     @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
-    public void forTest(@ParCookie(value = "asd", asIs = true) String asd) {
-    }
+    public void forTest(@ParCookie(value = "asd", asIs = true) String asd) {}
   }
 
   @Test
@@ -848,8 +853,7 @@ public class MethodParameterMetaTest {
 
   private class ForParCookie_SomeObject {
     @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
-    public void forTest(@ParCookie("asd") SomeObject asd) {
-    }
+    public void forTest(@ParCookie("asd") SomeObject asd) {}
   }
 
   @Test
@@ -881,8 +885,7 @@ public class MethodParameterMetaTest {
 
   private class ForParCookie_AsIsOnlyForString {
     @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
-    public void forTest(@ParCookie(value = "asd", asIs = true) SomeObject asd) {
-    }
+    public void forTest(@ParCookie(value = "asd", asIs = true) SomeObject asd) {}
   }
 
   @Test(expectedExceptions = AsIsOnlyForString.class)
@@ -894,8 +897,7 @@ public class MethodParameterMetaTest {
 
   private class ForRequestMethod {
     @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
-    public void forTest(RequestMethod requestMethod) {
-    }
+    public void forTest(RequestMethod requestMethod) {}
   }
 
   @Test
@@ -916,8 +918,7 @@ public class MethodParameterMetaTest {
 
   private class ForBinResponse {
     @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
-    public void forTest(BinResponse binResponse) {
-    }
+    public void forTest(BinResponse binResponse) {}
   }
 
   @Test
@@ -1024,8 +1025,7 @@ public class MethodParameterMetaTest {
 
   private class ForParamsToWithDates {
     @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
-    public void forTest(@ParamsTo TestParamsDatesAcceptor argument) {
-    }
+    public void forTest(@ParamsTo TestParamsDatesAcceptor argument) {}
   }
 
   @Test
@@ -1100,8 +1100,7 @@ public class MethodParameterMetaTest {
 
   private class ForParamsToWithStrs {
     @SuppressWarnings({"unused", "EmptyMethod", "UnusedParameters"})
-    public void forTest(@ParamsTo TestParamsStrsAcceptor argument) {
-    }
+    public void forTest(@ParamsTo TestParamsStrsAcceptor argument) {}
   }
 
   @Test
@@ -1139,8 +1138,7 @@ public class MethodParameterMetaTest {
 
   class ForParSession {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@ParSession("strParamAsd") String strParam) {
-    }
+    public void forTest(@ParSession("strParamAsd") String strParam) {}
   }
 
   @Test
@@ -1167,8 +1165,7 @@ public class MethodParameterMetaTest {
 
   class ForParSessionWithJson {
     @SuppressWarnings({"unused", "EmptyMethod"})
-    public void forTest(@ParSession("strParamHello") @Json String strParam) {
-    }
+    public void forTest(@ParSession("strParamHello") @Json String strParam) {}
   }
 
   @Test

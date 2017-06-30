@@ -139,8 +139,13 @@ public class MethodParameterMeta {
     }
 
     if (parPath != null) return (mappingResult, tunnel, model) -> {
-      final String paramValue = mappingResult.getParam(parPath.value());
-      return MvcUtil.convertStrToType(paramValue, genericParameterType);
+      if (annotationJson != null) {
+        final String paramValue = mappingResult.getParam(parPath.value());
+        return JsonUtil.convertStrToType(paramValue, genericParameterType);
+      } else {
+        final String paramValue = mappingResult.getParam(parPath.value());
+        return MvcUtil.convertStrToType(paramValue, genericParameterType);
+      }
     };
 
     if (parCookie != null) {
