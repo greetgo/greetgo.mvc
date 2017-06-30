@@ -398,7 +398,7 @@ public class MethodParameterMetaTest {
     String arg1 = RND.str(10);
     String arg2 = RND.str(10);
 
-    catchResult.params.put("param", ("['" + arg1 + "', '" + arg2 + "']").replace('\'', '"'));
+    catchResult.params.put("param", ("['" + arg1 + "', '" + arg2 + "']").replaceAll("'", "%22"));
 
     final Object actualParamValue = e.extract(catchResult, null, null);
 

@@ -34,10 +34,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,11 +141,13 @@ public class MethodParameterMeta {
     }
 
     if (parPath != null) return (mappingResult, tunnel, model) -> {
+      String paramValue = mappingResult.getParam(parPath.value());
+
+      paramValue = URLDecoder.decode(paramValue, "UTF-8");
+
       if (annotationJson != null) {
-        final String paramValue = mappingResult.getParam(parPath.value());
         return JsonUtil.convertStrToType(paramValue, genericParameterType);
       } else {
-        final String paramValue = mappingResult.getParam(parPath.value());
         return MvcUtil.convertStrToType(paramValue, genericParameterType);
       }
     };
