@@ -12,5 +12,5 @@ public @interface Mapping {
   /**
    * @return format of request address
    */
-  String value();
+  String[] value();
 }

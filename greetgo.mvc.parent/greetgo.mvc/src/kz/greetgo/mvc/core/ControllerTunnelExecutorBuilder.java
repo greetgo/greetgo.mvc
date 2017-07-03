@@ -52,7 +52,7 @@ public class ControllerTunnelExecutorBuilder {
     controllerClass = controller.getClass();
   }
 
-  String parentMapping = "";
+  String parentMapping[] = null;
 
   private final UploadInfoGetter uploadInfoGetter = new UploadInfoGetter();
 
@@ -77,12 +77,33 @@ public class ControllerTunnelExecutorBuilder {
 
     localUploadInfoGetter.assembleAnnotationFromMethod(method);
 
-    final TargetMapper targetMapper = new TargetMapper
-      (parentMapping + mapping.value(), method.getAnnotation(MethodFilter.class));
-
     final List<MethodParamExtractor> extractorList = MethodParameterMeta.create(method, views);
 
-    result.add(new TunnelExecutorGetter() {
+    if (parentMapping == null || parentMapping.length == 0) {
+
+      for (String mappingStr : mapping.value()) {
+        final TargetMapper targetMapper = new TargetMapper(mappingStr, method.getAnnotation(MethodFilter.class));
+        result.add(createTunnelExecutorGetter(method, localUploadInfoGetter, targetMapper, extractorList));
+      }
+
+    } else for (String parentMapperStr : parentMapping) {
+
+      for (String mappingStr : mapping.value()) {
+        final TargetMapper targetMapper = new TargetMapper
+          (parentMapperStr + mappingStr, method.getAnnotation(MethodFilter.class));
+        result.add(createTunnelExecutorGetter(method, localUploadInfoGetter, targetMapper, extractorList));
+      }
+
+    }
+
+
+  }
+
+  private TunnelExecutorGetter createTunnelExecutorGetter(Method method,
+                                                          UploadInfoGetter localUploadInfoGetter,
+                                                          TargetMapper targetMapper,
+                                                          List<MethodParamExtractor> extractorList) {
+    return new TunnelExecutorGetter() {
       @Override
       public String infoStr() {
         return method.getDeclaringClass().getSimpleName() + "." + method.getName() + " : " + targetMapper.infoStr();
@@ -241,7 +262,7 @@ public class ControllerTunnelExecutorBuilder {
       }
 
 
-    });
+    };
   }
 
   private static void copyCookies(Redirect redirect, TunnelCookies cookies) {
