@@ -42,6 +42,15 @@ public class CookieUtil {
     response.addCookie(cookie);
   }
 
+  public static void addCookie(HttpServletResponse response, int maxAge, String path, String cookieName, String cookieValue, boolean httpOnly) {
+    final Cookie cookie = new Cookie(cookieName, cookieValue);
+    cookie.setMaxAge(maxAge);
+    cookie.setSecure(false);
+    cookie.setPath(path);
+    cookie.setHttpOnly(httpOnly);
+    response.addCookie(cookie);
+  }
+
   /**
    * <p>
    * Converts object to string with java-serialization with following converting into base64

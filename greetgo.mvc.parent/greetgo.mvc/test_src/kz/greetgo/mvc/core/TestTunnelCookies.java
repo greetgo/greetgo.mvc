@@ -33,4 +33,11 @@ public class TestTunnelCookies extends AbstractTunnelCookies {
   public void removeFromResponse(String name) {
     calls.add("removeFromResponse " + name);
   }
+
+  @Override
+  public void saveToResponse(String name, int maxAge, String value, boolean httpOnly) {
+    savedCookies.put(name, value);
+    savedMaxAges.put(name, maxAge);
+    calls.add("saveToResponseStr (maxAge " + maxAge + ") " + name + ' ' + value + " httpOnly " + httpOnly);
+  }
 }

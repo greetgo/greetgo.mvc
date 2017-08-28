@@ -31,11 +31,12 @@ public class EventTunnelCookies extends AbstractTunnelCookies implements EventHa
     private final String name;
     private final int maxAge;
     private final String value;
-
-    public Save(String name, int maxAge, String value) {
+    private final boolean httpOnly;
+    public Save(String name, int maxAge, String value, boolean httpOnly) {
       this.name = name;
       this.maxAge = maxAge;
       this.value = value;
+      this.httpOnly = httpOnly;
     }
 
     @Override
@@ -49,7 +50,7 @@ public class EventTunnelCookies extends AbstractTunnelCookies implements EventHa
     if (commandList == null) {
       cookies.saveToResponse(name, maxAge, value);
     } else {
-      commandList.add(new Save(name, maxAge, value));
+      commandList.add(new Save(name, maxAge, value, false));
     }
   }
 
@@ -90,4 +91,12 @@ public class EventTunnelCookies extends AbstractTunnelCookies implements EventHa
     }
   }
 
+  @Override
+  public void saveToResponse(String name, int maxAge, String value, boolean httpOnly) {
+    if (commandList == null) {
+      cookies.saveToResponse(name, maxAge, value, httpOnly);
+    } else {
+      commandList.add(new Save(name, maxAge, value, httpOnly));
+    }
+  }
 }

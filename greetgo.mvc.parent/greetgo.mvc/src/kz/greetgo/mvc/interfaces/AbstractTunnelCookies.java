@@ -18,4 +18,9 @@ public abstract class AbstractTunnelCookies implements TunnelCookies {
   public void saveToResponseObject(String name, Object object) {
     saveToResponse(name, CookieUtil.objectToStr(object));
   }
+
+  @Override
+  public void saveToResponse(String name, String value, boolean httpOnly) {
+    saveToResponse(name, -1, value, httpOnly);
+  }
 }

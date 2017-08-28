@@ -27,6 +27,24 @@ public interface TunnelCookies {
   void saveToResponse(String name, int maxAge, String value);
 
   /**
+   * Saves cookie to response
+   *
+   * @param name   cookie name
+   * @param maxAge cookie living age in seconds
+   * @param value  cookie value
+   * @param httpOnly cookie's httpOnly attribute
+   */
+  void saveToResponse(String name, int maxAge, String value, boolean httpOnly);
+
+  /**
+   * Saves cookie to response
+   *
+   * @param name   cookie name
+   * @param value  cookie value
+   * @param httpOnly  cookie's httpOnly attribute value
+   */
+  void saveToResponse(String name, String value, boolean httpOnly);
+  /**
    * Removes cookie from response
    *
    * @param name cookie name

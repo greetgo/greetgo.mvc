@@ -29,4 +29,9 @@ public class HttpServletTunnelCookies extends AbstractTunnelCookies {
   public void removeFromResponse(String name) {
     CookieUtil.removeCookie(response, name);
   }
+
+  @Override
+  public void saveToResponse(String name, int maxAge, String value, boolean httpOnly) {
+    CookieUtil.addCookie(response, maxAge, request.getContextPath(), name, value, httpOnly);
+  }
 }
