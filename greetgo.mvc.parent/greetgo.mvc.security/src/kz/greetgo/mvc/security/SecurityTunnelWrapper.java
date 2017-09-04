@@ -114,7 +114,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
             final String signatureBase64 = bytesToBase64(signature);
             if (trace != null) trace.trace("CP tytgfyr SET COOKIE " + provider.cookieKeySignature()
               + " = " + signatureBase64);
-            tunnel.cookies().saveToResponse(provider.cookieKeySignature(), signatureBase64);
+            tunnel.cookies().saveToResponse(provider.cookieKeySignature(), signatureBase64, true);
           }
 
           if (sessionCrypto != null) {
@@ -125,7 +125,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
           final String bytesBase64 = bytesToBase64(bytes);
           if (trace != null) trace.trace("CP vv4t5v43t SET COOKIE " + provider.cookieKeySession()
             + " = " + bytesBase64);
-          tunnel.cookies().saveToResponse(provider.cookieKeySession(), bytesBase64);
+          tunnel.cookies().saveToResponse(provider.cookieKeySession(), bytesBase64, true);
 
         }
 
