@@ -7,6 +7,7 @@ allprojects {
   apply plugin: 'idea'
   apply plugin: 'eclipse'
   apply plugin: 'maven'
+  apply plugin: 'signing'
 
   version = '2.0.7'
 
@@ -22,17 +23,18 @@ subprojects {
   compileTestJava.options.debugOptions.debugLevel = "source,lines,vars"
 
   repositories {
-    mavenLocal()
-    maven {
-      name 'Our repository'
-      url System.getenv('GG_REPO')
-    }
+//    mavenLocal()
+//    maven {
+//      name 'Our repository'
+//      url System.getenv('GG_REPO')
+//    }
+    mavenCentral()
   }
 
   dependencies {
     //ext.jettyVersion = '8.0+'
     ext.jettyVersion = '9.2+'
-    ext.greetgoUtilVersion = '0.0.25'
+    ext.greetgoUtilVersion = '2.0.0'
     ext.servletApiVersion = '3.1.0'
     ext.jacksonVersion = '2.7.3'
 
