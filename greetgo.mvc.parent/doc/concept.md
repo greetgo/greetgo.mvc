@@ -1,4 +1,3 @@
-## Описание методов контроллеров
 ### Концепция
 
 Идея о том, как реализовать обработку Rest-запросов взята из SpringMVC, только реализация значительно
@@ -54,7 +53,7 @@ import java.util.Map;
 /**
  * В этом классе реализована обработка методов контроллеров
  */
-public abstract class SandboxViews implements Views {
+public class SandboxViews implements Views {
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -88,10 +87,15 @@ public abstract class SandboxViews implements Views {
    */
   @Override
   public String toXml(Object object, RequestTunnel tunnel, Method method) throws Exception {
+    //Здесь нужно object преобразовать в XML и вернуть
+    //Здесь аннотация ToXml не работает
     throw new UnsupportedOperationException();
   }
 
-  public BeanGetter<AuthRegister> userRegister;
+  /**
+   * Данное поле содержит ссылку на обхект, в котором сосредоточена логика работы с security
+   */
+  public BeanGetter<AuthRegister> authRegister;
 
   /**
    * Этот метод вызывается, каждый раз при обработке запроса. Метод контроллера ещё не вызван, и его нужно вызвать
@@ -171,13 +175,13 @@ public abstract class SandboxViews implements Views {
         //в этом методе токен будет расшифрован и помещён в ThreadLocal-переменную
         //если произойдёт какой-нибудь сбой, то произойдёт ошибка и вызов метода контроллера не произойдёт
         //тем самым мы предотвратим вероятный взлом
-        userRegister.get().checkTokenAndPutToThreadLocal(token);
+        authRegister.get().checkTokenAndPutToThreadLocal(token);
       } else {
 
         // если есть аннотация NoSecurity то это значит, что метод не нуждается в параметрах сессии и не
         // нуждается в защите - т.е. его может вызвать любой. Таким методом например является логинг.
         // В этом случае мы очищаем ThreadLocal-переменную
-        userRegister.get().cleanTokenThreadLocal();
+        authRegister.get().cleanTokenThreadLocal();
       }
     } catch (RestError restError) {
       restError.printStackTrace();
@@ -199,7 +203,7 @@ public abstract class SandboxViews implements Views {
       if (context.expectedReturnType() != String.class) throw new SecurityError("personId must be string");
 
       //sessionInfo берётся из ThreadLocal переменной, которая был определена в методе prepareSession
-      SessionInfo sessionInfo = userRegister.get().getSessionInfo();
+      SessionInfo sessionInfo = authRegister.get().getSessionInfo();
       if (sessionInfo == null) throw new SecurityError("No session");
       return sessionInfo.personId;
     }
@@ -299,3 +303,99 @@ public abstract class SandboxViews implements Views {
 всего запроса. Реализуя этот метод, мы определяем логику проверки безопасности и рендеринга. Получается, что
 нет необходимости придумывать что-то грандиозное типа Spring-Security, вся Security отдаётся на реализацию пользователя
 самому, и даётся очень удобный способ подключения security любой сложности.
+
+Если security пока не нужно вырежите поле authRegister и метод prepareSession.
+
+Имея эти классы можно уже подготовить сервлет, который будет обрабатывать запрос. Вот примерно так:
+```java
+import kz.greetgo.depinject.core.BeanGetter;
+import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
+import kz.greetgo.mvc.interfaces.Views;
+import kz.greetgo.mvc.model.UploadInfo;
+import kz.greetgo.mvc.war.AppServlet;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
+
+public class ControllerServlet extends AppServlet {
+
+  /**
+    * Контроллеров может быть несколько, поэтому этот метод возвращает список контроллеров
+    */
+  @Override
+  protected List<Object> getControllerList() {
+    List<Object> ret = new ArrayList<>();
+    ret.add(new ClientController());//здесь указываем наш контроллер
+    return unmodifiableList(ret);
+  }
+
+  @Override
+  protected Views getViews() {
+    return new SandboxViews();//незабудьте здесь вырезать authRegister и prepareSession
+  }
+
+  @Override
+  protected UploadInfo getUploadInfo() {
+    final UploadInfo ret = new UploadInfo();
+    ret.maxFileSize = 50_000_000;
+    ret.fileSizeThreshold = 1_000;
+    return ret;
+  }
+
+  @Override
+  protected void afterRegister() {
+
+    System.err.println("[ControllerServlet] --------------------------------------");
+    System.err.println("[ControllerServlet] -- USING CONTROLLERS:");
+    for (TunnelExecutorGetter teg : tunnelExecutorGetters) {
+      System.err.println("[ControllerServlet] --   " + teg.infoStr());
+    }
+    System.err.println("[ControllerServlet] --------------------------------------");
+
+    super.afterRegister();
+  }
+
+  @Override
+  protected String getTargetSubContext() {
+    return "/api";//важно здесь поставить правильный путь к сервлету
+  }
+}
+
+```
+
+Теперь этот сервлет можно зарегистрировать в приложении примерно таким образом:
+
+```java
+import kz.greetgo.sandbox.server.beans.ControllerServlet;
+
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import java.util.Set;
+
+public class Application implements ServletContainerInitializer {
+
+  @Override
+  public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
+    ControllerServlet controllerServlet = new ControllerServlet();
+
+    // метода register реализован в AppServlet
+    controllerServlet.register(ctx);
+
+  }
+}
+```
+
+Если теперь собрать war-файл например с таким именем: asd.war, и положить его в папку webapps на tomcat-е, то можно
+будет сделать запрос:
+
+    GET http://localhost:8080/asd/api/client/surname?id=222
+
+И получить в теле ответа сообщение:
+
+    surname of 222
+
+Библиотека обладает всеми необходимыми возможностями для реализация Rest запросов в стиле SpringMVC, но, при этом, очень
+маленькая и не зависить от той или иной инфраструктуры.

@@ -2,4 +2,5 @@
 
 Облегчённая реализация паттерна MVC. Сделана по образу и подобию spring.mvc
 
-[Описание методов контроллеров](greetgo.mvc.parent/doc/controller_methods.md)
+ - [Концепция](greetgo.mvc.parent/doc/concept.md)
+ - [Спецификация контроллеров](greetgo.mvc.parent/doc/controller_cpec.md)
