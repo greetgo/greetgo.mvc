@@ -1,0 +1,14 @@
+apply plugin: 'war'
+webAppDirName = 'webapps'
+
+configurations { providedCompile }
+
+dependencies {
+  compile project('server')
+
+  compile 'jstl:jstl:1.2'
+}
+
+war {
+  baseName 'mvc_stand_simple'
+}
