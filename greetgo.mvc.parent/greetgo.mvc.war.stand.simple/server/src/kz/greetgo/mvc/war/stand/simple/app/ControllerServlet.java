@@ -1,0 +1,62 @@
+package kz.greetgo.mvc.war.stand.simple.app;
+
+import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
+import kz.greetgo.mvc.interfaces.Views;
+import kz.greetgo.mvc.model.UploadInfo;
+import kz.greetgo.mvc.war.AppServlet;
+import kz.greetgo.mvc.war.stand.simple.controllers.RootController;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
+
+public class ControllerServlet extends AppServlet {
+
+  private final Views views;
+
+  public ControllerServlet(Views views) {
+    this.views = views;
+  }
+
+  /**
+   * Контроллеров может быть несколько, поэтому этот метод возвращает список контроллеров
+   */
+  @Override
+  protected List<Object> getControllerList() {
+    List<Object> ret = new ArrayList<>();
+    ret.add(new RootController());//здесь указываем наш контроллер
+    return unmodifiableList(ret);
+  }
+
+  @Override
+  protected Views getViews() {
+    return views;
+  }
+
+  @Override
+  protected UploadInfo getUploadInfo() {
+    final UploadInfo ret = new UploadInfo();
+    ret.maxFileSize = 50_000_000;
+    ret.fileSizeThreshold = 1_000;
+    return ret;
+  }
+
+  @Override
+  protected void afterRegister() {
+
+    System.err.println("[ControllerServlet] --------------------------------------");
+    System.err.println("[ControllerServlet] -- USING CONTROLLERS:");
+    for (TunnelExecutorGetter teg : tunnelExecutorGetters) {
+      System.err.println("[ControllerServlet] --   " + teg.infoStr());
+    }
+    System.err.println("[ControllerServlet] --------------------------------------");
+
+    super.afterRegister();
+  }
+
+  @Override
+  protected String getTargetSubContext() {
+    return "/api";//важно здесь поставить правильный путь к сервлету
+  }
+}
