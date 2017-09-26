@@ -7,7 +7,7 @@
 </head>
 <body>
 <p>
-  <a href="asd?param1=helloWorld&param2=3456">Call</a> GET asd?param1=helloWorld&param2=3456
+  <a href="asd?param1=helloWorld&param2=3456">Call</a> GET asd?param1=helloWorld&amp;param2=3456
 </p>
 </body>
 </html>

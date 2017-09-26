@@ -69,6 +69,8 @@ public class ViewsImpl implements Views {
   @Override
   public void performRequest(MethodInvoker methodInvoker) throws Exception {
 
+    System.out.println("     " + methodInvoker.tunnel().getRequestMethod() + " " + methodInvoker.tunnel().getTarget());
+
     //вызываем этот метод, чтобы в дальнейшем можно было получить момент непосредственно перед вызовом метода контроллера
     beforeRequest();
 

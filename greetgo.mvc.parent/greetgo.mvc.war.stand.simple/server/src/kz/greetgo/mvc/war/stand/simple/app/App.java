@@ -14,7 +14,5 @@ public class App implements ServletContainerInitializer {
 
     Utf8Filter utf8Filter = new Utf8Filter();
     utf8Filter.register(ctx);
-
-    System.out.println("----------------------- ctx.getContextPath() = " + ctx.getContextPath());
   }
 }

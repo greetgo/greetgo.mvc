@@ -2,6 +2,16 @@ def nowDate = new Date()
 def nowFormattedDate = nowDate.format("yyyy-MM-dd/HH:mm:ss")
 def vendorName = "greetgo!"
 
+buildscript {
+  repositories {
+    jcenter()
+  }
+
+  dependencies {
+    classpath 'com.bmuschko:gradle-tomcat-plugin:2.3'
+  }
+}
+
 allprojects {
   apply plugin: 'java'
   apply plugin: 'idea'

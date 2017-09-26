@@ -45,12 +45,12 @@ public class ControllerServlet extends AppServlet {
   @Override
   protected void afterRegister() {
 
-    System.err.println("[ControllerServlet] --------------------------------------");
-    System.err.println("[ControllerServlet] -- USING CONTROLLERS:");
+    System.out.println("-- [ControllerServlet] --------------------------------------");
+    System.out.println("-- [ControllerServlet] -- USING CONTROLLERS:");
     for (TunnelExecutorGetter teg : tunnelExecutorGetters) {
-      System.err.println("[ControllerServlet] --   " + teg.infoStr());
+      System.out.println("-- [ControllerServlet] --   " + teg.infoStr());
     }
-    System.err.println("[ControllerServlet] --------------------------------------");
+    System.out.println("-- [ControllerServlet] --------------------------------------");
 
     super.afterRegister();
   }

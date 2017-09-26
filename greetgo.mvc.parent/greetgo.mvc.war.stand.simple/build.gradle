@@ -1,3 +1,5 @@
+apply plugin: 'com.bmuschko.tomcat'
+
 apply plugin: 'war'
 webAppDirName = 'webapps'
 
@@ -7,6 +9,11 @@ dependencies {
   compile project('server')
 
   compile 'jstl:jstl:1.2'
+
+  def tomcatVersion = '8.0.42'
+  tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+    "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+    "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 }
 
 war {
