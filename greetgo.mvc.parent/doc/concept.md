@@ -1,9 +1,14 @@
+### Ссылки
+
+ - [Концепция]
+ - [Спецификация контроллеров](controller_cpec.md)
+
 ### Концепция
 
 Идея о том, как реализовать обработку Rest-запросов взята из SpringMVC, только реализация значительно
 упрощена, а также, по мнению автора, упрощён способ описания запросов. Также у greetgo.mvc нет интеграции
 в дебри какого-то фрэймворка, как у SpringMVC, т.е. SpringMVC нельзя использовать без других компонентов Spring,
-а greetgo.mvc - это независимая полноценная библиотека.
+а greetgo.mvc - это независимая полноценная библиотека, реализующая только MVC в стиле SpringMVC.
 
 Допустим у нас есть какой-нибудь такой контроллер:
 
@@ -15,8 +20,8 @@ import kz.greetgo.mvc.core.*;
 public class ClientController {
   
   @AsIs
-  @MethodFilter(RequestMethod.GET)
   @Mapping("/surname")
+  @MethodFilter(RequestMethod.GET)
   public String getSurname(@Par("id") String id) {
     return "surname of " + id;
   }
@@ -93,7 +98,7 @@ public class SandboxViews implements Views {
   }
 
   /**
-   * Данное поле содержит ссылку на обхект, в котором сосредоточена логика работы с security
+   * Данное поле содержит ссылку на объект, в котором сосредоточена логика работы с security
    */
   public BeanGetter<AuthRegister> authRegister;
 
