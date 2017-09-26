@@ -1,4 +1,0 @@
-
-dependencies {
-  compile project(':greetgo.mvc.war')
-}
