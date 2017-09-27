@@ -6,7 +6,7 @@ webAppDirName = 'webapps'
 configurations { providedCompile }
 
 dependencies {
-  compile project(':greetgo.mvc.war.stand.simple')
+  compile project(':greetgo.mvc.war.stand.example')
 
   compile 'jstl:jstl:1.2'
 
@@ -17,5 +17,5 @@ dependencies {
 }
 
 war {
-  baseName 'mvc_stand_simple'
+  baseName 'mvc_example'
 }
