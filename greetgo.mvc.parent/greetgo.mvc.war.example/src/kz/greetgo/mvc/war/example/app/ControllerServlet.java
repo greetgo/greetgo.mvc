@@ -4,6 +4,7 @@ import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.mvc.war.AppServlet;
+import kz.greetgo.mvc.war.example.controllers.RequestParametersController;
 import kz.greetgo.mvc.war.example.controllers.RootController;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class ControllerServlet extends AppServlet {
   protected List<Object> getControllerList() {
     List<Object> ret = new ArrayList<>();
     ret.add(new RootController());//здесь указываем наш контроллер
+    ret.add(new RequestParametersController());
     return unmodifiableList(ret);
   }
 

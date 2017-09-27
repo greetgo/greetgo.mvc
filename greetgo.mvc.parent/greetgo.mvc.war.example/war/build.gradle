@@ -8,7 +8,8 @@ configurations { providedCompile }
 dependencies {
   compile project(':greetgo.mvc.war.example')
 
-  compile 'jstl:jstl:1.2'
+//  compile 'jstl:jstl:1.2'
+  compile 'javax.servlet:jstl:1.2'
 
   def tomcatVersion = '8.0.46'
   tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
@@ -20,6 +21,10 @@ war {
   baseName 'mvc_example'
 }
 
-task runMvcWarExample {
+task runMvcWarExample(group: 'web application') {
   dependsOn tomcatRunWar
+}
+
+tomcat {
+  httpPort = 10000
 }

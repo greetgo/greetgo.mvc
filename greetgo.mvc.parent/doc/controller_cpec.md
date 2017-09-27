@@ -5,7 +5,7 @@
  - [Спецификация контроллеров]
    - [Пример контроллера](#controller-example)
    - [MethodFilter](#methodfilter)
-   - [Доступ к параметрам запроса](#Access-to-Request-Parameters)
+   - [Доступ к параметрам запроса](#access-to-request-parameters)
 
 ### Спецификация контроллеров
 
@@ -77,5 +77,18 @@ public class SomeController {
 ##### Access to Request Parameters
 ### Доступ к параметрам запроса
 
-Параметры запросов справа от знака можно передать в аргумент метода с помощью аннотации @Par. При этом параметр
-автоматически будет конвертирован в тип соответствующего параметра.
+Получать значения параметров запроса можно через аргументы метода контроллера помеченные аннотацией `@Par`.
+Например: к контроллере `RequestParametersController` есть метод:
+
+```java
+@Mapping("/request_parameters")
+public class RequestParametersController {
+  @AsIs
+  @Mapping("/base-example")
+  public String baseExample(@Par("helloMessage") String helloMessage, @Par("age") int age) {
+    return "called RequestParametersController.baseExample with arguments:\n" +
+      "    helloMessage = " + helloMessage + "\n" +
+      "    age = " + age;
+  }
+}
+```

@@ -3,11 +3,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Simple Stand</title>
+  <title>MVC Example - greetgo!</title>
 </head>
 <body>
 <p>
-  <a href="asd?param1=helloWorld&param2=3456">Call</a> GET asd?param1=helloWorld&amp;param2=3456
+  <a href="request_parameters/form">Request Parameters Example</a>
 </p>
 </body>
 </html>
