@@ -1,7 +1,7 @@
 ### Ссылки
 
  - [Концепция]
- - [Проект-пример mvc.war.example]
+ - [Проект-пример mvc.war.example](mvc_war_example.md)
  - [Спецификация контроллеров](controller_cpec.md)
 
 ### Концепция

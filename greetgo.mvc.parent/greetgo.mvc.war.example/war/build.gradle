@@ -19,3 +19,7 @@ dependencies {
 war {
   baseName 'mvc_example'
 }
+
+task runMvcWarExample {
+  dependsOn tomcatRunWar
+}
