@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.war.stand.simple.controllers;
+package kz.greetgo.mvc.war.example.controllers;
 
 import kz.greetgo.mvc.annotations.Mapping;
 import kz.greetgo.mvc.annotations.Par;

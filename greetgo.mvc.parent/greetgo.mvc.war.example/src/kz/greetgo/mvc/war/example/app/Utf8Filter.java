@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.war.stand.simple.app;
+package kz.greetgo.mvc.war.example.app;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;

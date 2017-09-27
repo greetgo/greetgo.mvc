@@ -1,10 +1,10 @@
-package kz.greetgo.mvc.war.stand.simple.app;
+package kz.greetgo.mvc.war.example.app;
 
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.mvc.war.AppServlet;
-import kz.greetgo.mvc.war.stand.simple.controllers.RootController;
+import kz.greetgo.mvc.war.example.controllers.RootController;
 
 import java.util.ArrayList;
 import java.util.List;

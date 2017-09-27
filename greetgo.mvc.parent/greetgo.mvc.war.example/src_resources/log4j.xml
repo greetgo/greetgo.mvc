@@ -15,7 +15,7 @@
   </appender>
 
   <appender name="SERVER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${user.home}/stand_simple.d/logs/server.log"/>
+    <param name="File" value="${user.home}/mvc_war_example.d/logs/server.log"/>
     <param name="Threshold" value="INFO"/>
     <param name="Append" value="true"/>
     <param name="MaxFileSize" value="100MB"/>
