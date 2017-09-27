@@ -95,7 +95,7 @@ public class RequestParametersController {
 ```
 > Пример его вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/base_example.jsp`
 >
-> Ссылка на [проект-пример](mvc_war_example.md): http://localhost:10000/mvc_example/api/request_parameters/form#base-example
+> В [проекте-примере](mvc_war_example.md) заходим сюда: http://localhost:10000/mvc_example/api/request_parameters/form#base-example
 
 Если сделать запрос:
     GET /request_parameters/base-example?helloMessage=HI&age=19
