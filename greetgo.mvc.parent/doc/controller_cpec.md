@@ -98,6 +98,7 @@ public class RequestParametersController {
 > В [проекте-примере](mvc_war_example.md) заходим сюда: http://localhost:10000/mvc_example/api/request_parameters/form#base-example
 
 Если сделать запрос:
+
     GET /request_parameters/base-example?helloMessage=HI&age=19
 
 То значения `HI` и `19` присвоятся аргументам `helloMessage` и `age` соответственно. Притом `age` автоматически
