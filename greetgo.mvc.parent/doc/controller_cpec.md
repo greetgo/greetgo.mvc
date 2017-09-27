@@ -40,20 +40,27 @@ public class SomeController {
     MvcModel model
   ) {
 
+    //эти параметры можно будет использовать в jsp-файле так: ${PARAM1}, ${COOL_NUMBER}
+    //эти параметры передаются в методе SandboxViews.performRender(...) [тут](concept.md)  
     model.setParam("PARAM1", "value of param1");
-    model.setParam("PARAM2", 678);
+    model.setParam("COOL_NUMBER", 678);
 
+    //так можно указать HTTP код ответа
     model.setStatus(208);
 
-    return "jsp/index.jsp";
+    //здесь мы указываем файл, который будет рендериться
+    return "index.jsp";
   }
 
 }
 ```
 
+ - Примечание: параметры и jsp-файл передаются в методе SandboxViews.performRender(...), который можно найти [тут](concept.md)
+
 Если @Mapping у класса контроллера отсутствует, то значит у методов в мапинге не используется префикс.
 
-#### MethodFilter
+#### MethodFilter - фильтрация по HTTP-методам
+
 Аннотация MethodFilter позволяет отфильтровать только некоторые HTTP-методы запроса - те, которые перечисленны в
 аннотации. Если эту аннотацию не указать, то фильтрации по HTTP-методам не будет - будут проходить все HTTP-методы.
 

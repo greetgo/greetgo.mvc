@@ -245,7 +245,7 @@ public class SandboxViews implements Views {
     }
 
     //форвардим на рендеринг jsp-файла
-    tunnel.forward(place, true);
+    tunnel.forward("/jsp/" + place, true);
   }
 
   /**
