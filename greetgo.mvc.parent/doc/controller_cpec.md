@@ -5,7 +5,7 @@
  - [Спецификация контроллеров]
    - [Пример контроллера](#Controller Example)
    - [MethodFilter](#methodfilter)
-   - [Access to Request Parameters](#access-to-request-parameters)
+   - [Доступ к параметрам запроса](#access-to-request-parameters)
 
 ### Спецификация контроллеров
 
@@ -74,7 +74,7 @@ public class SomeController {
 Аннотация MethodFilter позволяет отфильтровать только некоторые HTTP-методы запроса - те, которые перечисленны в
 аннотации. Если эту аннотацию не указать, то фильтрации по HTTP-методам не будет - будут проходить все HTTP-методы.
 
-### Access to Request Parameters
+##### Access to Request Parameters
 ### Доступ к параметрам запроса
 
 Параметры запросов справа от знака можно передать в аргумент метода с помощью аннотации @Par. При этом параметр
