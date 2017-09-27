@@ -3,9 +3,9 @@
  - [Концепция](concept.md)
  - [Проект-пример mvc.war.example](mvc_war_example.md)
  - [Спецификация контроллеров]
-   - [Пример контроллера](#Controller Example)
+   - [Пример контроллера](#controller-example)
    - [MethodFilter](#methodfilter)
-   - [Доступ к параметрам запроса](#access-to-request-parameters)
+   - [Доступ к параметрам запроса](#Access-to-Request-Parameters)
 
 ### Спецификация контроллеров
 
@@ -17,7 +17,7 @@
 Разработчиками составлен специальный [проект-пример](mvc_war_example.md), в котором продемонсрированы
 все возможные способы 
 
-### Controller Example
+##### Controller Example
 ### Пример контроллера
 
 ```java
