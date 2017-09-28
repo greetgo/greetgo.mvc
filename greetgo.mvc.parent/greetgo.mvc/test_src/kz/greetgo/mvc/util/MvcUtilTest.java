@@ -5,6 +5,8 @@ import kz.greetgo.mvc.utils.TestEnum;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
+
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class MvcUtilTest {
@@ -89,28 +91,67 @@ public class MvcUtilTest {
   }
 
   @Test(dataProvider = "convertStrsToType_Boolean_dataProvider")
-  public void convertStrsToType_Boolean(String str, Boolean bool) throws Exception {
+  public void convertStringsToType_Boolean(String str, Boolean bool) throws Exception {
     Object res = MvcUtil.convertStrToType(str, Boolean.class);
     assertThat(res).isInstanceOf(Boolean.class);
     assertThat(res).isEqualTo(bool);
   }
 
   @Test
-  public void convertStrsToType_Enum_SomeValue() throws Exception {
+  public void convertStringsToType_Enum_SomeValue() throws Exception {
     Object res = MvcUtil.convertStrToType(TestEnum.SOME_ENUM_VALUE1.name(), TestEnum.class);
     assertThat(res).isInstanceOf(TestEnum.class);
     assertThat(res).isEqualTo(TestEnum.SOME_ENUM_VALUE1);
   }
 
   @Test
-  public void convertStrsToType_Enum_Null() throws Exception {
+  public void convertStrToType_Enum_Null() throws Exception {
     Object res = MvcUtil.convertStrToType(null, TestEnum.class);
     assertThat(res).isNull();
   }
 
   @Test
-  public void convertStrsToType_Enum_EmptyStr() throws Exception {
+  public void convertStrToType_Enum_EmptyStr() throws Exception {
     Object res = MvcUtil.convertStrToType("", TestEnum.class);
+    assertThat(res).isNull();
+  }
+
+  @Test
+  public void convertStrToType_BigDecimal_pointAndSpaces() throws Exception {
+    Object res = MvcUtil.convertStrToType("123 098 345.876 878 987", BigDecimal.class);
+    assertThat(res).isInstanceOf(BigDecimal.class);
+    assertThat((BigDecimal) res).isEqualByComparingTo("123098345.876878987");
+  }
+
+  @Test
+  public void convertStrToType_BigDecimal_commaAndUnderscores() throws Exception {
+    Object res = MvcUtil.convertStrToType("123_098_345,876_878_987", BigDecimal.class);
+    assertThat(res).isInstanceOf(BigDecimal.class);
+    assertThat((BigDecimal) res).isEqualByComparingTo("123098345.876878987");
+  }
+
+  @Test
+  public void convertSirToType_BigDecimal_exponential() throws Exception {
+    Object res = MvcUtil.convertStrToType("3.347689e347", BigDecimal.class);
+    assertThat(res).isInstanceOf(BigDecimal.class);
+    assertThat((BigDecimal) res).isEqualByComparingTo("3.347689e347");
+  }
+
+  @Test
+  public void convertSirToType_BigDecimal_empty() throws Exception {
+    Object res = MvcUtil.convertStrToType("", BigDecimal.class);
+    assertThat(res).isNull();
+  }
+
+  @Test
+  public void convertSirToType_BigDecimal_spaces() throws Exception {
+    Object res = MvcUtil.convertStrToType("    ", BigDecimal.class);
+    assertThat(res).isNull();
+  }
+
+  @Test
+  public void convertSirToType_BigDecimal_null() throws Exception {
+    Object res = MvcUtil.convertStrToType(null, BigDecimal.class);
     assertThat(res).isNull();
   }
 }

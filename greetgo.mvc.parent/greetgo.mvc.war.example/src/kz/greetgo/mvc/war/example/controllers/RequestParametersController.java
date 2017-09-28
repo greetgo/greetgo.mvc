@@ -4,6 +4,8 @@ import kz.greetgo.mvc.annotations.AsIs;
 import kz.greetgo.mvc.annotations.Mapping;
 import kz.greetgo.mvc.annotations.Par;
 
+import java.math.BigDecimal;
+
 @Mapping("/request_parameters")
 public class RequestParametersController {
 
@@ -14,10 +16,14 @@ public class RequestParametersController {
 
   @AsIs
   @Mapping("/base-example")
-  public String baseExample(@Par("helloMessage") String helloMessage, @Par("age") int age) {
+  public String baseExample(@Par("helloMessage") String helloMessage,
+                            @Par("age") int age,
+                            @Par("amount") BigDecimal amount
+  ) {
     return "called RequestParametersController.baseExample with arguments:\n" +
       "    helloMessage = " + helloMessage + "\n" +
-      "    age = " + age;
+      "    age = " + age + "\n" +
+      "    amount = " + amount;
   }
 
   public static class Client {
@@ -31,9 +37,6 @@ public class RequestParametersController {
     public String amount;
     public String name;
   }
-
-
-
 
 
 }

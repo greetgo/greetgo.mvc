@@ -39,6 +39,13 @@
       <td>use</td>
       <td><input type="checkbox" class="age-use"></td>
     </tr>
+    <tr>
+      <td>amount</td>
+      <td>=</td>
+      <td><input type="text" class="amount" value="180 000.34">&#8376;</td>
+      <td>use</td>
+      <td><input type="checkbox" class="amount-use"></td>
+    </tr>
     </tbody>
   </table>
   <button class="call-button">
@@ -54,10 +61,15 @@
     var requestUriBase = "${contextPath}/api/request_parameters/base-example";
 
     var self = $("#base-example");
+
     var helloMessage = self.find(".helloMessage");
-    var age = self.find(".age");
     var helloMessageUse = self.find(".helloMessage-use");
+
+    var age = self.find(".age");
     var ageUse = self.find(".age-use");
+
+    var amount = self.find(".amount");
+    var amountUse = self.find(".amount-use");
 
     var uri = self.find(".uri");
 
@@ -73,6 +85,9 @@
       }
       if (ageUse.is(':checked')) {
         pars.push("age=" + encodeURIComponent(age.val()));
+      }
+      if (amountUse.is(':checked')) {
+        pars.push("amount=" + encodeURIComponent(amount.val()));
       }
 
       if (html) {
@@ -92,6 +107,8 @@
     helloMessageUse.on('change', inputChanged);
     age.on('keyup', inputChanged);
     ageUse.on('change', inputChanged);
+    amount.on('keyup', inputChanged);
+    amountUse.on('change', inputChanged);
 
     inputChanged();
 

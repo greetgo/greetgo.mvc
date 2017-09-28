@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -114,84 +115,87 @@ public class MvcUtil {
     });
 
     {
-      Converter converter = new Converter() {
-        @Override
-        public Object convert(String str) {
-          if (str == null) return null;
-          str = str.trim().toLowerCase();
-          if (str.length() == 0) return false;
+      Converter converter = str -> {
+        if (str == null) return null;
+        str = str.trim().toLowerCase();
+        if (str.length() == 0) return false;
 
-          if ("true".equals(str)) return true;
-          if ("on".equals(str)) return true;
+        if ("true".equals(str)) return true;
+        if ("on".equals(str)) return true;
 
-          if ("false".equals(str)) return false;
-          if ("off".equals(str)) return false;
+        if ("false".equals(str)) return false;
+        if ("off".equals(str)) return false;
 
-          try {
-            int parseInt = Integer.parseInt(str);
-            return parseInt != 0;
-          } catch (NumberFormatException e) {
-            return false;
-          }
-
-
+        try {
+          int parseInt = Integer.parseInt(str);
+          return parseInt != 0;
+        } catch (NumberFormatException e) {
+          return false;
         }
       };
       x.put(Boolean.TYPE, converter);
       x.put(Boolean.class, converter);
     }
-    x.put(Integer.TYPE, new Converter() {
-      @Override
-      public Object convert(String str) {
-        if (str == null) return 0;
-        if (str.length() == 0) return 0;
-        return Integer.valueOf(str);
-      }
+    x.put(Integer.TYPE, str -> {
+      if (str == null) return 0;
+      if (str.length() == 0) return 0;
+      return Integer.valueOf(str);
     });
 
-    x.put(Integer.class, new Converter() {
-      @Override
-      public Object convert(String str) {
-        if (str == null) return null;
-        if (str.length() == 0) return null;
-        return Integer.valueOf(str);
-      }
+    x.put(Integer.class, str -> {
+      if (str == null) return null;
+      if (str.length() == 0) return null;
+      return Integer.valueOf(str);
     });
 
-    x.put(Long.TYPE, new Converter() {
-      @Override
-      public Object convert(String str) {
-        if (str == null) return 0L;
-        if (str.length() == 0) return 0L;
-        return Long.valueOf(str);
-      }
+    x.put(Long.TYPE, str -> {
+      if (str == null) return 0L;
+      if (str.length() == 0) return 0L;
+      return Long.valueOf(str);
     });
 
-    x.put(Long.class, new Converter() {
-      @Override
-      public Object convert(String str) {
-        if (str == null) return null;
-        if (str.length() == 0) return null;
-        return Long.valueOf(str);
-      }
+    x.put(Long.class, str -> {
+      if (str == null) return null;
+      if (str.length() == 0) return null;
+      return Long.valueOf(str);
     });
 
-    x.put(Date.class, new Converter() {
-      @Override
-      public Object convert(String str) {
-        if (str == null) return null;
-        if (str.length() == 0) return null;
+    x.put(Date.class, str -> {
+      if (str == null) return null;
+      if (str.length() == 0) return null;
 
-        for (String x : SIMPLE_DATE_FORMATS) {
-          //noinspection EmptyCatchBlock
-          try {
-            return new SimpleDateFormat(x).parse(str);
-          } catch (ParseException e) {
-          }
+      for (String x1 : SIMPLE_DATE_FORMATS) {
+        //noinspection EmptyCatchBlock
+        try {
+          return new SimpleDateFormat(x1).parse(str);
+        } catch (ParseException e) {
         }
-
-        throw new CannotConvertToDate(str);
       }
+
+      throw new CannotConvertToDate(str);
+    });
+
+    x.put(BigDecimal.class, str -> {
+      if (str == null) return null;
+
+      char chars[] = new char[str.length()];
+      str.getChars(0, str.length(), chars, 0);
+      StringBuilder sb = new StringBuilder(str.length());
+
+      for (char c : chars) {
+        if (c == ' ') continue;
+        if (c == '\t') continue;
+        if (c == '_') continue;
+        if (c == ',') {
+          sb.append('.');
+          continue;
+        }
+        sb.append(c);
+      }
+
+      if (sb.length() == 0) return null;
+
+      return new BigDecimal(sb.toString());
     });
 
     CONVERTERS = unmodifiableMap(x);
