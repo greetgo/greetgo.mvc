@@ -20,4 +20,20 @@ public class RequestParametersController {
       "    age = " + age;
   }
 
+  public static class Client {
+    public String id;
+    public String surname;
+    public String name;
+  }
+
+  public static class Account {
+    public String number;
+    public String amount;
+    public String name;
+  }
+
+
+
+
+
 }
