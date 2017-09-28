@@ -6,6 +6,7 @@ import kz.greetgo.mvc.annotations.Par;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Mapping("/request_parameters")
 public class RequestParametersController {
@@ -26,14 +27,17 @@ public class RequestParametersController {
                             @Par("age") int age,
                             @Par("amount") BigDecimal amount,
                             @Par("weather") Weather weather,
-                            @Par("happenedAt") Date happenedAt
+                            @Par("happenedAt") Date happenedAt,
+                            @Par("address") List<String> addresses
   ) {
     return "called RequestParametersController.baseExample with arguments:\n" +
       "    helloMessage = " + helloMessage + "\n" +
       "    age = " + age + "\n" +
       "    amount = " + amount + "\n" +
       "    weather = " + weather + "\n" +
-      "    happenedAt = " + happenedAt;
+      "    happenedAt = " + happenedAt + "\n" +
+      "    addresses = " + addresses + "\n" +
+      "    addresses.size() = " + addresses.size();
   }
 
   public static class Client {

@@ -73,6 +73,20 @@
       <td>use</td>
       <td><input type="checkbox" class="happenedAt-use"></td>
     </tr>
+    <tr>
+      <td>address</td>
+      <td>=</td>
+      <td><input type="text" class="address1" value="New York, Stone st., 27"></td>
+      <td>use</td>
+      <td><input type="checkbox" class="address1-use"></td>
+    </tr>
+    <tr>
+      <td>address</td>
+      <td>=</td>
+      <td><input type="text" class="address2" value="London, Baker st., 221"></td>
+      <td>use</td>
+      <td><input type="checkbox" class="address2-use"></td>
+    </tr>
     </tbody>
   </table>
   <button class="call-button">
@@ -113,6 +127,12 @@
     var resultBody = self.find(".resultBody");
     var resultCode = self.find(".resultCode");
 
+    var address1 = self.find(".address1");
+    var address1Use = self.find(".address1-use");
+    var address2 = self.find(".address2");
+    var address2Use = self.find(".address2-use");
+
+
     var requestUri = function (html) {
       var pars = [];
 
@@ -138,6 +158,13 @@
         pars.push("happenedAt=" + encodeURIComponent(happenedAt.val()));
       }
 
+      if (address1Use.is(':checked')) {
+        pars.push("address=" + encodeURIComponent(address1.val()));
+      }
+      if (address2Use.is(':checked')) {
+        pars.push("address=" + encodeURIComponent(address2.val()));
+      }
+
       if (html) {
         if (pars.length === 0) return '<b>' + requestUriBase + '</b>';
         return '<b>' + requestUriBase + "</b>?" + pars.join("&amp;");
@@ -159,6 +186,11 @@
 
     amount.on('keyup', inputChanged);
     amountUse.on('change', inputChanged);
+
+    address1.on('keyup', inputChanged);
+    address2.on('keyup', inputChanged);
+    address1Use.on('change', inputChanged);
+    address2Use.on('change', inputChanged);
 
     weather.on('change', inputChanged);
     weatherUseName.on('change', inputChanged);
