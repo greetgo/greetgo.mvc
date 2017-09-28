@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -169,29 +170,56 @@ public class MvcUtil {
     });
 
     x.put(BigDecimal.class, str -> {
-      if (str == null) return null;
+      str = floating(str);
+      return str == null ? null : new BigDecimal(str);
+    });
 
-      char chars[] = new char[str.length()];
-      str.getChars(0, str.length(), chars, 0);
-      StringBuilder sb = new StringBuilder(str.length());
+    x.put(Double.class, str -> {
+      str = floating(str);
+      return str == null ? null : Double.valueOf(str);
+    });
 
-      for (char c : chars) {
-        if (c == ' ') continue;
-        if (c == '\t') continue;
-        if (c == '_') continue;
-        if (c == ',') {
-          sb.append('.');
-          continue;
-        }
-        sb.append(c);
-      }
+    x.put(Double.TYPE, str -> {
+      str = floating(str);
+      return str == null ? 0d : Double.valueOf(str);
+    });
 
-      if (sb.length() == 0) return null;
+    x.put(Float.class, str -> {
+      str = floating(str);
+      return str == null ? null : Float.valueOf(str);
+    });
 
-      return new BigDecimal(sb.toString());
+    x.put(Float.TYPE, str -> {
+      str = floating(str);
+      return str == null ? 0f : Float.valueOf(str);
+    });
+
+    x.put(BigInteger.class, str -> {
+      str = floating(str);
+      return str == null ? null : new BigInteger(str);
     });
 
     CONVERTERS = unmodifiableMap(x);
+  }
+
+  private static String floating(String str) {
+    if (str == null) return null;
+    char chars[] = new char[str.length()];
+    str.getChars(0, str.length(), chars, 0);
+    StringBuilder sb = new StringBuilder(str.length());
+
+    for (char c : chars) {
+      if (c == ' ') continue;
+      if (c == '\t') continue;
+      if (c == '_') continue;
+      if (c == ',') {
+        sb.append('.');
+        continue;
+      }
+      sb.append(c);
+    }
+
+    return sb.length() == 0 ? null : sb.toString();
   }
 
   private static String first(String[] strings) {

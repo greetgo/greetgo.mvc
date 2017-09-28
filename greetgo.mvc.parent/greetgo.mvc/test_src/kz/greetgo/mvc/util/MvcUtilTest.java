@@ -7,6 +7,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -254,5 +255,77 @@ public class MvcUtilTest {
   @Test(expectedExceptions = CannotConvertToDate.class)
   public void convertStrToType_Date_leftStr() throws Exception {
     MvcUtil.convertStrToType("Left str", Date.class);
+  }
+
+  @Test
+  public void convertStrToType_Double_ok() throws Exception {
+    Object res = MvcUtil.convertStrToType("  23 098,458 765", Double.class);
+    assertThat(res).isInstanceOf(Double.class);
+
+    assertThat((double) res).isEqualTo(23_098.458_765);
+  }
+
+  @Test
+  public void convertStrToType_Double_null() throws Exception {
+    Object res = MvcUtil.convertStrToType(null, Double.class);
+    assertThat(res).isNull();
+  }
+
+  @Test
+  public void convertStrToType_double_ok() throws Exception {
+    Object res = MvcUtil.convertStrToType("  23 098,458 765", Double.TYPE);
+    assertThat(res).isInstanceOf(Double.class);
+
+    assertThat((double) res).isEqualTo(23_098.458_765);
+  }
+
+  @Test
+  public void convertStrToType_double_null() throws Exception {
+    Object res = MvcUtil.convertStrToType(null, Double.TYPE);
+    assertThat(res).isInstanceOf(Double.class);
+    assertThat((double) res).isZero();
+  }
+
+  @Test
+  public void convertStrToType_Float_ok() throws Exception {
+    Object res = MvcUtil.convertStrToType("  23 098,458 765", Float.class);
+    assertThat(res).isInstanceOf(Float.class);
+
+    assertThat((float) res).isEqualTo(23_098.458_765f);
+  }
+
+  @Test
+  public void convertStrToType_Float_null() throws Exception {
+    Object res = MvcUtil.convertStrToType(null, Float.class);
+    assertThat(res).isNull();
+  }
+
+  @Test
+  public void convertStrToType_float_ok() throws Exception {
+    Object res = MvcUtil.convertStrToType("  23 098,458 765", Float.TYPE);
+    assertThat(res).isInstanceOf(Float.class);
+
+    assertThat((float) res).isEqualTo(23_098.458_765f);
+  }
+
+  @Test
+  public void convertStrToType_float_null() throws Exception {
+    Object res = MvcUtil.convertStrToType(null, Float.TYPE);
+    assertThat(res).isInstanceOf(Float.class);
+    assertThat((float) res).isZero();
+  }
+
+  @Test
+  public void convertStrToType_BigInteger_ok() throws Exception {
+    Object res = MvcUtil.convertStrToType("  23 098 458 765 654 768 967 654 768", BigInteger.class);
+    assertThat(res).isInstanceOf(BigInteger.class);
+
+    assertThat((BigInteger) res).isEqualTo(new BigInteger("23098458765654768967654768"));
+  }
+
+  @Test
+  public void convertStrToType_BigInteger_null() throws Exception {
+    Object res = MvcUtil.convertStrToType(null, BigInteger.class);
+    assertThat(res).isNull();
   }
 }
