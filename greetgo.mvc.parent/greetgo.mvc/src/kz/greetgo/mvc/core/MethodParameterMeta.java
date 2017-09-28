@@ -34,7 +34,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -136,7 +135,7 @@ public class MethodParameterMeta {
       };
       else return (mappingResult, tunnel, model) -> {
         final String[] paramValues = tunnel.getParamValues(par.value());
-        return MvcUtil.convertStrsToType(paramValues, genericParameterType);
+        return MvcUtil.convertStringsToType(paramValues, genericParameterType);
       };
     }
 

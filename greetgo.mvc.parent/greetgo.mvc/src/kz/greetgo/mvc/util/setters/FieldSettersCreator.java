@@ -94,7 +94,7 @@ public class FieldSettersCreator {
       @Override
       public void setFromStrs(Object destination, String[] strValues) {
         Type genericType = field.getGenericType();
-        Object value = MvcUtil.convertStrsToType(strValues, genericType);
+        Object value = MvcUtil.convertStringsToType(strValues, genericType);
         try {
           field.set(destination, value);
         } catch (IllegalAccessException e) {
@@ -192,7 +192,7 @@ public class FieldSettersCreator {
         @Override
         public void setFromStrs(Object destination, String[] strValues) {
           try {
-            method.invoke(destination, MvcUtil.convertStrsToType(strValues, type));
+            method.invoke(destination, MvcUtil.convertStringsToType(strValues, type));
           } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
           }

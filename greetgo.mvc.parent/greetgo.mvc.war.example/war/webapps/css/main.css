@@ -1,0 +1,10 @@
+h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+}
+
+.radio_group label {
+  font-size: smaller;
+  margin-right: 1rem;
+  vertical-align: text-top;
+}

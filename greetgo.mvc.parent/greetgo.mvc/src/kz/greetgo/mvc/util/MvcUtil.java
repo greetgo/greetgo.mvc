@@ -9,6 +9,7 @@ import kz.greetgo.mvc.model.Redirect;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -24,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static java.util.Collections.unmodifiableMap;
 
@@ -106,32 +108,22 @@ public class MvcUtil {
   static {
     Map<Class<?>, Converter> x = new HashMap<>();
 
-    x.put(String.class, new Converter() {
-      @Override
-      public Object convert(String str) {
-        if (str == null) return null;
-        return str;
-      }
-    });
+    x.put(String.class, str -> str);
 
     {
       Converter converter = str -> {
         if (str == null) return null;
         str = str.trim().toLowerCase();
+
         if (str.length() == 0) return false;
-
-        if ("true".equals(str)) return true;
-        if ("on".equals(str)) return true;
-
         if ("false".equals(str)) return false;
+        if ("f".equals(str)) return false;
         if ("off".equals(str)) return false;
+        if ("no".equals(str)) return false;
+        if ("n".equals(str)) return false;
+        if ("0".equals(str)) return false;
 
-        try {
-          int parseInt = Integer.parseInt(str);
-          return parseInt != 0;
-        } catch (NumberFormatException e) {
-          return false;
-        }
+        return true;
       };
       x.put(Boolean.TYPE, converter);
       x.put(Boolean.class, converter);
@@ -162,6 +154,7 @@ public class MvcUtil {
 
     x.put(Date.class, str -> {
       if (str == null) return null;
+      str = str.trim();
       if (str.length() == 0) return null;
 
       for (String x1 : SIMPLE_DATE_FORMATS) {
@@ -201,10 +194,10 @@ public class MvcUtil {
     CONVERTERS = unmodifiableMap(x);
   }
 
-  private static String first(String[] strs) {
-    if (strs == null) return null;
-    if (strs.length == 0) return null;
-    return strs[0];
+  private static String first(String[] strings) {
+    if (strings == null) return null;
+    if (strings.length == 0) return null;
+    return strings[0];
   }
 
   private static Object convertStrToClass(String str, Class<?> aClass) {
@@ -213,15 +206,15 @@ public class MvcUtil {
     return converter.convert(str);
   }
 
-  public static Object convertStrsToType(String[] strs, Type type) {
-    if (type instanceof Class) return convertStrToClass(first(strs), (Class<?>) type);
+  public static Object convertStringsToType(String[] strings, Type type) {
+    if (type instanceof Class) return convertStrToType(first(strings), type);
 
-    if (type instanceof ParameterizedType) return convertStrsToParameterizedType(strs, (ParameterizedType) type);
+    if (type instanceof ParameterizedType) return convertStringsToParameterizedType(strings, (ParameterizedType) type);
 
     throw new IllegalArgumentException("Cannot convert strings to " + type);
   }
 
-  private static Object convertStrsToParameterizedType(String[] strs, ParameterizedType type) {
+  private static Object convertStringsToParameterizedType(String[] strs, ParameterizedType type) {
 
     final Class<?> rawType = (Class<?>) type.getRawType();
 
@@ -253,10 +246,21 @@ public class MvcUtil {
     throw new IllegalArgumentException("Cannot convert str [[" + str + "]] to " + type);
   }
 
+  private static final Pattern ONLY_DIGITS = Pattern.compile("\\d+");
+
   private static Object convertStrToEnum(String str, Class<?> enumClass) {
     if (str == null) return null;
     if (str.isEmpty()) return null;
+
+
     try {
+
+      if (ONLY_DIGITS.matcher(str).matches()) {
+        Method methodValues = enumClass.getMethod("values");
+        Object values = methodValues.invoke(null);
+        return Array.get(values, Integer.parseInt(str));
+      }
+
       Method valueOfMethod = enumClass.getMethod("valueOf", String.class);
       return valueOfMethod.invoke(null, str);
     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {

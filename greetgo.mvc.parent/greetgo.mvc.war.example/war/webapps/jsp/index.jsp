@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <%@include file="_head_std.jsp" %>
   <title>MVC Example - greetgo!</title>
 </head>
 <body>
