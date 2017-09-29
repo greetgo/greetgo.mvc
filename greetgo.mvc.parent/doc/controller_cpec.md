@@ -6,6 +6,7 @@
    - [Доступ к параметрам запроса](#access-to-request-parameters)
      - [Аннотация @Par (простые параметры)](#base-example)
      - [Аннотация @Par с @Json (структурные параметры в формате JSON)](#json-parameter-example)
+     - [Аннотация @ParamsTo (все параметры в один класс)](#params-to-example)
    - [MethodFilter](#methodfilter)
 
 ### Спецификация контроллеров
@@ -120,10 +121,40 @@ public class RequestParametersController {
 
   // Вот так можно составить запрос GET
   var uri = "../par-json-example?clientToSave=" + encodeURIComponent(JSON.stringify(clientToSave));
+  
+  console.log("uri = " + uri);
 
 ```
 
 В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-json-example
+
+###### Params To Example
+#### Аннотация @ParamsTo (все параметры в один класс)
+
+Все переметры запроса можно передавть одному аргументу-классу. Для этого можно воспользоваться аннотацией `@ParamsTo`,
+как приведено на примере ниже:
+
+```java
+@Mapping("/request_parameters")
+public class RequestParametersController {
+  
+  public static class Client {
+    public String id;
+    public String name;
+    public BigDecimal amount;
+    public List<String> addresses;
+  }
+  
+  @AsIs
+  @Mapping("/params-to-example")
+  public String paramsToExample(@ParamsTo Client client) {
+    return "called RequestParametersController.paramsToExample with\n" +
+      "    client = " + client;
+  }
+  
+}
+```
+
 
 ### MethodFilter
 

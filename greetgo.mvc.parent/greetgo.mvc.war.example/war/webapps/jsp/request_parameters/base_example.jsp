@@ -1,19 +1,11 @@
 <%--suppress HtmlFormInputWithoutLabel --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+<%--suppress CssUnusedSymbol --%>
 <style>
-  #base-example .resultBody {
-    border: 1px dashed #18d52d;
-  }
 
   #base-example .err {
     border: 1px solid red;
-  }
-
-  #base-example .call-button {
-    padding: 0.1rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
   }
 </style>
 
@@ -93,6 +85,7 @@
     <pre class="resultBody"></pre>
   </div>
 
+  <%--suppress JSUnresolvedFunction, JSUnresolvedVariable --%>
   <script>(function () {
 
     var requestUriBase = "${contextPath}/api/request_parameters/base-example";

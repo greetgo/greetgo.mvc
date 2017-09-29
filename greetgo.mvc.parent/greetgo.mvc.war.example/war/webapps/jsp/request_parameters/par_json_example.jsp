@@ -1,11 +1,7 @@
+<%--suppress HtmlFormInputWithoutLabel --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%--suppress JSUnresolvedVariable --%>
-<%--suppress JSUnresolvedFunction --%>
-<%--suppress HtmlFormInputWithoutLabel, CssUnusedSymbol --%>
+<%--suppress CssUnusedSymbol --%>
 <style>
-  #par-json-example .resultBody {
-    border: 1px dashed #18d52d;
-  }
 
   #par-json-example .err {
     border: 1px solid red;
@@ -18,12 +14,6 @@
   #par-json-example .area {
     width: 20rem;
     height: 6rem;
-  }
-
-  #par-json-example .call-button {
-    padding: 0.1rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
   }
 </style>
 
@@ -70,6 +60,7 @@
     <pre class="resultBody"></pre>
   </div>
 
+  <%--suppress JSUnresolvedFunction, JSUnresolvedVariable --%>
   <script>(function () {
 
     var requestUriBase = "${contextPath}/api/request_parameters/par-json-example";

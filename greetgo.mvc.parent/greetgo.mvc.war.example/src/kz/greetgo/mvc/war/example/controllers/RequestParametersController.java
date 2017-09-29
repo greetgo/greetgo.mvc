@@ -89,15 +89,20 @@ public class RequestParametersController {
   /////////////////////////////// ParamsTo Example /////////////////////////////////////////////////////////////////////
 
   public static class Client {
-    public String id;
+    public Long id;
     public String name;
     public BigDecimal amount;
     public List<String> addresses;
 
+    @SuppressWarnings("unused")
+    public void setName(String name) {
+      this.name = name + " - from setter";
+    }
+
     @Override
     public String toString() {
-      return "Client {" +
-        "        id               = '" + id + "'\n" +
+      return "Client {\n" +
+        "        id               = " + id + "\n" +
         "        name             = '" + name + "'\n" +
         "        amount           = " + amount + "\n" +
         "        addresses.size() = " + (addresses == null ? "-" : "" + addresses.size()) + "\n" +
@@ -112,6 +117,4 @@ public class RequestParametersController {
     return "called RequestParametersController.paramsToExample with\n" +
       "    client = " + client;
   }
-
-
 }
