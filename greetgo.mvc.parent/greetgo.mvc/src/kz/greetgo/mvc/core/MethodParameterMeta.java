@@ -203,7 +203,7 @@ public class MethodParameterMeta {
 
         for (String name : fieldSetters.names()) {
           String[] values = tunnel.getParamValues(name);
-          if (values != null) fieldSetters.get(name).setFromStrs(ret, values);
+          if (values != null) fieldSetters.get(name).setFromStrings(ret, values);
         }
 
         return ret;

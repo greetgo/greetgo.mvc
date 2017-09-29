@@ -48,74 +48,74 @@ public class FieldSettersCreatorTest {
 
     String str1 = RND.str(10), str2 = RND.str(10);
 
-    strField1.setFromStrs(model, new String[]{str1, "left value"});
+    strField1.setFromStrings(model, new String[]{str1, "left value"});
 
     assertThat(model.strField1).isEqualTo(str1);
 
     FieldSetter strField2 = fieldSetters.get("strField2");
-    strField2.setFromStrs(model, new String[]{str2, "left value"});
+    strField2.setFromStrings(model, new String[]{str2, "left value"});
 
     assertThat(model.strField2).isEqualTo(str2 + " from setter");
 
   }
 
-  public static class FieldClassStrs {
+  public static class FieldClassStrings {
 
-    public List<String> strs1 = new ArrayList<>();
-    public final List<String> strs2 = new ArrayList<>();
+    public List<String> strings1 = new ArrayList<>();
+    public final List<String> strings2 = new ArrayList<>();
 
-    private final List<String> strs3 = new ArrayList<>();
-    public List<String> strs4 = new ArrayList<>();
+    private final List<String> strings3 = new ArrayList<>();
+    public List<String> strings4 = new ArrayList<>();
 
-    public List<String> getStrs3() {
-      return strs3;
+    public List<String> getStrings3() {
+      return strings3;
     }
 
     @SuppressWarnings("unused")
-    public void setStrs4(List<String> strs4) {
-      this.strs4 = strs4;
-      this.strs4.add("from setter");
+    public void setStrings4(List<String> strings4) {
+      this.strings4 = strings4;
+      this.strings4.add("from setter");
     }
   }
 
   @Test
-  public void strs() throws Exception {
-    FieldSetters fieldSetters = FieldSettersCreator.extractFrom(FieldClassStrs.class);
+  public void strings() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.extractFrom(FieldClassStrings.class);
     assertThat(fieldSetters).isNotNull();
-    assertThat(fieldSetters.names()).contains("strs1", "strs2", "strs3", "strs4");
+    assertThat(fieldSetters.names()).contains("strings1", "strings2", "strings3", "strings4");
     assertThat(fieldSetters.names()).hasSize(4);
 
     {
-      FieldSetter setter = fieldSetters.get("strs1");
+      FieldSetter setter = fieldSetters.get("strings1");
       assertThat(setter).isNotNull();
-      FieldClassStrs model = new FieldClassStrs();
+      FieldClassStrings model = new FieldClassStrings();
       String str1 = RND.str(10), str2 = RND.str(10), str3 = RND.str(10);
-      setter.setFromStrs(model, new String[]{str1, str2, str3});
-      assertThat(model.strs1).containsExactly(str1, str2, str3);
+      setter.setFromStrings(model, new String[]{str1, str2, str3});
+      assertThat(model.strings1).containsExactly(str1, str2, str3);
     }
     {
-      FieldSetter setter = fieldSetters.get("strs2");
+      FieldSetter setter = fieldSetters.get("strings2");
       assertThat(setter).isNotNull();
-      FieldClassStrs model = new FieldClassStrs();
+      FieldClassStrings model = new FieldClassStrings();
       String str1 = RND.str(10), str2 = RND.str(10), str3 = RND.str(10);
-      setter.setFromStrs(model, new String[]{str1, str2, str3});
-      assertThat(model.strs2).containsExactly(str1, str2, str3);
+      setter.setFromStrings(model, new String[]{str1, str2, str3});
+      assertThat(model.strings2).containsExactly(str1, str2, str3);
     }
     {
-      FieldSetter setter = fieldSetters.get("strs3");
+      FieldSetter setter = fieldSetters.get("strings3");
       assertThat(setter).isNotNull();
-      FieldClassStrs model = new FieldClassStrs();
+      FieldClassStrings model = new FieldClassStrings();
       String str1 = RND.str(10), str2 = RND.str(10), str3 = RND.str(10);
-      setter.setFromStrs(model, new String[]{str1, str2, str3});
-      assertThat(model.getStrs3()).containsExactly(str1, str2, str3);
+      setter.setFromStrings(model, new String[]{str1, str2, str3});
+      assertThat(model.getStrings3()).containsExactly(str1, str2, str3);
     }
     {
-      FieldSetter setter = fieldSetters.get("strs4");
+      FieldSetter setter = fieldSetters.get("strings4");
       assertThat(setter).isNotNull();
-      FieldClassStrs model = new FieldClassStrs();
+      FieldClassStrings model = new FieldClassStrings();
       String str1 = RND.str(10), str2 = RND.str(10), str3 = RND.str(10);
-      setter.setFromStrs(model, new String[]{str1, str2, str3});
-      assertThat(model.strs4).containsExactly(str1, str2, str3, "from setter");
+      setter.setFromStrings(model, new String[]{str1, str2, str3});
+      assertThat(model.strings4).containsExactly(str1, str2, str3, "from setter");
     }
   }
 
@@ -143,7 +143,7 @@ public class FieldSettersCreatorTest {
       FieldSetter setter = fieldSetters.get("intField");
       assertThat(setter).isNotNull();
       FieldClassNumbers numbers = new FieldClassNumbers();
-      setter.setFromStrs(numbers, new String[]{"213", "left value"});
+      setter.setFromStrings(numbers, new String[]{"213", "left value"});
       assertThat(numbers.intField).isEqualTo(213);
     }
 
@@ -151,7 +151,7 @@ public class FieldSettersCreatorTest {
       FieldSetter setter = fieldSetters.get("integerField");
       assertThat(setter).isNotNull();
       FieldClassNumbers numbers = new FieldClassNumbers();
-      setter.setFromStrs(numbers, new String[]{"2131", "left value"});
+      setter.setFromStrings(numbers, new String[]{"2131", "left value"});
       assertThat(numbers.integerField).isEqualTo(2131);
     }
 
@@ -159,7 +159,7 @@ public class FieldSettersCreatorTest {
       FieldSetter setter = fieldSetters.get("longField");
       assertThat(setter).isNotNull();
       FieldClassNumbers numbers = new FieldClassNumbers();
-      setter.setFromStrs(numbers, new String[]{"97811", "left value"});
+      setter.setFromStrings(numbers, new String[]{"97811", "left value"});
       assertThat(numbers.longField).isEqualTo(97811);
     }
 
@@ -167,7 +167,7 @@ public class FieldSettersCreatorTest {
       FieldSetter setter = fieldSetters.get("longBoxedField");
       assertThat(setter).isNotNull();
       FieldClassNumbers numbers = new FieldClassNumbers();
-      setter.setFromStrs(numbers, new String[]{"76487658764", "left value"});
+      setter.setFromStrings(numbers, new String[]{"76487658764", "left value"});
       assertThat(numbers.longBoxedField).isEqualTo(76487658764L);
     }
 
@@ -175,7 +175,7 @@ public class FieldSettersCreatorTest {
       FieldSetter setter = fieldSetters.get("booleanField");
       assertThat(setter).isNotNull();
       FieldClassNumbers numbers = new FieldClassNumbers();
-      setter.setFromStrs(numbers, new String[]{"true", "left value"});
+      setter.setFromStrings(numbers, new String[]{"true", "left value"});
       assertThat(numbers.booleanField).isTrue();
     }
 
@@ -183,7 +183,7 @@ public class FieldSettersCreatorTest {
       FieldSetter setter = fieldSetters.get("booleanBoxedField");
       assertThat(setter).isNotNull();
       FieldClassNumbers numbers = new FieldClassNumbers();
-      setter.setFromStrs(numbers, new String[]{"false", "left value"});
+      setter.setFromStrings(numbers, new String[]{"false", "left value"});
       assertThat(numbers.booleanBoxedField).isFalse();
     }
   }
