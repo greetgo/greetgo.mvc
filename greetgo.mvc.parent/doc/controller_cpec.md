@@ -78,10 +78,52 @@ public class RequestParametersController {
 ###### Json Parameter Example
 #### Аннотация @Par с @Json (структурные параметры в формате JSON)
 
-Аннотация @Par может также работать с более сложными структурами, передаваемыми в формате JSON. Для этого к этой
-аннотации можно добавить аннотацию @Json как в приведённом миже примере:
+Аннотация `@Par` может также работать с более сложными структурами, передаваемыми в формате JSON. Для этого к этой
+аннотации можно добавить аннотацию `@Json` как в приведённом миже примере:
 
+```java
+@Mapping("/request_parameters")
+public class RequestParametersController {
+  public static class ClientToSave {
+    public String id;
+    public String surname;
+    public String name;
+  }
 
+  public static class AccountToSave {
+    public String number;
+    public BigDecimal amount;
+    public Long typeId;
+  }
+
+  @AsIs
+  @Mapping("/par-json-example")
+  public String parJsonExample(@Par("clientToSave") @Json ClientToSave clientToSave,
+                               @Par("accountToSave") @Json AccountToSave accountToSave
+  ) {
+    return "called RequestParametersController.parJsonExample with arguments:\n" +
+      "    clientToSave  = " + clientToSave + "\n" +
+      "    accountToSave = " + accountToSave;
+  }
+}
+```
+
+Например параметр `clientToSave` нужно приготовить так:
+```javascript
+  
+  //Например есть объект, который надо отослать на сервер
+  var clientToSave = {
+     id: "sa676hyu",
+     surname: "Smith",
+     name: "John"
+  };
+
+  // Вот так можно составить запрос GET
+  var uri = "../par-json-example?clientToSave=" + encodeURIComponent(JSON.stringify(clientToSave));
+
+```
+
+В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-json-example
 
 ### MethodFilter
 

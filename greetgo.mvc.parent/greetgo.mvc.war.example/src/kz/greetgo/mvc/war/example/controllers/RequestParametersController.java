@@ -1,8 +1,10 @@
 package kz.greetgo.mvc.war.example.controllers;
 
 import kz.greetgo.mvc.annotations.AsIs;
+import kz.greetgo.mvc.annotations.Json;
 import kz.greetgo.mvc.annotations.Mapping;
 import kz.greetgo.mvc.annotations.Par;
+import kz.greetgo.mvc.annotations.ParamsTo;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -20,6 +22,8 @@ public class RequestParametersController {
   public enum Weather {
     SUNNY, CLOUDY, RAINY, HOT;
   }
+
+  /////////////////////////////// Base Example /////////////////////////////////////////////////////////////////////////
 
   @AsIs
   @Mapping("/base-example")
@@ -40,16 +44,73 @@ public class RequestParametersController {
       "    addresses.size() = " + addresses.size();
   }
 
-  public static class Client {
+  /////////////////////////////// @Par @Json Example ///////////////////////////////////////////////////////////////////
+
+  public static class ClientToSave {
     public String id;
     public String surname;
     public String name;
+
+    @Override
+    public String toString() {
+      return "ClientToSave{" +
+        "id='" + id + '\'' +
+        ", surname='" + surname + '\'' +
+        ", name='" + name + '\'' +
+        '}';
+    }
   }
 
-  public static class Account {
+  public static class AccountToSave {
     public String number;
-    public String amount;
+    public BigDecimal amount;
+    public Long typeId;
+
+    @Override
+    public String toString() {
+      return "AccountToSave{" +
+        "number='" + number + '\'' +
+        ", amount=" + amount +
+        ", typeId=" + typeId +
+        '}';
+    }
+  }
+
+  @AsIs
+  @Mapping("/par-json-example")
+  public String parJsonExample(@Par("clientToSave") @Json ClientToSave clientToSave,
+                               @Par("accountToSave") @Json AccountToSave accountToSave
+  ) {
+    return "called RequestParametersController.parJsonExample with arguments:\n" +
+      "    clientToSave  = " + clientToSave + "\n" +
+      "    accountToSave = " + accountToSave;
+  }
+
+  /////////////////////////////// ParamsTo Example /////////////////////////////////////////////////////////////////////
+
+  public static class Client {
+    public String id;
     public String name;
+    public BigDecimal amount;
+    public List<String> addresses;
+
+    @Override
+    public String toString() {
+      return "Client {" +
+        "        id               = '" + id + "'\n" +
+        "        name             = '" + name + "'\n" +
+        "        amount           = " + amount + "\n" +
+        "        addresses.size() = " + (addresses == null ? "-" : "" + addresses.size()) + "\n" +
+        "        addresses        = " + addresses + "\n" +
+        "    }";
+    }
+  }
+
+  @AsIs
+  @Mapping("/params-to-example")
+  public String paramsToExample(@ParamsTo Client client) {
+    return "called RequestParametersController.paramsToExample with\n" +
+      "    client = " + client;
   }
 
 

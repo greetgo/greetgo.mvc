@@ -1,11 +1,7 @@
 <%--suppress HtmlFormInputWithoutLabel --%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <style>
-  #base-example {
-    border: 3px solid #5c56ff;
-    padding: 1rem;
-  }
-
   #base-example .resultBody {
     border: 1px dashed #18d52d;
   }
@@ -21,7 +17,7 @@
   }
 </style>
 
-<div id="base-example">
+<div id="base-example" class="example-container">
   <h3 class="title">Base Example</h3>
   <table>
     <tbody>

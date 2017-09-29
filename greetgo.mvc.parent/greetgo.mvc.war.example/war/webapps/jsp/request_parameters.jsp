@@ -1,4 +1,5 @@
 <%--suppress HtmlUnknownTarget --%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -15,6 +16,10 @@
 <body>
 
 <%@include file="request_parameters/base_example.jsp" %>
+&nbsp;
+<%@include file="request_parameters/par_json_example.jsp" %>
+
+<div style="height: 100rem"></div>
 
 </body>
 </html>
