@@ -4,6 +4,7 @@ import kz.greetgo.mvc.annotations.SkipParameter;
 import kz.greetgo.util.RND;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,8 +83,8 @@ public class FieldSettersCreatorTest {
   public void strings() throws Exception {
     FieldSetters fieldSetters = FieldSettersCreator.extractFrom(FieldClassStrings.class);
     assertThat(fieldSetters).isNotNull();
-    assertThat(fieldSetters.names()).contains("strings1", "strings2", "strings3", "strings4");
     assertThat(fieldSetters.names()).hasSize(4);
+    assertThat(fieldSetters.names()).contains("strings1", "strings2", "strings3", "strings4");
 
     {
       FieldSetter setter = fieldSetters.get("strings1");
@@ -186,5 +187,43 @@ public class FieldSettersCreatorTest {
       setter.setFromStrings(numbers, new String[]{"false", "left value"});
       assertThat(numbers.booleanBoxedField).isFalse();
     }
+  }
+
+  public static class ClassWithLists {
+    public List<Long> list1 = new ArrayList<>();
+
+    public List<BigDecimal> list2;
+  }
+
+  @Test
+  public void testClassWithLists_withInitiatorInside() throws Exception {
+
+    FieldSetters fieldSetters = FieldSettersCreator.extractFrom(ClassWithLists.class);
+
+
+    FieldSetter list1 = fieldSetters.get("list1");
+    ClassWithLists a = new ClassWithLists();
+    list1.setFromStrings(a, new String[]{"123", "432", "4563"});
+
+    assertThat(a.list1).hasSize(3);
+    assertThat(a.list1.get(0)).isEqualTo(123L);
+    assertThat(a.list1.get(1)).isEqualTo(432L);
+    assertThat(a.list1.get(2)).isEqualTo(4563L);
+  }
+
+  @Test(enabled = false)
+  public void testClassWithLists_withoutInitiatorInside() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.extractFrom(ClassWithLists.class);
+
+    FieldSetter list2 = fieldSetters.get("list2");
+    assertThat(list2).isNotNull();
+    ClassWithLists a = new ClassWithLists();
+    list2.setFromStrings(a, new String[]{" 54326.76", "12.4356 ", "5465.34  54", "43_55,435 46"});
+
+    assertThat(a.list2).hasSize(4);
+    assertThat(a.list2.get(0)).isEqualByComparingTo("54326.76");
+    assertThat(a.list2.get(1)).isEqualByComparingTo("12.4356");
+    assertThat(a.list2.get(2)).isEqualByComparingTo("5465.3454");
+    assertThat(a.list2.get(3)).isEqualByComparingTo("4355.43546");
   }
 }

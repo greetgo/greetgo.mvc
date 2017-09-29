@@ -242,7 +242,7 @@ public class MvcUtil {
     throw new IllegalArgumentException("Cannot convert strings to " + type);
   }
 
-  private static Object convertStringsToParameterizedType(String[] strs, ParameterizedType type) {
+  private static Object convertStringsToParameterizedType(String[] strings, ParameterizedType type) {
 
     final Class<?> rawType = (Class<?>) type.getRawType();
 
@@ -250,9 +250,9 @@ public class MvcUtil {
 
       Collection collection = createEmptyInstanceFor(rawType);
 
-      if (strs == null) return collection;
+      if (strings == null) return collection;
 
-      for (String str : strs) {
+      for (String str : strings) {
         //noinspection unchecked
         collection.add(convertStrToType(str, type.getActualTypeArguments()[0]));
       }
