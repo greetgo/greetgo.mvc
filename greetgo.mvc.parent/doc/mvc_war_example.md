@@ -2,7 +2,7 @@
 
  - [Концепция](concept.md)
  - [Проект-пример mvc.war.example]
- - [Спецификация контроллеров](controller_cpec.md)
+ - [Спецификация контроллеров](controller_spec.md)
 
 ### Проект-пример mvc.war.example
 
