@@ -155,6 +155,7 @@ public class RequestParametersController {
 }
 ```
 
+В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#params-to-example
 
 ### MethodFilter
 

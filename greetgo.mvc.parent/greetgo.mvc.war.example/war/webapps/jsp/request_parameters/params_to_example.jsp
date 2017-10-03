@@ -38,14 +38,14 @@
       <td>=</td>
       <td><input type="text" class="address1" value="New York, Stone st., 27"></td>
       <td>use</td>
-      <td><input type="checkbox" class="address1-use"></td>
+      <td><input type="checkbox" class="address1-use" checked></td>
     </tr>
     <tr>
       <td>address</td>
       <td>=</td>
       <td><input type="text" class="address2" value="London, Baker st., 221"></td>
       <td>use</td>
-      <td><input type="checkbox" class="address2-use"></td>
+      <td><input type="checkbox" class="address2-use" checked></td>
     </tr>
     </tbody>
   </table>
@@ -103,10 +103,10 @@
       }
 
       if (address1Use.is(':checked')) {
-        pars.push("address=" + encodeURIComponent(address1.val()));
+        pars.push("addresses=" + encodeURIComponent(address1.val()));
       }
       if (address2Use.is(':checked')) {
-        pars.push("address=" + encodeURIComponent(address2.val()));
+        pars.push("addresses=" + encodeURIComponent(address2.val()));
       }
 
       if (html) {
