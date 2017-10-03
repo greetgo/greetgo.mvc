@@ -2,10 +2,13 @@ package kz.greetgo.mvc.util.setters;
 
 import kz.greetgo.mvc.annotations.SkipParameter;
 import kz.greetgo.util.RND;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.AccessibleObject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -37,7 +40,7 @@ public class FieldSettersCreatorTest {
 
   @Test
   public void str() throws Exception {
-    FieldSetters fieldSetters = FieldSettersCreator.extractFrom(FieldClassStr.class);
+    FieldSetters fieldSetters = FieldSettersCreator.create(FieldClassStr.class);
     assertThat(fieldSetters).isNotNull();
     assertThat(fieldSetters.names()).contains("strField1", "strField2");
     assertThat(fieldSetters.names()).hasSize(2);
@@ -81,7 +84,7 @@ public class FieldSettersCreatorTest {
 
   @Test
   public void strings() throws Exception {
-    FieldSetters fieldSetters = FieldSettersCreator.extractFrom(FieldClassStrings.class);
+    FieldSetters fieldSetters = FieldSettersCreator.create(FieldClassStrings.class);
     assertThat(fieldSetters).isNotNull();
     assertThat(fieldSetters.names()).hasSize(4);
     assertThat(fieldSetters.names()).contains("strings1", "strings2", "strings3", "strings4");
@@ -116,7 +119,7 @@ public class FieldSettersCreatorTest {
       FieldClassStrings model = new FieldClassStrings();
       String str1 = RND.str(10), str2 = RND.str(10), str3 = RND.str(10);
       setter.setFromStrings(model, new String[]{str1, str2, str3});
-      assertThat(model.strings4).containsExactly(str1, str2, str3, "from setter");
+      assertThat(model.strings4).containsExactly(str1, str2, str3);
     }
   }
 
@@ -131,7 +134,7 @@ public class FieldSettersCreatorTest {
 
   @Test
   public void numbers() throws Exception {
-    FieldSetters fieldSetters = FieldSettersCreator.extractFrom(FieldClassNumbers.class);
+    FieldSetters fieldSetters = FieldSettersCreator.create(FieldClassNumbers.class);
     assertThat(fieldSetters).isNotNull();
     assertThat(fieldSetters.names()).contains(
       "intField", "integerField",
@@ -198,7 +201,7 @@ public class FieldSettersCreatorTest {
   @Test
   public void testClassWithLists_withInitiatorInside() throws Exception {
 
-    FieldSetters fieldSetters = FieldSettersCreator.extractFrom(ClassWithLists.class);
+    FieldSetters fieldSetters = FieldSettersCreator.create(ClassWithLists.class);
 
 
     FieldSetter list1 = fieldSetters.get("list1");
@@ -211,9 +214,9 @@ public class FieldSettersCreatorTest {
     assertThat(a.list1.get(2)).isEqualTo(4563L);
   }
 
-  @Test(enabled = false)
+  @Test
   public void testClassWithLists_withoutInitiatorInside() throws Exception {
-    FieldSetters fieldSetters = FieldSettersCreator.extractFrom(ClassWithLists.class);
+    FieldSetters fieldSetters = FieldSettersCreator.create(ClassWithLists.class);
 
     FieldSetter list2 = fieldSetters.get("list2");
     assertThat(list2).isNotNull();
@@ -225,5 +228,545 @@ public class FieldSettersCreatorTest {
     assertThat(a.list2.get(1)).isEqualByComparingTo("12.4356");
     assertThat(a.list2.get(2)).isEqualByComparingTo("5465.3454");
     assertThat(a.list2.get(3)).isEqualByComparingTo("4355.43546");
+  }
+
+  @SuppressWarnings("unused")
+  public static class Tmp {
+    public List<String> listField;
+
+    public String leftField;
+
+    public void setListSetter(List<Long> list) {}
+
+    public void setLeftSetter(int left) {}
+
+    public ArrayList<String> arrayListField;
+
+    public void setArrayListSetter(ArrayList<BigDecimal> list) {}
+
+    public List<Date> getSomeListDate() {return null;}
+
+    public Date getSomeDate() {return null;}
+  }
+
+  @DataProvider
+  public Object[][] createCollectionManager_DataProvider() throws Exception {
+    List<Object[]> toRet = new ArrayList<>();
+
+    toRet.add(new Object[]{Tmp.class.getField("listField"), ArrayList.class, String.class});
+    toRet.add(new Object[]{Tmp.class.getField("leftField"), null, null});
+    toRet.add(new Object[]{Tmp.class.getMethod("setListSetter", List.class), ArrayList.class, Long.class});
+    toRet.add(new Object[]{Tmp.class.getMethod("setLeftSetter", Integer.TYPE), null, null});
+    toRet.add(new Object[]{Tmp.class.getMethod("setArrayListSetter", ArrayList.class), ArrayList.class, BigDecimal.class});
+    toRet.add(new Object[]{Tmp.class.getField("arrayListField"), ArrayList.class, String.class});
+    toRet.add(new Object[]{Tmp.class.getMethod("getSomeListDate"), ArrayList.class, Date.class});
+    toRet.add(new Object[]{Tmp.class.getMethod("getSomeDate"), null, null});
+
+    return toRet.toArray(new Object[toRet.size()][]);
+  }
+
+  @Test(dataProvider = "createCollectionManager_DataProvider")
+  public void createCollectionManager(AccessibleObject accessibleObject,
+                                      Class<?> expectedInstanceOf,
+                                      Class<?> expectedElementType
+  ) throws Exception {
+    FieldSettersCreator.CollectionManager instance = FieldSettersCreator.createCollectionManager(accessibleObject);
+    if (expectedInstanceOf == null) {
+      assertThat(instance).isNull();
+    } else {
+      assertThat(instance).isNotNull();
+      //noinspection ConstantConditions,unchecked
+      assertThat(instance.createInstance()).isInstanceOf(expectedInstanceOf);
+      assertThat(instance.elementType().getName()).isEqualTo(expectedElementType.getName());
+    }
+  }
+
+  public static class TestField_int {
+    public int field;
+
+    public void assertValue(int expected) {
+      assertThat(field).isEqualTo(expected);
+    }
+  }
+
+  @Test
+  public void testField_int_ok() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestField_int.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    int rndInt = RND.plusInt(20_000_000);
+    {
+      TestField_int tmp = new TestField_int();
+      fieldSetter.setFromStrings(tmp, new String[]{"" + rndInt, "Left value"});
+      tmp.assertValue(rndInt);
+    }
+    rndInt = -rndInt;
+    {
+      TestField_int tmp = new TestField_int();
+      fieldSetter.setFromStrings(tmp, new String[]{"" + rndInt, "Left value"});
+      tmp.assertValue(rndInt);
+    }
+  }
+
+  @Test
+  public void testField_int_empty() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestField_int.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    TestField_int tmp = new TestField_int();
+    fieldSetter.setFromStrings(tmp, new String[]{"", "Left value"});
+    tmp.assertValue(0);
+  }
+
+  public static class TestField_Integer {
+    public Integer field;
+  }
+
+  @Test
+  public void testField_Integer_empty() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestField_Integer.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    TestField_Integer tmp = new TestField_Integer();
+    fieldSetter.setFromStrings(tmp, new String[]{"", "Left value"});
+    assertThat(tmp.field).isNull();
+  }
+
+  @Test(expectedExceptions = java.lang.NumberFormatException.class)
+  public void testField_int_leftValue() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestField_int.class);
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    TestField_int tmp = new TestField_int();
+    fieldSetter.setFromStrings(tmp, new String[]{"Left value"});
+  }
+
+  public static class TestField_ListInteger {
+    public List<Integer> field = null;
+
+    public void assertEqualsTo(int... ii) {
+      for (int i = 0, c = ii.length; i < c; i++) {
+        assertThat(field.get(i)).describedAs("i = " + i).isEqualTo(ii[i]);
+      }
+    }
+  }
+
+  @Test
+  public void testField_ListInteger() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestField_ListInteger.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    int i1 = RND.plusInt(20_000_000) - 10_000_000;
+    int i2 = RND.plusInt(20_000_000) - 10_000_000;
+    int i3 = RND.plusInt(20_000_000) - 10_000_000;
+    int i4 = RND.plusInt(20_000_000) - 10_000_000;
+    int i5 = RND.plusInt(20_000_000) - 10_000_000;
+
+    TestField_ListInteger tmp = new TestField_ListInteger();
+    fieldSetter.setFromStrings(tmp, new String[]{"" + i1, "" + i2, "" + i3, "" + i4, "" + i5,});
+    tmp.assertEqualsTo(i1, i2, i3, i4, i5);
+  }
+
+  public static class TestField_ListIntegerAlreadyInitiated {
+    public List<Integer> field = new ArrayList<>();
+
+    {
+      field.add(RND.plusInt(20_000_000) - 10_000_000);
+    }
+
+    public void assertEqualsTo(int... ii) {
+      for (int i = 0, c = ii.length; i < c; i++) {
+        assertThat(field.get(i)).describedAs("i = " + i).isEqualTo(ii[i]);
+      }
+    }
+  }
+
+  @Test
+  public void testField_ListIntegerAlreadyInitiated() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestField_ListIntegerAlreadyInitiated.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    int i1 = RND.plusInt(20_000_000) - 10_000_000;
+    int i2 = RND.plusInt(20_000_000) - 10_000_000;
+    int i3 = RND.plusInt(20_000_000) - 10_000_000;
+    int i4 = RND.plusInt(20_000_000) - 10_000_000;
+    int i5 = RND.plusInt(20_000_000) - 10_000_000;
+
+    TestField_ListIntegerAlreadyInitiated tmp = new TestField_ListIntegerAlreadyInitiated();
+    List<Integer> oldField = tmp.field;
+    fieldSetter.setFromStrings(tmp, new String[]{"" + i1, "" + i2, "" + i3, "" + i4, "" + i5,});
+    tmp.assertEqualsTo(i1, i2, i3, i4, i5);
+
+    assertThat(oldField).describedAs("Очень важно чтобы использовался тот список, который уже есть").isSameAs(tmp.field);
+  }
+
+  public static class TestSetter_int {
+    public int field;
+
+    @SuppressWarnings("unused")
+    public void setField(int field) {
+      this.field = field + 5;
+    }
+
+    public void assertValue(int expected) {
+      assertThat(field).isEqualTo(expected + 5);
+    }
+  }
+
+  @Test
+  public void TestSetter_int_ok() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestSetter_int.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    int rndInt = RND.plusInt(20_000_000);
+    {
+      TestSetter_int tmp = new TestSetter_int();
+      fieldSetter.setFromStrings(tmp, new String[]{"" + rndInt, "Left value"});
+      tmp.assertValue(rndInt);
+    }
+    rndInt = -rndInt;
+    {
+      TestSetter_int tmp = new TestSetter_int();
+      fieldSetter.setFromStrings(tmp, new String[]{"" + rndInt, "Left value"});
+      tmp.assertValue(rndInt);
+    }
+  }
+
+  public static class TestSetter_ListInteger {
+    public List<Integer> field = null;
+    List<Integer> __fieldFromSetter__ = null;
+
+    int getterCallCount = 0;
+
+    @SuppressWarnings("unused")
+    public List<Integer> getField() {
+      getterCallCount++;
+      return field;
+    }
+
+    @SuppressWarnings("unused")
+    public void setField(List<Integer> field) {
+      this.__fieldFromSetter__ = field;
+      this.field = field;
+    }
+
+    public void assertEqualsTo(int... ii) {
+      for (int i = 0, c = ii.length; i < c; i++) {
+        assertThat(field.get(i)).describedAs("i = " + i).isEqualTo(ii[i]);
+      }
+    }
+  }
+
+  @Test
+  public void testSetter_ListInteger() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestSetter_ListInteger.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    int i1 = RND.plusInt(20_000_000) - 10_000_000;
+    int i2 = RND.plusInt(20_000_000) - 10_000_000;
+    int i3 = RND.plusInt(20_000_000) - 10_000_000;
+    int i4 = RND.plusInt(20_000_000) - 10_000_000;
+    int i5 = RND.plusInt(20_000_000) - 10_000_000;
+
+    TestSetter_ListInteger tmp = new TestSetter_ListInteger();
+    fieldSetter.setFromStrings(tmp, new String[]{"" + i1, "" + i2, "" + i3, "" + i4, "" + i5,});
+    tmp.assertEqualsTo(i1, i2, i3, i4, i5);
+
+    assertThat(tmp.getterCallCount).isEqualTo(1);
+    assertThat(tmp.field)
+      .describedAs("Установка должна производиться только через setter")
+      .isSameAs(tmp.__fieldFromSetter__);
+  }
+
+  public static class TestSetter_ListIntegerAlreadyInitiated {
+    public List<Integer> field = new ArrayList<>();
+
+    int getterCallCount = 0;
+
+    @SuppressWarnings("unused")
+    public List<Integer> getField() {
+      getterCallCount++;
+      return field;
+    }
+
+    @SuppressWarnings("unused")
+    public void setField(List<Integer> field) {
+      throw new RuntimeException("Когда поле уже определено, setter вызываться не должен");
+    }
+
+    public void assertEqualsTo(int... ii) {
+      for (int i = 0, c = ii.length; i < c; i++) {
+        assertThat(field.get(i)).describedAs("i = " + i).isEqualTo(ii[i]);
+      }
+    }
+  }
+
+  @Test
+  public void testSetter_ListIntegerAlreadyInitiated() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestSetter_ListIntegerAlreadyInitiated.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    int i1 = RND.plusInt(20_000_000) - 10_000_000;
+    int i2 = RND.plusInt(20_000_000) - 10_000_000;
+    int i3 = RND.plusInt(20_000_000) - 10_000_000;
+    int i4 = RND.plusInt(20_000_000) - 10_000_000;
+    int i5 = RND.plusInt(20_000_000) - 10_000_000;
+
+    TestSetter_ListIntegerAlreadyInitiated tmp = new TestSetter_ListIntegerAlreadyInitiated();
+    List<Integer> oldField = tmp.field;
+    fieldSetter.setFromStrings(tmp, new String[]{"" + i1, "" + i2, "" + i3, "" + i4, "" + i5,});
+    tmp.assertEqualsTo(i1, i2, i3, i4, i5);
+
+    assertThat(oldField)
+      .describedAs("Очень важно чтобы использовался тот же список, который уже есть")
+      .isSameAs(tmp.field);
+    assertThat(tmp.getterCallCount).isEqualTo(1);
+  }
+
+  public static class TestSetter_ListIntegerNoGetter {
+    private List<Integer> field = new ArrayList<>();
+
+    int setterCallCount = 0;
+
+    @SuppressWarnings("unused")
+    public void setField(List<Integer> field) {
+      this.field = field;
+      setterCallCount++;
+    }
+
+    public void assertEqualsTo(int... ii) {
+      for (int i = 0, c = ii.length; i < c; i++) {
+        assertThat(field.get(i)).describedAs("i = " + i).isEqualTo(ii[i]);
+      }
+    }
+  }
+
+  @Test
+  public void testSetter_ListIntegerNoGetter() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestSetter_ListIntegerNoGetter.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    int i1 = RND.plusInt(20_000_000) - 10_000_000;
+    int i2 = RND.plusInt(20_000_000) - 10_000_000;
+    int i3 = RND.plusInt(20_000_000) - 10_000_000;
+    int i4 = RND.plusInt(20_000_000) - 10_000_000;
+    int i5 = RND.plusInt(20_000_000) - 10_000_000;
+
+    TestSetter_ListIntegerNoGetter tmp = new TestSetter_ListIntegerNoGetter();
+    List<Integer> oldField = tmp.field;
+    fieldSetter.setFromStrings(tmp, new String[]{"" + i1, "" + i2, "" + i3, "" + i4, "" + i5,});
+    tmp.assertEqualsTo(i1, i2, i3, i4, i5);
+
+    assertThat(oldField)
+      .describedAs("Здесь не получиьтся оставить прежнее значение, так как нету getter-а")
+      .isNotSameAs(tmp.field);
+    assertThat(tmp.setterCallCount).isEqualTo(1);
+  }
+
+  public static class TestField_ListIntegerFinal {
+    public final List<Integer> field = new ArrayList<>();
+
+    {
+      field.add(RND.plusInt(20_000_000) - 10_000_000);
+    }
+
+    public void assertEqualsTo(int... ii) {
+      for (int i = 0, c = ii.length; i < c; i++) {
+        assertThat(field.get(i)).describedAs("i = " + i).isEqualTo(ii[i]);
+      }
+    }
+  }
+
+  @Test
+  public void testField_ListIntegerFinal() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestField_ListIntegerFinal.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    int i1 = RND.plusInt(20_000_000) - 10_000_000;
+    int i2 = RND.plusInt(20_000_000) - 10_000_000;
+    int i3 = RND.plusInt(20_000_000) - 10_000_000;
+    int i4 = RND.plusInt(20_000_000) - 10_000_000;
+    int i5 = RND.plusInt(20_000_000) - 10_000_000;
+
+    TestField_ListIntegerFinal tmp = new TestField_ListIntegerFinal();
+    fieldSetter.setFromStrings(tmp, new String[]{"" + i1, "" + i2, "" + i3, "" + i4, "" + i5,});
+    tmp.assertEqualsTo(i1, i2, i3, i4, i5);
+
+  }
+
+  public static class TestGetter_ListIntegerNoSetter {
+    private final List<Integer> field = new ArrayList<>();
+
+    {
+      field.add(RND.plusInt(20_000_000) - 10_000_000);
+    }
+
+    int getterCallCount = 0;
+
+    @SuppressWarnings("unused")
+    public List<Integer> getField() {
+      getterCallCount++;
+      return field;
+    }
+
+    public void assertEqualsTo(int... ii) {
+      for (int i = 0, c = ii.length; i < c; i++) {
+        assertThat(field.get(i)).describedAs("i = " + i).isEqualTo(ii[i]);
+      }
+    }
+  }
+
+  @Test
+  public void testGetter_ListIntegerNoSetter() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(TestGetter_ListIntegerNoSetter.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).containsOnly("field");
+
+    FieldSetter fieldSetter = fieldSetters.get("field");
+    assertThat(fieldSetter).isNotNull();
+
+    int i1 = RND.plusInt(20_000_000) - 10_000_000;
+    int i2 = RND.plusInt(20_000_000) - 10_000_000;
+    int i3 = RND.plusInt(20_000_000) - 10_000_000;
+    int i4 = RND.plusInt(20_000_000) - 10_000_000;
+    int i5 = RND.plusInt(20_000_000) - 10_000_000;
+
+    TestGetter_ListIntegerNoSetter tmp = new TestGetter_ListIntegerNoSetter();
+    fieldSetter.setFromStrings(tmp, new String[]{"" + i1, "" + i2, "" + i3, "" + i4, "" + i5,});
+    tmp.assertEqualsTo(i1, i2, i3, i4, i5);
+
+    assertThat(tmp.getterCallCount).isEqualTo(1);
+  }
+
+  public static class SkipByField {
+    @SkipParameter
+    @SuppressWarnings("unused")
+    public String field;
+  }
+
+  @Test
+  public void testSkipByField() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(SkipByField.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).isEmpty();
+  }
+
+  public static class SkipByFieldWithGetterAndSetter {
+    @SkipParameter
+    public String field;
+
+    @SuppressWarnings("unused")
+    public String getField() {
+      return field;
+    }
+
+    @SuppressWarnings("unused")
+    public void setField(String field) {
+      this.field = field;
+    }
+  }
+
+  @Test
+  public void testSkipByFieldWithGetterAndSetter() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(SkipByFieldWithGetterAndSetter.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).isEmpty();
+  }
+
+  public static class AnnotationSkipParameterDoesNotDoWithPrivateField {
+    @SkipParameter
+    private String field;
+
+    @SuppressWarnings("unused")
+    public String getField() {
+      return field;
+    }
+
+    @SuppressWarnings("unused")
+    public void setField(String field) {
+      this.field = field;
+    }
+  }
+
+  @Test
+  public void testAnnotationSkipParameterDoesNotDoWithPrivateField() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(AnnotationSkipParameterDoesNotDoWithPrivateField.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).isNotEmpty();
+  }
+
+  public static class SkipByGetter {
+    @SuppressWarnings("unused")
+    @SkipParameter
+    public String getField() {
+      return null;
+    }
+
+    @SuppressWarnings("unused")
+    public void setField(String field) {}
+  }
+
+  @Test
+  public void testSkipByGetter() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(SkipByGetter.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).isEmpty();
+  }
+
+  public static class SkipBySetter {
+    @SuppressWarnings("unused")
+    public String getField() {
+      return null;
+    }
+
+    @SkipParameter
+    @SuppressWarnings("unused")
+    public void setField(String field) {}
+  }
+
+  @Test
+  public void testSkipBySetter() throws Exception {
+    FieldSetters fieldSetters = FieldSettersCreator.create(SkipBySetter.class);
+    assertThat(fieldSetters).isNotNull();
+    assertThat(fieldSetters.names()).isEmpty();
   }
 }
