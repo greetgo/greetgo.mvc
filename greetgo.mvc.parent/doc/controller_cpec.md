@@ -126,7 +126,9 @@ public class RequestParametersController {
 
 ```
 
-В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-json-example
+> Другой пример вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_json_example.jsp`
+>
+>В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-json-example
 
 ###### Params To Example
 #### Аннотация @ParamsTo (все параметры в один класс)
@@ -155,7 +157,9 @@ public class RequestParametersController {
 }
 ```
 
-В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#params-to-example
+> Пример его вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/params_to_example.jsp`
+>
+> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#params-to-example
 
 ### MethodFilter
 
