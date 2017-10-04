@@ -8,7 +8,6 @@ import kz.greetgo.mvc.interfaces.MethodInvokedResult;
 import kz.greetgo.mvc.interfaces.MethodInvoker;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.SessionParameterGetter;
-import kz.greetgo.mvc.interfaces.Views;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
@@ -17,7 +16,7 @@ import java.util.Map;
 /**
  * В этом классе реализована обработка методов контроллеров
  */
-public class ViewsImpl implements Views {
+public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -115,7 +114,17 @@ public class ViewsImpl implements Views {
   @Override
   public Object getSessionParameter(SessionParameterGetter.ParameterContext context, RequestTunnel tunnel) {
     if ("personId".equals(context.parameterName())) {
-      return "session person id";
+      if (context.expectedReturnType() != Long.class) {
+        throw new RuntimeException("Session parameter `personId` must be a Long");
+      }
+      return 543265L;
+    }
+
+    if ("role".equals(context.parameterName())) {
+      if (context.expectedReturnType() != String.class) {
+        throw new RuntimeException("Session parameter `role` must be a string");
+      }
+      return "role value taken from session";
     }
 
     throw new RuntimeException("Unknown session parameter " + context.parameterName());
@@ -181,7 +190,6 @@ public class ViewsImpl implements Views {
       error.printStackTrace();
     }
 
-    return;
   }
 
 }

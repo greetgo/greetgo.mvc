@@ -18,6 +18,7 @@
   <li><a href="request_parameters/form#par-json-example">@Par @Json Example</a></li>
   <li><a href="request_parameters/form#params-to-example">@ParamsTo Example</a></li>
   <li><a href="request_parameters/form#par-path-example">@ParPath Example</a></li>
+  <li><a href="request_parameters/form#par-session-example">@ParSession Example</a></li>
 </ul>
 </body>
 </html>

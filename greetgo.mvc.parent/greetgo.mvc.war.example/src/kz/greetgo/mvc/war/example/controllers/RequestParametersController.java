@@ -5,6 +5,7 @@ import kz.greetgo.mvc.annotations.Json;
 import kz.greetgo.mvc.annotations.Mapping;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.annotations.ParPath;
+import kz.greetgo.mvc.annotations.ParSession;
 import kz.greetgo.mvc.annotations.ParamsTo;
 
 import java.math.BigDecimal;
@@ -128,5 +129,15 @@ public class RequestParametersController {
     return "called RequestParametersController.parPathExample with\n" +
       "    id   = " + id + "\n" +
       "    name = " + name;
+  }
+
+  /////////////////////////////// ParSession Example ///////////////////////////////////////////////////////////////////
+
+  @AsIs
+  @Mapping("/par-session-example")
+  public String parSessionExample(@ParSession("personId") Long personId, @ParSession("role") String role) {
+    return "called RequestParametersController.parSessionExample with\n" +
+      "    personId = " + personId + "\n" +
+      "    role     = '" + role + "'";
   }
 }
