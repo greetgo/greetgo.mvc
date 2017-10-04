@@ -166,7 +166,7 @@ public class RequestParametersController {
 ###### ParPath Example
 #### Аннотация @ParPath (параметры из URL‐пути)
 
-Параметры можно передавать через URL-путь. Например так:
+Параметры можно передавать через URL-путь, используя фигурные скобки - `{имя_параметра}`. Например так:
 
 ```java
 @Mapping("/request_parameters")
@@ -181,7 +181,7 @@ public class RequestParametersController {
 }
 ```
 
-Тгда, если сделать запрос:
+Тогда, если сделать запрос:
 
     GET /request_parameters/par-path-example/id:4567/John
 
