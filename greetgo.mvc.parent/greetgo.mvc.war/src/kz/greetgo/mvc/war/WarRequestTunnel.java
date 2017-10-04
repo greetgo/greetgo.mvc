@@ -15,13 +15,18 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WarRequestTunnel implements RequestTunnel {
   public final HttpServletRequest request;
   public final HttpServletResponse response;
   private final EventTunnelCookies cookiesReturn;
-  private volatile boolean executed = false;
+  private final AtomicBoolean executed = new AtomicBoolean(false);
   public String targetSubContext;
 
   public WarRequestTunnel(ServletRequest request, ServletResponse response, String targetSubContext) {
@@ -112,7 +117,7 @@ public class WarRequestTunnel implements RequestTunnel {
         reference = request.getContextPath() + reference;
       }
       response.sendRedirect(reference);
-      executed = true;
+      executed.set(true);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -132,12 +137,12 @@ public class WarRequestTunnel implements RequestTunnel {
 
   @Override
   public void enableMultipartSupport(UploadInfo uploadInfo) {
-    throw new RuntimeException("enableMultipartSupport cannot be called");
+    throw new RuntimeException("enableMultipartSupport cannot be called for WAR");
   }
 
   @Override
   public void removeMultipartData() {
-    throw new RuntimeException("removeMultipartData cannot be called");
+    throw new RuntimeException("removeMultipartData cannot be called for WAR");
   }
 
   @Override
@@ -147,12 +152,12 @@ public class WarRequestTunnel implements RequestTunnel {
 
   @Override
   public boolean isExecuted() {
-    return executed;
+    return executed.get();
   }
 
   @Override
   public void setExecuted(boolean executed) {
-    this.executed = executed;
+    this.executed.set(executed);
   }
 
   @Override

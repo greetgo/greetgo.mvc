@@ -63,8 +63,7 @@ public abstract class AppServlet extends GenericServlet {
     afterRegister();
   }
 
-  protected void afterRegister() {
-  }
+  protected void afterRegister() {}
 
   public void register(ServletContext ctx) {
     register(ctx, null);
