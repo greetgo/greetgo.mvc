@@ -7,6 +7,7 @@
      - [Аннотация @Par (простые параметры)](#base-example)
      - [Аннотация @Par с @Json (структурные параметры в формате JSON)](#json-parameter-example)
      - [Аннотация @ParamsTo (все параметры в один класс)](#params-to-example)
+     - [Аннотация @ParPath (параметры из URL‐пути)](#parpath-example)
    - [MethodFilter](#methodfilter)
 
 ### Спецификация контроллеров
@@ -160,6 +161,38 @@ public class RequestParametersController {
 > Пример его вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/params_to_example.jsp`
 >
 > В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#params-to-example
+
+
+###### ParPath Example
+#### Аннотация @ParPath (параметры из URL‐пути)
+
+Параметры можно передавать через URL-путь. Например так:
+
+```java
+@Mapping("/request_parameters")
+public class RequestParametersController {
+  @AsIs
+  @Mapping("/par-path-example/id:{id}/{name}")
+  public String parPathExample(@ParPath("id") Long id, @ParPath("name") String name) {
+    return "called RequestParametersController.parPathExample with\n" +
+      "    id   = " + id + "\n" +
+      "    name = " + name;
+  }
+}
+```
+
+Тгда, если сделать запрос:
+
+    GET /request_parameters/par-path-example/id:4567/John
+
+То аргументу `id` присвоиться значение `4567`, а аргументу `name` присвоиться значение `John`.
+
+> Пример находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_path_example.jsp`
+>
+> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-path-example
+
+Если в аннотации `@ParPath` указать параметр, которого нет в аннотации `@Mapping` в фигурных скобках, то, при вызове,
+произойдёт ошибка 500. В лог вывалиться ошибка `kz.greetgo.mvc.errors.NoPathParam`.
 
 ### MethodFilter
 

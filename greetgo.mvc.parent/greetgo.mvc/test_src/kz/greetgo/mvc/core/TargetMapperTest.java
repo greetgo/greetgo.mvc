@@ -1,6 +1,7 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.MethodFilter;
+import kz.greetgo.mvc.errors.NoPathParam;
 import kz.greetgo.mvc.interfaces.MappingResult;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.utils.TestTunnel;
@@ -69,10 +70,8 @@ public class TargetMapperTest {
     }
   }
 
-  @Test
-  public void catchTarget_requestMethods() throws Exception {
-
-    MethodFilter mf = new MethodFilter() {
+  private static MethodFilter methodFilter(RequestMethod... methods) {
+    return new MethodFilter() {
       @Override
       public Class<? extends Annotation> annotationType() {
         return null;
@@ -80,22 +79,56 @@ public class TargetMapperTest {
 
       @Override
       public RequestMethod[] value() {
-        return new RequestMethod[]{GET, DELETE};
+        return methods;
       }
     };
+  }
 
-    TargetMapper targetMapper = new TargetMapper("/asd", mf);
+  @Test
+  public void catchTarget_requestMethods() throws Exception {
+
+    TargetMapper targetMapper = new TargetMapper("/asd1", methodFilter(GET, DELETE));
 
     {
-      final MappingResult mappingResult = targetMapper.mapTarget(tunnel("/asd", GET));
+      final MappingResult mappingResult = targetMapper.mapTarget(tunnel("/asd1", GET));
       assertThat(mappingResult).isNotNull();
       assertThat(mappingResult.ok()).isTrue();
     }
 
     {
-      final MappingResult mappingResult = targetMapper.mapTarget(tunnel("/asd", POST));
+      final MappingResult mappingResult = targetMapper.mapTarget(tunnel("/asd2", POST));
       assertThat(mappingResult).isNotNull();
       assertThat(mappingResult.ok()).isFalse();
     }
+  }
+
+  @Test
+  public void parseManyParams() throws Exception {
+    TargetMapper targetMapper = new TargetMapper("/page/{pageNumber}/pageSize/{pageSize}/sort/{direction}/column/{nameOfColumn}", null);
+
+
+    final MappingResult mappingResult = targetMapper.mapTarget(tunnel(
+      "/page/6/pageSize/3/sort/asc/column/date"
+    ));
+    assertThat(mappingResult).isNotNull();
+    assertThat(mappingResult.ok()).isTrue();
+    assertThat(mappingResult.getParam("pageNumber")).isEqualTo("6");
+    assertThat(mappingResult.getParam("pageSize")).isEqualTo("3");
+    assertThat(mappingResult.getParam("direction")).isEqualTo("asc");
+    assertThat(mappingResult.getParam("nameOfColumn")).isEqualTo("date");
+
+  }
+
+  @Test(expectedExceptions = NoPathParam.class)
+  public void throws_NoPathParam() throws Exception {
+    TargetMapper targetMapper = new TargetMapper("/page/{pageNumber}/pageSize/{pageSize}/sort/{direction}/column/{nameOfColumn}", null);
+
+
+    final MappingResult mappingResult = targetMapper.mapTarget(tunnel(
+      "/page/6/pageSize/3/sort/asc/column/date"
+    ));
+
+    mappingResult.getParam("asd");
+
   }
 }

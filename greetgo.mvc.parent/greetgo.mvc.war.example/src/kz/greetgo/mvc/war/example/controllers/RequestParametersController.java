@@ -4,6 +4,7 @@ import kz.greetgo.mvc.annotations.AsIs;
 import kz.greetgo.mvc.annotations.Json;
 import kz.greetgo.mvc.annotations.Mapping;
 import kz.greetgo.mvc.annotations.Par;
+import kz.greetgo.mvc.annotations.ParPath;
 import kz.greetgo.mvc.annotations.ParamsTo;
 
 import java.math.BigDecimal;
@@ -116,5 +117,16 @@ public class RequestParametersController {
   public String paramsToExample(@ParamsTo Client client) {
     return "called RequestParametersController.paramsToExample with\n" +
       "    client = " + client;
+  }
+
+  /////////////////////////////// ParPath Example //////////////////////////////////////////////////////////////////////
+
+
+  @AsIs
+  @Mapping("/par-path-example/id:{id}/{name}")
+  public String parPathExample(@ParPath("id") Long id, @ParPath("name") String name) {
+    return "called RequestParametersController.parPathExample with\n" +
+      "    id   = " + id + "\n" +
+      "    name = " + name;
   }
 }

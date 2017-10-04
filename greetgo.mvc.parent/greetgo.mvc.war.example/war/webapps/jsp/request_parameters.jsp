@@ -20,6 +20,8 @@
 <%@include file="request_parameters/par_json_example.jsp" %>
 &nbsp;
 <%@include file="request_parameters/params_to_example.jsp" %>
+&nbsp;
+<%@include file="request_parameters/par_path_example.jsp" %>
 
 <div style="height: 100rem"></div>
 
