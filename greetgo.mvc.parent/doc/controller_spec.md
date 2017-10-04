@@ -1,7 +1,7 @@
 ### Ссылки
 
  - [Концепция](concept.md)
- - [Проект-пример mvc.war.example](mvc_war_example.md)
+ - [Проект-пример mvc.war.example (быстрая установка и запуск)](mvc_war_example.md)
  - [Спецификация контроллеров]
    - [Доступ к параметрам запроса](#access-to-request-parameters)
      - [Аннотация @Par (простые параметры)](#base-example)
