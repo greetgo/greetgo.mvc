@@ -37,14 +37,21 @@ public abstract class TunnelFilter implements Filter {
       try {
         chain.doFilter(request, response);
       } catch (IOException | ServletException e) {
-        throw new RuntimeException(e);
+        throw new ExceptionWrapper(e);
       }
     };
 
-    filter(tunnel, tunnelChain);
+    try {
+      filter(tunnel, tunnelChain);
+    } catch (Exception e) {
+      if (e instanceof IOException) throw (IOException) e;
+      if (e instanceof ServletException) throw (ServletException) e;
+      if (e instanceof RuntimeException) throw (RuntimeException) e;
+      throw new RuntimeException(e);
+    }
   }
 
-  protected abstract void filter(RequestTunnel tunnel, TunnelFilterChain tunnelChain);
+  protected abstract void filter(RequestTunnel tunnel, TunnelFilterChain tunnelChain) throws Exception;
 
   @Override
   public void destroy() {}
