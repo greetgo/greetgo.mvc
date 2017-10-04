@@ -8,6 +8,7 @@
      - [Аннотация @Par с @Json (структурные параметры в формате JSON)](#json-parameter-example)
      - [Аннотация @ParamsTo (все параметры в один класс)](#params-to-example)
      - [Аннотация @ParPath (параметры из URL‐пути)](#parpath-example)
+     - [Аннотация @ParSession (параметры из сессии)](#parsession-example)
    - [MethodFilter](#methodfilter)
 
 ### Спецификация контроллеров
@@ -193,6 +194,62 @@ public class RequestParametersController {
 
 Если в аннотации `@ParPath` указать параметр, которого нет в аннотации `@Mapping` в фигурных скобках, то, при вызове,
 произойдёт ошибка 500. В лог вывалиться ошибка `kz.greetgo.mvc.errors.NoPathParam`.
+
+###### ParSession Example
+#### Аннотация @ParSession (параметры из сессии)
+
+Параметры можно получать из сессии. Для этого используется аннотация `@ParSession`. Вот пример метода контроллера, который использует эту аннотацию:
+
+```java
+@Mapping("/request_parameters")
+public class RequestParametersController {
+  @AsIs
+  @Mapping("/par-session-example")
+  public String parSessionExample(@ParSession("personId") Long personId, @ParSession("role") String role) {
+    return "called RequestParametersController.parSessionExample with\n" +
+      "    personId = " + personId + "\n" +
+      "    role     = '" + role + "'";
+  }
+}
+```
+
+Для получения значения запрашиваемого параметра из сессии библиотека обращается к методу: `kz.greetgo.mvc.interfaces.Views#getSessionParameter(...)`, и то, что этот метод вернёт, передаётся на запрашиваемый параметр. Вот пример реализации этого метода:
+
+```java
+public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
+  /**
+   * Этот метод вызывается, когда необходимо заполнить параметр метода контроллера
+   * помеченный аннотацией {@link ParSession}
+   *
+   * @param context информация о параметре: что за параметр, его тип и пр.
+   * @param tunnel  тунель запроса - дан для того, чтобы можно было получить какие-нибудь данные для параметра
+   * @return значение этого параметра: оно будет подставлено в этот параметр
+   */
+  @Override
+  public Object getSessionParameter(SessionParameterGetter.ParameterContext context, RequestTunnel tunnel) {
+    if ("personId".equals(context.parameterName())) {
+      if (context.expectedReturnType() != Long.class) {
+        throw new RuntimeException("Session parameter `personId` must be a Long");
+      }
+      return 543265L;
+    }
+
+    if ("role".equals(context.parameterName())) {
+      if (context.expectedReturnType() != String.class) {
+        throw new RuntimeException("Session parameter `role` must be a string");
+      }
+      return "role value taken from session";
+    }
+
+    throw new RuntimeException("Unknown session parameter " + context.parameterName());
+  }
+}
+```
+
+> Пример его вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_session_example.jsp`
+>
+> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-session-example
+
 
 ### MethodFilter
 
