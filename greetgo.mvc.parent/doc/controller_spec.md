@@ -10,6 +10,7 @@
      - [Аннотация @ParPath (параметры из URL‐пути)](#parpath-example)
      - [Аннотация @ParSession (параметры из сессии)](#parsession-example)
    - [Возврат из метода контроллера](#controller-method-return)
+     - [Аннотация @Json](#annotation-json)
    - [MethodFilter](#methodfilter)
 
 ### Спецификация контроллеров
@@ -256,6 +257,8 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 
 В [таблице](concept.md#controller-method-return-table) описаны способы, которыми обрабатываются результаты
 методов контроллеров.
+
+###### Annotation @Json
 
 Если метод контроллера пометить аннотацией `@ToJson`, то предполагается, что возвращённый объект метода контроллера
 должен конвертироваться JSON, и полученный JSON уйти в теле ответа на запрос. Это реализовано тем, что вызывается
