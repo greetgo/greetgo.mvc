@@ -258,7 +258,7 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 ###### Controller Method Return
 ### Возврат из метода контроллера
 
-В [таблице](concept.md#controller-method-return-table) описаны способы, которыми обрабатываются результаты
+В таблице [Controller Method Return Table](concept.md#controller-method-return-table) описаны способы, которыми обрабатываются результаты
 методов контроллеров.
 
 ###### Annotation @ToJson
