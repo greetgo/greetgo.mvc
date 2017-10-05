@@ -203,7 +203,8 @@ public class RequestParametersController {
 ###### ParSession Example
 #### Аннотация @ParSession (параметры из сессии)
 
-Параметры можно получать из сессии. Для этого используется аннотация `@ParSession`. Вот пример метода контроллера, который использует эту аннотацию:
+Параметры можно получать из сессии. Для этого используется аннотация `@ParSession`. Вот пример метода контроллера,
+который использует эту аннотацию:
 
 ```java
 @Mapping("/request_parameters")
@@ -218,7 +219,9 @@ public class RequestParametersController {
 }
 ```
 
-Для получения значения запрашиваемого параметра из сессии библиотека обращается к методу: `kz.greetgo.mvc.interfaces.Views#getSessionParameter(...)`, и то, что этот метод вернёт, передаётся на запрашиваемый параметр. Вот пример реализации этого метода:
+Для получения значения запрашиваемого параметра из сессии библиотека обращается к методу: 
+`kz.greetgo.mvc.interfaces.Views#getSessionParameter(...)`, и то, что этот метод вернёт, передаётся на запрашиваемый
+параметр. Вот пример реализации этого метода:
 
 ```java
 public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
@@ -258,8 +261,8 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 ###### Controller Method Return
 ### Возврат из метода контроллера
 
-В таблице [Controller Method Return Table](concept.md#controller-method-return-table) описаны способы, которыми обрабатываются результаты
-методов контроллеров.
+В таблице [Controller Method Return Table](concept.md#controller-method-return-table) описаны способы,
+которыми обрабатываются результаты методов контроллеров.
 
 ###### Annotation @ToJson
 
