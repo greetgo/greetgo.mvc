@@ -82,6 +82,6 @@ Gradle из репозитория лучше не устанавливать - 
 
 Эта команда соберёт проект-пример и запустит apache-tomcat с этим проектом. В конце вылетит сообщение:
 
-    The Server is running at http://localhost:8080/mvc_example
+    The Server is running at http://localhost:10000/mvc_example
 
 Пройдя в браузере по указанной ссылке, попадаем в приложение-пример.
