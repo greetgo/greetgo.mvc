@@ -1,6 +1,6 @@
 # greetgo.mvc
 
-Облегчённая реализация паттерна MVC. Сделана по образу и подобию spring.mvc
+Облегчённая реализация паттерна MVC. Сделана по образу и подобию SpringMVC
 
  - [Концепция](greetgo.mvc.parent/doc/concept.md)
  - [Проект-пример mvc.war.example (быстрая установка и запуск)](greetgo.mvc.parent/doc/mvc_war_example.md)
