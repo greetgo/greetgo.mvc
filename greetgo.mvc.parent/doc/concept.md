@@ -11,7 +11,7 @@
 в дебри какого-то фрэймворка, как у SpringMVC, т.е. SpringMVC нельзя использовать без других компонентов Spring,
 а greetgo.mvc - это независимая полноценная библиотека, реализующая только MVC в стиле SpringMVC.
 
-####### Method Views performRequest
+###### Method Views.performRequest
 ##### Метод `Views.performRequest`
 
 Важно понять, что **любой запрос приводит не к вызову метода контроллера, а к вызову метода `Views.performRequest`**,
