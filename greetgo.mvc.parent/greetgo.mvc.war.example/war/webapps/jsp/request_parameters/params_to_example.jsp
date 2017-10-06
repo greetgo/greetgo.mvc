@@ -109,12 +109,9 @@
         pars.push("addresses=" + encodeURIComponent(address2.val()));
       }
 
-      if (html) {
-        if (pars.length === 0) return '<b>' + requestUriBase + '</b>';
-        return '<b>' + requestUriBase + "</b>?" + pars.join("&amp;");
-      } else {
-        if (pars.length === 0) return requestUriBase;
-        return requestUriBase + "?" + pars.join("&");
+      {
+        var params = pars.length === 0 ? '' : (html ? "?" + pars.join("&amp;") : "?" + pars.join("&"));
+        return html ? '<b>' + requestUriBase + '</b>' + params : requestUriBase + params;
       }
     };
 

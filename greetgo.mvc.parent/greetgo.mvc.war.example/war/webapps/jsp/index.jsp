@@ -20,5 +20,15 @@
   <li><a href="request_parameters/form#par-path-example">@ParPath Example</a></li>
   <li><a href="request_parameters/form#par-session-example">@ParSession Example</a></li>
 </ul>
+<p>
+  <a href="method_returns/form">Method Returns Example</a>
+</p>
+<ul>
+  <li><a href="method_returns/form#using-as-is">Using @AsIs Example</a></li>
+  <li><a href="method_returns/form#using-to-json">Using @ToJson Example</a></li>
+  <li><a href="method_returns/form#using-to-xml">Using @ToXml Example</a></li>
+  <li><a href="method_returns/form#return-redirect">Return Redirect</a></li>
+  <li><a href="method_returns/form#throw-redirect">Throw Redirect</a></li>
+</ul>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package kz.greetgo.mvc.war.example.app;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.xstream.XStream;
 import kz.greetgo.mvc.annotations.ParSession;
 import kz.greetgo.mvc.annotations.ToJson;
 import kz.greetgo.mvc.annotations.ToXml;
@@ -11,7 +12,11 @@ import kz.greetgo.mvc.interfaces.SessionParameterGetter;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * В этом классе реализована обработка методов контроллеров
@@ -31,6 +36,7 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
    */
   @Override
   public String toJson(Object object, RequestTunnel tunnel, Method method) throws Exception {
+    System.out.println("-----------> Calling method " + getClass() + ".toJson(...)");
     return convertToJson(object);
   }
 
@@ -50,9 +56,10 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
    */
   @Override
   public String toXml(Object object, RequestTunnel tunnel, Method method) throws Exception {
+    System.out.println("-----------> Calling method " + getClass() + ".toXml(...)");
     //Здесь нужно object преобразовать в XML и вернуть
-    //Здесь аннотация ToXml не работает
-    throw new UnsupportedOperationException();
+    XStream xstream = new XStream();
+    return xstream.toXML(object);
   }
 
   /**
@@ -159,7 +166,6 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
     }
 
     //форвардим на рендеринг jsp-файла
-
     tunnel.forward("/jsp/" + place, true);
   }
 

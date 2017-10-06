@@ -262,7 +262,17 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 ### Возврат из метода контроллера
 
 В таблице [Controller Method Return Table](concept.md#controller-method-return-table) описаны способы,
-которыми обрабатываются результаты методов контроллеров.
+которыми обрабатываются результаты методов контроллеров, реализлованные методом
+[MethodInvokedResult.tryDefaultRenderer()](concept.md#method-viewsperformrequest).
+
+###### Annotation @AsIs
+
+Если же метод контроллера помечен аннотацией `@AsIs`, то этот метод должен возвращать строку. Эта строка будет
+преобразована в текст в кодировке UTF-8, и полученный текст будет отправлен в тело ответа на запрос.
+
+> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/using_as_is.jsp`
+>
+> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#using-as-is
 
 ###### Annotation @ToJson
 
@@ -272,6 +282,10 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 которую вернёт метод `Views.toJson` будет преобразована в текст в кодировке UTF-8, и полученный текст будет отправлен
 в тело ответа на запрос. 
 
+> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/using_to_json.jsp`
+>
+> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#using-to-json
+
 ###### Annotation @ToXml
 
 Если метод контроллера пометить аннотацией `@ToXml`, то предполагается, что возвращённый объект метода контроллера
@@ -280,21 +294,38 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 которую вернёт метод `Views.toXml` будет преобразована в текст в кодировке UTF-8, и полученный текст будет отправлен
 в тело ответа на запрос. 
 
-###### Annotation @AsIs
-
-Если же метод контроллера помечен аннотацией `@AsIs`, то этот метод должен возвращать строку. Эта строка будет
-преобразована в текст в кодировке UTF-8, и полученный текст будет отправлен в тело ответа на запрос.
+> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/using_to_xml.jsp`
+>
+> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#using-to-xml
 
 ###### Using Redirect
 
 Если метод контроллера вернёт объект `kz.greetgo.mvc.model.Redirect`, то соответствующий редирект
 отправится в ответ запроса. При этом указанный редирект может содержать кукие, которые будут корректно добавлены
-в заголовки ответа на запрос. Это действие происходить внутри метода
-[MethodInvokedResult.tryDefaultRenderer()](concept.md#method-viewsperformrequest).
+в заголовки ответа на запрос.
+
+> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/return_redirect.jsp`
+>
+> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#return-redirect
 
 Если метод контроллера сгенерирует исключение класса `kz.greetgo.mvc.model.Redirect`, то соответствующий редирект
 отправится в ответ запроса. При этом указанный редирект может содержать кукие, которые будут корректно добавлены
 в заголовки ответа на запрос.
+
+> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/throw_redirect.jsp`
+>
+> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#throw-redirect
+
+###### User Renderer
+
+Во всех остальных случаях пользователю необходимо самостоятельно обрабатывать результаты методов контроллеров. Более
+детально это описано в [концепции](concept.md). В проекте-примеры все формы, оттображаемые в браузере, реализованы
+посредством jsp-рендеринга. В методе `ViewsImpl.performRequest` происходит вызов метода `ViewsImpl.performRender`,
+в котором происходит форвардинг на jsp-рендеринг. Имя jsp-файла берётся из возврата метода контроллера.
+
+В [проекте-примере](mvc_war_example.md) такие методы, как: `RequestParametersController.form`,
+`MethodReturnsController.form`, `MethodReturnsController.returnRedirectParam1` и другие, возвращают необходимый им
+для рендеринга jsp-файл.
 
 ### MethodFilter
 

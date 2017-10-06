@@ -1,4 +1,6 @@
 
 dependencies {
   compile project(':greetgo.mvc.war')
+
+  compile group: 'xstream', name: 'xstream', version: '1.2.2'
 }
