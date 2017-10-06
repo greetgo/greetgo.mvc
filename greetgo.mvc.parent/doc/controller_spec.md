@@ -290,7 +290,7 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 Если метод контроллера вернёт объект `kz.greetgo.mvc.model.Redirect`, то соответствующий редирект
 отправится в ответ запроса. При этом указанный редирект может содержать кукие, которые будут корректно добавлены
 в заголовки ответа на запрос. Это действие происходить внутри метода
-[MethodInvokedResult.tryDefaultRenderer()](concept.md#method-views-performrequest).
+[MethodInvokedResult.tryDefaultRenderer()](concept.md#method-viewsperformrequest).
 
 Если метод контроллера сгенерирует исключение класса `kz.greetgo.mvc.model.Redirect`, то соответствующий редирект
 отправится в ответ запроса. При этом указанный редирект может содержать кукие, которые будут корректно добавлены
