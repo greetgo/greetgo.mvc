@@ -75,6 +75,7 @@ tasks.withType(Javadoc) {
 
 
 project.tasks.create('uploadToMavenCentral', Upload.class) {
+  group = "upload"
   configuration = configurations.archives
   repositories {
     mavenDeployer {
