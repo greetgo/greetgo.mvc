@@ -102,6 +102,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
 
         if (bytes == null) {
           if (trace != null) trace.trace("CP uyu76gfh4 DELETE COOKIE " + provider.cookieKeySession());
+//          tunnel.cookies().removeFromResponse(provider.cookieKeySession());
           tunnel.cookies().forName(provider.cookieKeySession()).remove();
           if (trace != null) trace.trace("CP wsS676Sdd DELETE COOKIE " + provider.cookieKeySignature());
           tunnel.cookies().forName(provider.cookieKeySignature()).remove();
@@ -114,9 +115,8 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
             final String signatureBase64 = bytesToBase64(signature);
             if (trace != null) trace.trace("CP tytgfyr SET COOKIE " + provider.cookieKeySignature()
               + " = " + signatureBase64);
-            tunnel.cookies().forName(provider.cookieKeySignature())
-              .httpOnly(true)
-              .saveValue(signatureBase64);
+//            tunnel.cookies().saveToResponse(provider.cookieKeySignature(), signatureBase64, true);
+            saveSignatureToCookies(tunnel, signatureBase64);
           }
 
           if (sessionCrypto != null) {
@@ -127,9 +127,8 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
           final String bytesBase64 = bytesToBase64(bytes);
           if (trace != null) trace.trace("CP vv4t5v43t SET COOKIE " + provider.cookieKeySession()
             + " = " + bytesBase64);
-          tunnel.cookies().forName(provider.cookieKeySession())
-            .httpOnly(true)
-            .saveValue(bytesBase64);
+//          tunnel.cookies().saveToResponse(provider.cookieKeySession(), bytesBase64, true);
+          saveSessionToCookies(tunnel, bytesBase64);
         }
 
       }
@@ -169,5 +168,17 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
       if (trace != null) trace.trace("CP fjewhtb FINALLY");
     }
 
+  }
+
+  protected void saveSessionToCookies(RequestTunnel tunnel, String sessionBase64) {
+    tunnel.cookies().forName(provider.cookieKeySession())
+      .httpOnly(true)
+      .saveValue(sessionBase64);
+  }
+
+  protected void saveSignatureToCookies(RequestTunnel tunnel, String signatureBase64) {
+    tunnel.cookies().forName(provider.cookieKeySignature())
+      .httpOnly(true)
+      .saveValue(signatureBase64);
   }
 }
