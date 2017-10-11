@@ -101,11 +101,7 @@ public class SecurityTunnelWrapper implements TunnelHandler {
         if (trace != null) trace.trace("CP ktmreyr");
 
         if (bytes == null) {
-          if (trace != null) trace.trace("CP uyu76gfh4 DELETE COOKIE " + provider.cookieKeySession());
-//          tunnel.cookies().removeFromResponse(provider.cookieKeySession());
-          tunnel.cookies().forName(provider.cookieKeySession()).remove();
-          if (trace != null) trace.trace("CP wsS676Sdd DELETE COOKIE " + provider.cookieKeySignature());
-          tunnel.cookies().forName(provider.cookieKeySignature()).remove();
+          cleanSecurityCookies(tunnel);
         } else {
 
           if (trace != null) trace.trace("CP thbrejhby bytes != null");
@@ -115,7 +111,6 @@ public class SecurityTunnelWrapper implements TunnelHandler {
             final String signatureBase64 = bytesToBase64(signature);
             if (trace != null) trace.trace("CP tytgfyr SET COOKIE " + provider.cookieKeySignature()
               + " = " + signatureBase64);
-//            tunnel.cookies().saveToResponse(provider.cookieKeySignature(), signatureBase64, true);
             saveSignatureToCookies(tunnel, signatureBase64);
           }
 
@@ -127,7 +122,6 @@ public class SecurityTunnelWrapper implements TunnelHandler {
           final String bytesBase64 = bytesToBase64(bytes);
           if (trace != null) trace.trace("CP vv4t5v43t SET COOKIE " + provider.cookieKeySession()
             + " = " + bytesBase64);
-//          tunnel.cookies().saveToResponse(provider.cookieKeySession(), bytesBase64, true);
           saveSessionToCookies(tunnel, bytesBase64);
         }
 
@@ -168,6 +162,18 @@ public class SecurityTunnelWrapper implements TunnelHandler {
       if (trace != null) trace.trace("CP fjewhtb FINALLY");
     }
 
+  }
+
+  protected void cleanSecurityCookies(RequestTunnel tunnel) {
+    if (trace != null) trace.trace("CP uyu76gfh4 DELETE COOKIE " + provider.cookieKeySession());
+    tunnel.cookies().forName(provider.cookieKeySession())
+      .path("/")
+      .remove();
+
+    if (trace != null) trace.trace("CP wsS676Sdd DELETE COOKIE " + provider.cookieKeySignature());
+    tunnel.cookies().forName(provider.cookieKeySignature())
+      .path("/")
+      .remove();
   }
 
   protected void saveSessionToCookies(RequestTunnel tunnel, String sessionBase64) {

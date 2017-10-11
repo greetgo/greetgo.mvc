@@ -4,3 +4,4 @@
   3) SecurityTunnelWrapper поля с private преобразованы в protected
   4) В SecurityTunnelWrapper.saveSessionToCookies   httpOnly(true) убрали, а path("/") - добавили
   5) В SecurityTunnelWrapper.saveSignatureToCookies httpOnly(true) убрали, а path("/") - добавили
+  6) Добавлен path("/") в методе SecurityTunnelWrapper.cleanSecurityCookies
