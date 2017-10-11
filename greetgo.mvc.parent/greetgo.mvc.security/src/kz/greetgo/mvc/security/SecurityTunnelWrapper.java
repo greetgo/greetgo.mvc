@@ -11,7 +11,7 @@ import java.util.Arrays;
 import static kz.greetgo.mvc.util.Base64Util.base64ToBytes;
 import static kz.greetgo.mvc.util.Base64Util.bytesToBase64;
 
-public final class SecurityTunnelWrapper implements TunnelHandler {
+public class SecurityTunnelWrapper implements TunnelHandler {
 
   private final TunnelHandler whatWrapping;
   private final SecurityProvider provider;
