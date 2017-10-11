@@ -50,7 +50,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
     final byte[] bytesInStorage;
 
     {
-      final String sessionBase64 = tunnel.cookies().getFromRequest(provider.cookieKeySession());
+      final String sessionBase64 = tunnel.cookies().name(provider.cookieKeySession()).value();
       if (trace != null) trace.trace("CP bsWyw312ger READ COOKIE "
         + provider.cookieKeySession() + " = " + sessionBase64);
       byte[] bytes = base64ToBytes(sessionBase64);
@@ -64,7 +64,7 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
 
       if (underSecurityUmbrella && bytes != null && signatureCrypto != null) {
         if (trace != null) trace.trace("CP QTTSFrt ");
-        String signatureBase64 = tunnel.cookies().getFromRequest(provider.cookieKeySignature());
+        String signatureBase64 = tunnel.cookies().name(provider.cookieKeySignature()).value();
         if (trace != null) trace.trace("CP h2hrhbrfer READ COOKIE " + provider.cookieKeySignature()
           + " = " + signatureBase64);
         byte[] signature = base64ToBytes(signatureBase64);
@@ -102,9 +102,9 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
 
         if (bytes == null) {
           if (trace != null) trace.trace("CP uyu76gfh4 DELETE COOKIE " + provider.cookieKeySession());
-          tunnel.cookies().removeFromResponse(provider.cookieKeySession());
+          tunnel.cookies().forName(provider.cookieKeySession()).remove();
           if (trace != null) trace.trace("CP wsS676Sdd DELETE COOKIE " + provider.cookieKeySignature());
-          tunnel.cookies().removeFromResponse(provider.cookieKeySignature());
+          tunnel.cookies().forName(provider.cookieKeySignature()).remove();
         } else {
 
           if (trace != null) trace.trace("CP thbrejhby bytes != null");
@@ -114,7 +114,9 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
             final String signatureBase64 = bytesToBase64(signature);
             if (trace != null) trace.trace("CP tytgfyr SET COOKIE " + provider.cookieKeySignature()
               + " = " + signatureBase64);
-            tunnel.cookies().saveToResponse(provider.cookieKeySignature(), signatureBase64, true);
+            tunnel.cookies().forName(provider.cookieKeySignature())
+              .httpOnly(true)
+              .saveValue(signatureBase64);
           }
 
           if (sessionCrypto != null) {
@@ -125,8 +127,9 @@ public final class SecurityTunnelWrapper implements TunnelHandler {
           final String bytesBase64 = bytesToBase64(bytes);
           if (trace != null) trace.trace("CP vv4t5v43t SET COOKIE " + provider.cookieKeySession()
             + " = " + bytesBase64);
-          tunnel.cookies().saveToResponse(provider.cookieKeySession(), bytesBase64, true);
-
+          tunnel.cookies().forName(provider.cookieKeySession())
+            .httpOnly(true)
+            .saveValue(bytesBase64);
         }
 
       }

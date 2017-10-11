@@ -1,8 +1,8 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.interfaces.AbstractTunnelCookies;
-import kz.greetgo.mvc.util.CookieUtil;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,22 +16,12 @@ public class HttpServletTunnelCookies extends AbstractTunnelCookies {
   }
 
   @Override
-  public String getFromRequest(String name) {
-    return CookieUtil.getCookieValue(request, name);
+  public Cookie[] getRequestCookies() {
+    return request.getCookies();
   }
 
   @Override
-  public void saveToResponse(String name, int maxAge, String value) {
-    CookieUtil.addCookie(response, maxAge, request.getContextPath(), name, value);
-  }
-
-  @Override
-  public void removeFromResponse(String name) {
-    CookieUtil.removeCookie(response, name);
-  }
-
-  @Override
-  public void saveToResponse(String name, int maxAge, String value, boolean httpOnly) {
-    CookieUtil.addCookie(response, maxAge, request.getContextPath(), name, value, httpOnly);
+  public void addCookieToResponse(Cookie cookie) {
+    response.addCookie(cookie);
   }
 }

@@ -26,8 +26,10 @@ import org.fest.assertions.api.Assertions;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import javax.servlet.http.Cookie;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static kz.greetgo.mvc.core.RequestMethod.DELETE;
 import static kz.greetgo.mvc.core.RequestMethod.GET;
@@ -44,9 +46,9 @@ public class ControllerTunnelExecutorBuilderTest {
   private static final String MODEL_PARAMETER_NAME = RND.str(10);
   private static final String MODEL_PARAMETER_VALUE = RND.str(10);
 
-  private static final String COOKIE_KEY1 = "COOKIE_KEY1_" + RND.str(10);
+  private static final String COOKIE_KEY1 = "COOKIE_KEY1_" + RND.intStr(10);
   private static final String COOKIE_VALUE1 = "COOKIE_VALUE1_" + RND.str(10);
-  private static final String COOKIE_KEY2 = "COOKIE_KEY2_" + RND.str(10);
+  private static final String COOKIE_KEY2 = "COOKIE_KEY2_" + RND.intStr(10);
   private static final String COOKIE_VALUE2 = "COOKIE_VALUE2_" + RND.str(10);
 
   @Mapping("/test")
@@ -142,7 +144,9 @@ public class ControllerTunnelExecutorBuilderTest {
     assertThat(controller.calledReturnRedirect).isTrue();
     assertThat(tunnel.redirectedTo).isEqualTo(RETURN_REDIRECT_TO);
 
-    final Map<String, String> savedCookies = tunnel.testCookies.savedCookies;
+    final Map<String, String> savedCookies = tunnel.testCookies.addedCookies
+      .stream().collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+
     assertThat(savedCookies.get(COOKIE_KEY1)).isEqualTo(COOKIE_VALUE1);
     assertThat(savedCookies.get(COOKIE_KEY2)).isEqualTo(COOKIE_VALUE2);
 
@@ -174,7 +178,8 @@ public class ControllerTunnelExecutorBuilderTest {
     assertThat(controller.calledThrowRedirect).isTrue();
     assertThat(tunnel.redirectedTo).isEqualTo(THROW_REDIRECT_TO);
 
-    final Map<String, String> savedCookies = tunnel.testCookies.savedCookies;
+    final Map<String, String> savedCookies = tunnel.testCookies.addedCookies
+      .stream().collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
     assertThat(savedCookies.get(COOKIE_KEY1)).isEqualTo(COOKIE_VALUE1);
     assertThat(savedCookies.get(COOKIE_KEY2)).isEqualTo(COOKIE_VALUE2);
   }

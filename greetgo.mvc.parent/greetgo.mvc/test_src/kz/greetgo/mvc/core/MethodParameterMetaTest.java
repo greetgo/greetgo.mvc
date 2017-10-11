@@ -30,6 +30,7 @@ import org.fest.util.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import javax.servlet.http.Cookie;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
@@ -757,27 +758,33 @@ public class MethodParameterMetaTest {
 
     TunnelCookies ex = (TunnelCookies) actualParamValue;
 
-    tunnel.testCookies.getRequestCookieValue_return = RND.str(10);
+    String cookieName = "A" + RND.intStr(10);
+    tunnel.testCookies.requestCookies = new Cookie[]{
+      new Cookie(cookieName, RND.str(10))
+    };
 
-    String name = RND.str(10);
-    assertThat(ex.getFromRequest(name)).isEqualTo(tunnel.testCookies.getRequestCookieValue_return);
-    assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo(name);
+    assertThat(ex.name(cookieName).value()).isEqualTo(tunnel.testCookies.requestCookies[0].getValue());
 
-    ex.saveToResponse("asd", "asd_value");
-    ex.removeFromResponse("dsa");
+    ex.forName("asd").saveValue("asd_value");
+    ex.forName("dsa").remove();
 
-    assertThat(tunnel.testCookies.calls).isEmpty();
+    assertThat(tunnel.testCookies.addedCookies).isEmpty();
 
     tunnel.eventBeforeCompleteHeaders().fire();
 
-    assertThat(tunnel.testCookies.calls).containsExactly(
-      "saveToResponseStr (maxAge -1) asd asd_value", "removeFromResponse dsa");
+    assertThat(tunnel.testCookies.addedCookies).hasSize(2);
+    assertThat(tunnel.testCookies.addedCookies.get(0).getName()).isEqualTo("asd");
+    assertThat(tunnel.testCookies.addedCookies.get(0).getValue()).isEqualTo("asd_value");
+    assertThat(tunnel.testCookies.addedCookies.get(1).getName()).isEqualTo("dsa");
+    assertThat(tunnel.testCookies.addedCookies.get(1).getValue()).isNull();
+    assertThat(tunnel.testCookies.addedCookies.get(1).getMaxAge()).isZero();
 
-    ex.removeFromResponse("pom");
+    ex.forName("pom").remove();
 
-    assertThat(tunnel.testCookies.calls).containsExactly(
-      "saveToResponseStr (maxAge -1) asd asd_value", "removeFromResponse dsa",
-      "removeFromResponse pom");
+    assertThat(tunnel.testCookies.addedCookies).hasSize(3);
+    assertThat(tunnel.testCookies.addedCookies.get(2).getName()).isEqualTo("pom");
+    assertThat(tunnel.testCookies.addedCookies.get(2).getValue()).isNull();
+    assertThat(tunnel.testCookies.addedCookies.get(2).getMaxAge()).isZero();
   }
 
   private class ForParCookie {
@@ -796,12 +803,9 @@ public class MethodParameterMetaTest {
 
     String value = RND.str(10);
 
-    tunnel.testCookies.getRequestCookieValue_return = CookieUtil.objectToStr(value);
-    tunnel.testCookies.getRequestCookieValue_name = null;
+    tunnel.testCookies.requestCookies = new Cookie[]{new Cookie("asd", CookieUtil.objectToStr(value))};
 
     final Object extractedValue = e.extract(null, tunnel, null);
-
-    assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo("asd");
 
     assertThat(extractedValue).isInstanceOf(String.class);
 
@@ -825,12 +829,9 @@ public class MethodParameterMetaTest {
 
     String value = RND.str(10);
 
-    tunnel.testCookies.getRequestCookieValue_return = value;
-    tunnel.testCookies.getRequestCookieValue_name = null;
+    tunnel.testCookies.requestCookies = new Cookie[]{new Cookie("asd", value)};
 
     final Object extractedValue = e.extract(null, tunnel, null);
-
-    assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo("asd");
 
     assertThat(extractedValue).isInstanceOf(String.class);
 
@@ -870,12 +871,9 @@ public class MethodParameterMetaTest {
 
     TestTunnel tunnel = new TestTunnel();
 
-    tunnel.testCookies.getRequestCookieValue_return = CookieUtil.objectToStr(original);
-    tunnel.testCookies.getRequestCookieValue_name = null;
+    tunnel.testCookies.requestCookies = new Cookie[]{new Cookie("asd", CookieUtil.objectToStr(original))};
 
     final Object extractedValue = e.extract(null, tunnel, null);
-
-    assertThat(tunnel.testCookies.getRequestCookieValue_name).isEqualTo("asd");
 
     assertThat(extractedValue).isInstanceOf(SomeObject.class);
 

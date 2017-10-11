@@ -1,70 +1,38 @@
 package kz.greetgo.mvc.interfaces;
 
+import javax.servlet.http.Cookie;
+
+/**
+ * Tunnel cookie worker
+ */
 public interface TunnelCookies {
   /**
-   * Reads cookie value from request
+   * Takes cookie getter for specified coolie name
    *
    * @param name cookie name
-   * @return cookie value
+   * @return cookie getter
    */
-  String getFromRequest(String name);
+  CookieRequestGetter name(String name);
 
   /**
-   * Saves to response cookie with max age = 24 hours
-   *
-   * @param name  cookie name
-   * @param value cookie value
-   */
-  void saveToResponse(String name, String value);
-
-  /**
-   * Saves cookie to response
-   *
-   * @param name   cookie name
-   * @param maxAge cookie living age in seconds
-   * @param value  cookie value
-   */
-  void saveToResponse(String name, int maxAge, String value);
-
-  /**
-   * Saves cookie to response
-   *
-   * @param name   cookie name
-   * @param maxAge cookie living age in seconds
-   * @param value  cookie value
-   * @param httpOnly cookie's httpOnly attribute
-   */
-  void saveToResponse(String name, int maxAge, String value, boolean httpOnly);
-
-  /**
-   * Saves cookie to response
-   *
-   * @param name   cookie name
-   * @param value  cookie value
-   * @param httpOnly  cookie's httpOnly attribute value
-   */
-  void saveToResponse(String name, String value, boolean httpOnly);
-  /**
-   * Removes cookie from response
+   * Takes cookie getter for specified coolie name
    *
    * @param name cookie name
+   * @return object for saving cookie
    */
-  void removeFromResponse(String name);
+  CookieResponseSaver forName(String name);
 
   /**
-   * Reads cookie and converts it to object
+   * Gets request cookies direct
    *
-   * @param name cookie name
-   * @param <T>  object type
-   * @return object from cookie
+   * @return all request cookies
    */
-  <T> T getFromRequestObject(String name);
+  Cookie[] getRequestCookies();
 
   /**
-   * Saves object to cookie
+   * Adds cookie to response
    *
-   * @param name   cookie name
-   * @param object object to save in cookie
+   * @param cookie adding cookie
    */
-  void saveToResponseObject(String name, Object object);
+  void addCookieToResponse(Cookie cookie);
 }

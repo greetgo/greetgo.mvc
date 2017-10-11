@@ -5,8 +5,11 @@ import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.util.events.EventHandler;
 import kz.greetgo.util.events.EventHandlerList;
 
+import javax.servlet.http.Cookie;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class EventTunnelCookies extends AbstractTunnelCookies implements EventHandler {
   private final TunnelCookies cookies;
@@ -16,84 +19,34 @@ public class EventTunnelCookies extends AbstractTunnelCookies implements EventHa
     beforeCompleteHeaders.addEventHandler(this);
   }
 
-  @Override
-  public String getFromRequest(String name) {
-    return cookies.getFromRequest(name);
-  }
 
-  interface Command {
-    void apply();
-  }
-
-  private List<Command> commandList = new ArrayList<>();
-
-  class Save implements Command {
-    private final String name;
-    private final int maxAge;
-    private final String value;
-    private final boolean httpOnly;
-
-    public Save(String name, int maxAge, String value, boolean httpOnly) {
-      this.name = name;
-      this.maxAge = maxAge;
-      this.value = value;
-      this.httpOnly = httpOnly;
-    }
-
-    @Override
-    public void apply() {
-      cookies.saveToResponse(name, maxAge, value, httpOnly);
-    }
-  }
-
-  @Override
-  public void saveToResponse(String name, int maxAge, String value) {
-    saveToResponse(name,maxAge,value,false);
-  }
-
-  class Remove implements Command {
-    final String name;
-
-    public Remove(String name) {
-      this.name = name;
-    }
-
-    @Override
-    public void apply() {
-      cookies.removeFromResponse(name);
-    }
-  }
-
-  @Override
-  public void removeFromResponse(String name) {
-    if (commandList == null) {
-      cookies.removeFromResponse(name);
-    } else {
-      commandList.add(new Remove(name));
-    }
-  }
+  private final AtomicReference<List<Cookie>> cookieList =
+    new AtomicReference<>(Collections.synchronizedList(new ArrayList<>()));
 
   @Override
   public void handle() {
-    final List<Command> list;
-    synchronized (this) {
-      list = commandList;
-      commandList = null;
-    }
+
+    final List<Cookie> list = cookieList.getAndSet(null);
 
     if (list == null) return;
 
-    for (Command command : list) {
-      command.apply();
+    for (Cookie cookie : list) {
+      addCookieToResponse(cookie);
     }
   }
 
   @Override
-  public void saveToResponse(String name, int maxAge, String value, boolean httpOnly) {
-    if (commandList == null) {
-      cookies.saveToResponse(name, maxAge, value, httpOnly);
+  public Cookie[] getRequestCookies() {
+    return cookies.getRequestCookies();
+  }
+
+  @Override
+  public void addCookieToResponse(Cookie cookie) {
+    List<Cookie> list = cookieList.get();
+    if (list == null) {
+      cookies.addCookieToResponse(cookie);
     } else {
-      commandList.add(new Save(name, maxAge, value, httpOnly));
+      list.add(cookie);
     }
   }
 }

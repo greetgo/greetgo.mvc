@@ -156,7 +156,7 @@ public class MethodParameterMeta {
         throw new AsIsOnlyForString(parameterIndex, method);
       }
       return (mappingResult, tunnel, model) -> {
-        final String str = tunnel.cookies().getFromRequest(parCookie.value());
+        final String str = tunnel.cookies().name(parCookie.value()).value();
         if (parCookie.asIs()) return str;
         return CookieUtil.strToObject(str);
       };
