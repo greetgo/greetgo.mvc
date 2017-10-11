@@ -13,11 +13,11 @@ import static kz.greetgo.mvc.util.Base64Util.bytesToBase64;
 
 public class SecurityTunnelWrapper implements TunnelHandler {
 
-  private final TunnelHandler whatWrapping;
-  private final SecurityProvider provider;
-  private final SessionStorage sessionStorage;
-  private final SecurityCrypto sessionCrypto;
-  private final SecurityCrypto signatureCrypto;
+  protected final TunnelHandler whatWrapping;
+  protected final SecurityProvider provider;
+  protected final SessionStorage sessionStorage;
+  protected final SecurityCrypto sessionCrypto;
+  protected final SecurityCrypto signatureCrypto;
 
   public static MvcTrace trace;
 
@@ -172,13 +172,13 @@ public class SecurityTunnelWrapper implements TunnelHandler {
 
   protected void saveSessionToCookies(RequestTunnel tunnel, String sessionBase64) {
     tunnel.cookies().forName(provider.cookieKeySession())
-      .httpOnly(true)
+      .path("/")
       .saveValue(sessionBase64);
   }
 
   protected void saveSignatureToCookies(RequestTunnel tunnel, String signatureBase64) {
     tunnel.cookies().forName(provider.cookieKeySignature())
-      .httpOnly(true)
+      .path("/")
       .saveValue(signatureBase64);
   }
 }

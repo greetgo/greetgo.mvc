@@ -6,3 +6,8 @@
 
 Изменения сделанные с версии 2.0.9.1 к версии 2.0.9.2
   1) С класса SecurityTunnelWrapper убран спецификатор final
+
+Изменения сделанные с версии 2.0.9.2 к версии 2.0.9.3
+  1) SecurityTunnelWrapper поля с private преобразованы в protected
+  2) В SecurityTunnelWrapper.saveSessionToCookies   httpOnly(true) убрали, а path("/") - добавили
+  3) В SecurityTunnelWrapper.saveSignatureToCookies httpOnly(true) убрали, а path("/") - добавили
