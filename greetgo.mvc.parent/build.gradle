@@ -34,7 +34,7 @@ subprojects {
   compileTestJava.options.debugOptions.debugLevel = "source,lines,vars"
 
   repositories {
-    if (System.getenv('GG_REPO') != null && System.getenv('GG_REPO').length() > 0) maven {url System.getenv('GG_REPO')}
+    if (System.getenv('GG_REPO')?.trim()) maven {url System.getenv('GG_REPO')}
     jcenter()
   }
 
