@@ -9,6 +9,7 @@
      - [Аннотация @ParamsTo (все параметры в один класс)](#params-to-example)
      - [Аннотация @ParPath (параметры из URL‐пути)](#parpath-example)
      - [Аннотация @ParSession (параметры из сессии)](#parsession-example)
+     - [Аннотация @RequestInput (тело запроса как параметр)](#requestinput-help)
    - [Возврат из метода контроллера](#controller-method-return)
      - [Аннотация @ToJson](#annotation-tojson)
      - [Аннотация @ToXml](#annotation-toxml)
@@ -257,6 +258,35 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 > Пример его вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_session_example.jsp`
 >
 > В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-session-example
+
+###### RequestInput Help
+#### Аннотация @RequestInput (тело запроса как параметр)
+
+Можно обращаться ко всему телу запроса как к одному параметру. Для этого используется аннотация `@RequestInput`.
+Пример использования:
+
+```java
+@Mapping("/some_prefix")
+public class SomeController {
+  @Mapping("/some_suffix")
+  public String someMethod(@RequestInput String content) {
+    //...
+  }
+}
+```
+
+Возможны следующие варианты использования этой аннотации:
+
+| Определение аргумента метода контроллера|Описание|
+|---|---|
+|`@RequestInput String content`|Всё тело запроса будет преобразовано в строку, используя кодировку UTF-8, и передано параметру `content`|
+|`@RequestInput List<String> lines`|Всё тело запроса будет преобразовано в строку, используя кодировку UTF-8, разрезано на строки по \\n или по \\r\\n, и, в качесте списка, передано аргументу `lines` |
+|`@RequestInput byte[] content`|Всё тело запроса будет передано параметру `content` как массив байтов|
+|`@RequestInput @Json SomeClass object`|Всё тело запроса будет будет рассмотрено, как JSON, и десериализовано в указанный объект. Если тело запроса пустое, то будет передан `null`|
+|`@RequestInput @Json List<SomeClass? object`|Всё тело запроса будет будет рассмотрено, как JSON, и десериализовано в список указанных объектов (корневым элементов JSON-а должен быть массив). Если тело запроса пустое, то будет передан пустой массив|
+|`@RequestInput InputStream inputStream`|Тело запроса предоставляется как `InputStream`|
+|`@RequestInput BufferedReader reader`|Тело запроса предоставляется как `BufferedReader` через кодировку в запросе|
+|`@RequestInput Reader reader`|Тело запроса предоставляется как `BufferedReader` через кодировку в запросе|
 
 ###### Controller Method Return
 ### Возврат из метода контроллера
