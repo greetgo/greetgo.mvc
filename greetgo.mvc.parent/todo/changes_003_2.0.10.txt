@@ -1,4 +1,4 @@
-Изменения сделанные с версии 2.0.9 к версии 2.0.11
+Изменения сделанные с версии 2.0.9 к версии 2.0.10
   1) Восстановлена старая логика SecurityFilter
   2) С класса SecurityTunnelWrapper убран спецификатор final
   3) SecurityTunnelWrapper поля с private преобразованы в protected
