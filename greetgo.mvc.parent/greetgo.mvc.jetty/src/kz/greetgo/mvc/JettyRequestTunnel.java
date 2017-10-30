@@ -17,7 +17,11 @@ import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 public class JettyRequestTunnel implements RequestTunnel {
 
@@ -227,5 +231,11 @@ public class JettyRequestTunnel implements RequestTunnel {
   @Override
   public void setRequestAttribute(String name, Object value) {
     request.setAttribute(name, value);
+  }
+
+  @Override
+  public <T> T getRequestAttribute(String name) {
+    //noinspection unchecked
+    return (T) request.getAttribute(name);
   }
 }

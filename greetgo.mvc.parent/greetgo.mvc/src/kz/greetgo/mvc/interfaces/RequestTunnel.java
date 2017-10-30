@@ -176,4 +176,13 @@ public interface RequestTunnel {
    * @param value значение атрибута
    */
   void setRequestAttribute(String name, Object value);
+
+  /**
+   * Считывает аттрибут из запроса
+   *
+   * @param name имя считываемого аттрибута
+   * @param <T>  тип считываемого аттрибута
+   * @return значение аттрибута
+   */
+  <T> T getRequestAttribute(String name);
 }

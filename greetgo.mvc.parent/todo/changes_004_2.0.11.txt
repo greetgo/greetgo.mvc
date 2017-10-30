@@ -1,0 +1,3 @@
+Изменения сделанные с версии 2.0.10 к версии 2.0.11
+  1) Добавлено поле overratedTarget в класс WarRequestTunnel и сделано чтобы метод forward устанавливал это поле
+  2) Добавлен метод RequestTunnel.getRequestAttribute и все его реализации

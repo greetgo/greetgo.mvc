@@ -28,6 +28,7 @@ public class WarRequestTunnel implements RequestTunnel {
   private final EventTunnelCookies cookiesReturn;
   private final AtomicBoolean executed = new AtomicBoolean(false);
   public String targetSubContext;
+  public String overratedTarget = null;
 
   public WarRequestTunnel(ServletRequest request, ServletResponse response, String targetSubContext) {
     this.request = (HttpServletRequest) request;
@@ -50,6 +51,7 @@ public class WarRequestTunnel implements RequestTunnel {
   }
 
   private String getTopTarget() {
+    if (overratedTarget != null) return overratedTarget;
     final String requestURI = request.getRequestURI();
     if (requestURI == null) return "";
     final String contextPath = request.getContextPath();
@@ -219,6 +221,7 @@ public class WarRequestTunnel implements RequestTunnel {
 
   @Override
   public void forward(String reference, boolean executeBeforeCompleteHeaders) {
+    overratedTarget = reference;
     if (executeBeforeCompleteHeaders) {
       beforeCompleteHeaders.fire();
     }
@@ -232,5 +235,11 @@ public class WarRequestTunnel implements RequestTunnel {
   @Override
   public void setRequestAttribute(String name, Object value) {
     request.setAttribute(name, value);
+  }
+
+  @Override
+  public <T> T getRequestAttribute(String name) {
+    //noinspection unchecked
+    return (T) request.getAttribute(name);
   }
 }

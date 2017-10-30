@@ -9,7 +9,15 @@ import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.util.events.EventHandlerList;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.CharArrayWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -211,6 +219,11 @@ public class TestTunnel implements RequestTunnel {
 
   @Override
   public void setResponseContentLength(int length) {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public <T> T getRequestAttribute(String name) {
     throw new RuntimeException();
   }
 }
