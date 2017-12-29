@@ -1,10 +1,8 @@
-def nowDate = new Date()
-def nowFormattedDate = nowDate.format("yyyy-MM-dd/HH:mm:ss")
-def vendorName = "greetgo!"
-
 buildscript {
   repositories {
-    if (System.getenv('GG_REPO') != null && System.getenv('GG_REPO').length() > 0) maven {url System.getenv('GG_REPO')}
+    if (System.getenv('GG_REPO') != null && System.getenv('GG_REPO').length() > 0) maven {
+      url System.getenv('GG_REPO')
+    }
     jcenter()
   }
 
@@ -34,7 +32,7 @@ subprojects {
   compileTestJava.options.debugOptions.debugLevel = "source,lines,vars"
 
   repositories {
-    if (System.getenv('GG_REPO')?.trim()) maven {url System.getenv('GG_REPO')}
+    if (System.getenv('GG_REPO')?.trim()) maven { url System.getenv('GG_REPO') }
     jcenter()
   }
 
@@ -62,16 +60,18 @@ subprojects {
       cp.entries.findAll { it.path.contains('JRE_CONTAINER') }.each {
 
         it.path += "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/" +
-            "JavaSE-$project.sourceCompatibility"
+          "JavaSE-$project.sourceCompatibility"
       }
     }
   }
 
   jar {
     manifest {
-      attributes 'Implementation-Title': project.name,
-          'Implementation-Version': version, 'Implementation-Vendor': vendorName,
-          'Built-By': System.getProperty("user.name"), 'Built-At': nowFormattedDate
+      attributes 'Implementation-Title': project.name
+      attributes 'Implementation-Version': version
+      attributes 'Implementation-Vendor': "greetgo!"
+      attributes 'Created-By': System.getProperty("user.name")
+      attributes 'Created-At': new Date().format("yyyy-MM-dd/HH:mm:ss")
     }
   }
 

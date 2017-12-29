@@ -130,11 +130,11 @@ public class MethodParameterMeta {
 
     if (par != null) {
       if (annotationJson != null) return (mappingResult, tunnel, model) -> {
-        final String[] paramValues = tunnel.getParamValues(par.value());
+        final String[] paramValues = tunnel.requestParams().asArray(par.value());
         return JsonUtil.convertStrsToType(paramValues, genericParameterType);
       };
       else return (mappingResult, tunnel, model) -> {
-        final String[] paramValues = tunnel.getParamValues(par.value());
+        final String[] paramValues = tunnel.requestParams().asArray(par.value());
         return MvcUtil.convertStringsToType(paramValues, genericParameterType);
       };
     }
@@ -202,7 +202,7 @@ public class MethodParameterMeta {
         Object ret = parameterClass.newInstance();
 
         for (String name : fieldSetters.names()) {
-          String[] values = tunnel.getParamValues(name);
+          String[] values = tunnel.requestParams().asArray(name);
           if (values != null) fieldSetters.get(name).setFromStrings(ret, values);
         }
 
@@ -223,7 +223,7 @@ public class MethodParameterMeta {
     if (genericParameterType == BinResponse.class) {
       return new MethodParamExtractor() {
         @Override
-        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) throws Exception {
+        public Object extract(MappingResult mappingResult, RequestTunnel tunnel, MvcModel model) {
           return new BinResponse() {
             String filename = null;
 

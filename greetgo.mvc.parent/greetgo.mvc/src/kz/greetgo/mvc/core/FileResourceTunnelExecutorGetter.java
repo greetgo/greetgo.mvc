@@ -137,7 +137,7 @@ public class FileResourceTunnelExecutorGetter implements TunnelExecutorGetter {
     private void shoveContentIn(RequestTunnel tunnel) throws Exception {
       String eTag = null;
       if (useETag) {
-        final String currentETag = tunnel.getRequestHeader("If-None-Match");
+        final String currentETag = tunnel.requestHeaders().value("If-None-Match");
         eTag = getWeakETag();
         if (currentETag != null && currentETag.equals(eTag)) {
           tunnel.setResponseStatus(304);//NOT MODIFIED
@@ -148,7 +148,7 @@ public class FileResourceTunnelExecutorGetter implements TunnelExecutorGetter {
       }
 
       if (prevLastModifiedAt > 0) {
-        final long lastModifiedFromHeader = tunnel.getRequestDateHeader("If-Modified-Since");
+        final long lastModifiedFromHeader = tunnel.requestHeaders().asDate("If-Modified-Since");
         if (lastModifiedFromHeader > 0 && prevLastModifiedAt / 1000 <= lastModifiedFromHeader / 1000) {
           tunnel.setResponseStatus(304);//NOT MODIFIED
           tunnel.setExecuted(true);

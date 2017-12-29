@@ -22,6 +22,27 @@ public interface RequestTunnel {
   String getTarget();
 
   /**
+   * Предоставляет доступ к заголовкам запроса
+   *
+   * @return заголовки запроса
+   */
+  RequestHeaders requestHeaders();
+
+  /**
+   * Предоставляет доступ параметрам запроса
+   *
+   * @return параметры запроса
+   */
+  RequestParams requestParams();
+
+  /**
+   * Предоставляет возможность для работы с атрибутами запроса
+   *
+   * @return атрибуты запроса
+   */
+  RequestAttributes requestAttributes();
+
+  /**
    * Предоаставляет райтер в поток ответа
    *
    * @return райтер в поток ответа
@@ -34,14 +55,6 @@ public interface RequestTunnel {
    * @return поток ответа
    */
   OutputStream getResponseOutputStream();
-
-  /**
-   * Предоставляет значения указанного параметра
-   *
-   * @param paramName имя указанного параметра
-   * @return значения указанного параметра
-   */
-  String[] getParamValues(String paramName);
 
   /**
    * Предоставляет ридер для чтения данных с тела запроса
@@ -123,14 +136,6 @@ public interface RequestTunnel {
   void setResponseContentType(String contentType);
 
   /**
-   * Предоставляет доступ к параметру заголовка запроса
-   *
-   * @param headerName имя параметра
-   * @return значение параметра
-   */
-  String getRequestHeader(String headerName);
-
-  /**
    * Отправляет параметр в заголовок ответа как дату
    *
    * @param headerName  имя отправляемого параметра
@@ -154,35 +159,10 @@ public interface RequestTunnel {
   void setResponseHeader(String headerName, String headerValue);
 
   /**
-   * Получает параметр из заголовка запроса, как величину new Date().getTime()
-   *
-   * @param headerName имя запрашиваемого параметра
-   * @return значение, как величина new Date().getTime()
-   */
-  long getRequestDateHeader(String headerName);
-
-  /**
    * Производит форвардинг
    *
    * @param reference                    дислокация форвардинга
    * @param executeBeforeCompleteHeaders признак установки заголовков
    */
   void forward(String reference, boolean executeBeforeCompleteHeaders);
-
-  /**
-   * Добавляет/устанавливает атрибут в инфраструктуру запроса
-   *
-   * @param name  имя атрибута
-   * @param value значение атрибута
-   */
-  void setRequestAttribute(String name, Object value);
-
-  /**
-   * Считывает аттрибут из запроса
-   *
-   * @param name имя считываемого аттрибута
-   * @param <T>  тип считываемого аттрибута
-   * @return значение аттрибута
-   */
-  <T> T getRequestAttribute(String name);
 }

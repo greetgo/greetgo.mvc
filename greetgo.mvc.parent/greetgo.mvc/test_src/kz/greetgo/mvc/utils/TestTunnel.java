@@ -3,6 +3,9 @@ package kz.greetgo.mvc.utils;
 import kz.greetgo.mvc.core.EventTunnelCookies;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.core.TestTunnelCookies;
+import kz.greetgo.mvc.interfaces.RequestAttributes;
+import kz.greetgo.mvc.interfaces.RequestHeaders;
+import kz.greetgo.mvc.interfaces.RequestParams;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
@@ -18,7 +21,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TestTunnel implements RequestTunnel {
@@ -49,9 +55,34 @@ public class TestTunnel implements RequestTunnel {
 
   public final Map<String, String[]> paramValues = new HashMap<>();
 
+  private final RequestParams requestParams = new RequestParams() {
+    @Override
+    public String[] asArray(String name) {
+      return paramValues.get(name);
+    }
+
+    @Override
+    public Enumeration<String> nameAsEnumeration() {
+      return new Enumeration<String>() {
+        List<String> names = new ArrayList<>(paramValues.keySet());
+        int i = 0;
+
+        @Override
+        public boolean hasMoreElements() {
+          return i < names.size();
+        }
+
+        @Override
+        public String nextElement() {
+          return names.get(i++);
+        }
+      };
+    }
+  };
+
   @Override
-  public String[] getParamValues(String name) {
-    return paramValues.get(name);
+  public RequestParams requestParams() {
+    return requestParams;
   }
 
   public String forGetRequestReader;
@@ -179,7 +210,7 @@ public class TestTunnel implements RequestTunnel {
   }
 
   @Override
-  public String getRequestHeader(String headerName) {
+  public RequestHeaders requestHeaders() {
     throw new RuntimeException();
   }
 
@@ -198,17 +229,7 @@ public class TestTunnel implements RequestTunnel {
   }
 
   @Override
-  public long getRequestDateHeader(String headerName) {
-    throw new RuntimeException();
-  }
-
-  @Override
   public void forward(String reference, boolean executeBeforeCompleteHeaders) {
-    throw new RuntimeException();
-  }
-
-  @Override
-  public void setRequestAttribute(String name, Object value) {
     throw new RuntimeException();
   }
 
@@ -223,7 +244,7 @@ public class TestTunnel implements RequestTunnel {
   }
 
   @Override
-  public <T> T getRequestAttribute(String name) {
+  public RequestAttributes requestAttributes() {
     throw new RuntimeException();
   }
 }

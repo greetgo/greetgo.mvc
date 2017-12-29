@@ -12,11 +12,7 @@ import kz.greetgo.mvc.interfaces.SessionParameterGetter;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * В этом классе реализована обработка методов контроллеров
@@ -162,7 +158,7 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 
     //заполняем данные для вьюшки, которые будут доступны через $ например $hello - в методе их добавляли в MvcModel
     for (Map.Entry<String, Object> e : methodInvoker.model().data.entrySet()) {
-      tunnel.setRequestAttribute(e.getKey(), e.getValue());
+      tunnel.requestAttributes().set(e.getKey(), e.getValue());
     }
 
     //форвардим на рендеринг jsp-файла
@@ -183,7 +179,7 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
     error.printStackTrace();
 
     RequestTunnel tunnel = methodInvoker.tunnel();
-    tunnel.setRequestAttribute("ERROR_TYPE", error.getClass().getSimpleName());
+    tunnel.requestAttributes().set("ERROR_TYPE", error.getClass().getSimpleName());
 
     {
       tunnel.setResponseStatus(500);
