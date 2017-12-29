@@ -1,3 +1,4 @@
 Изменения сделанные с версии 2.0.11 к версии 2.1.0
-  1) Выделены интерфейсы RequestAttributes, RequestHeaders, RequestParams в RequestTunnel
+  1) RequestTunnel: выделены интерфейсы: RequestAttributes, RequestHeaders, RequestParams в RequestTunnel
+  2) RequestTunnel: выделены интерфейсы: RequestContent, RequestMeta, RequestPaths, RequestSession
 

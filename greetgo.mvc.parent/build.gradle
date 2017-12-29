@@ -48,12 +48,9 @@ subprojects {
     testCompile 'org.easytesting:fest-assert-core:2.0M10'
   }
 
-  compileJava {
-    options.encoding = "UTF-8"
-  }
-  compileTestJava {
-    options.encoding = "UTF-8"
-  }
+  compileJava.options.encoding = "UTF-8"
+  compileTestJava.options.encoding = "UTF-8"
+
 
   project.eclipse.classpath.file.whenMerged { cp ->
     if (project.hasProperty("sourceCompatibility")) {
@@ -75,16 +72,14 @@ subprojects {
     }
   }
 
-  sourceSets {
-    main {
-      java.srcDirs = ["src", "src_resources"]
-      resources.srcDirs = ["src", "src_resources"]
-    }
-    test {
-      java.srcDirs = ["test_src", "test_src_resources"]
-      resources.srcDirs = ["test_src", "test_src_resources"]
-    }
-  }
+  sourceSets.main.java.srcDirs = ["src", "src_resources"]
+  sourceSets.main.resources.srcDirs = ["src", "src_resources"]
+  sourceSets.main.output.classesDir = "build/main_classes"
+  sourceSets.main.output.resourcesDir = "build/main_resources"
+  sourceSets.test.java.srcDirs = ["test_src", "test_src_resources"]
+  sourceSets.test.resources.srcDirs = ["test_src", "test_src_resources"]
+  sourceSets.test.output.classesDir = "build/test_classes"
+  sourceSets.test.output.resourcesDir = "build/test_resources"
 
   test { useTestNG() }
 }

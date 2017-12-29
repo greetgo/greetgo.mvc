@@ -4,6 +4,7 @@ import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.util.events.EventHandlerList;
 
+import javax.servlet.DispatcherType;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -165,4 +166,24 @@ public interface RequestTunnel {
    * @param executeBeforeCompleteHeaders признак установки заголовков
    */
   void forward(String reference, boolean executeBeforeCompleteHeaders);
+
+  /**
+   * Предоставляет информацию о положении запроса
+   *
+   * @return информация о положении запроса
+   */
+  RequestPaths requestPaths();
+
+  /**
+   * Работа с сессией
+   *
+   * @return работник с сессией
+   */
+  RequestSession requestSession();
+
+  RequestContent requestContent();
+
+  RequestMeta requestMeta();
+
+  DispatcherType getDispatcherType();
 }

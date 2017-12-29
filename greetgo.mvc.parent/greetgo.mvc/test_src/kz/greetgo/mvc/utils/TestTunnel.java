@@ -4,14 +4,19 @@ import kz.greetgo.mvc.core.EventTunnelCookies;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.core.TestTunnelCookies;
 import kz.greetgo.mvc.interfaces.RequestAttributes;
+import kz.greetgo.mvc.interfaces.RequestContent;
 import kz.greetgo.mvc.interfaces.RequestHeaders;
+import kz.greetgo.mvc.interfaces.RequestMeta;
 import kz.greetgo.mvc.interfaces.RequestParams;
+import kz.greetgo.mvc.interfaces.RequestPaths;
+import kz.greetgo.mvc.interfaces.RequestSession;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelCookies;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.util.events.EventHandlerList;
 
+import javax.servlet.DispatcherType;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -230,6 +235,31 @@ public class TestTunnel implements RequestTunnel {
 
   @Override
   public void forward(String reference, boolean executeBeforeCompleteHeaders) {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public RequestPaths requestPaths() {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public RequestSession requestSession() {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public RequestContent requestContent() {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public RequestMeta requestMeta() {
+    throw new RuntimeException();
+  }
+
+  @Override
+  public DispatcherType getDispatcherType() {
     throw new RuntimeException();
   }
 
