@@ -2,9 +2,9 @@
 
 Облегчённая реализация паттерна MVC. Сделана по образу и подобию SpringMVC
 
- - [Концепция](greetgo.mvc.parent/doc/concept.md)
- - [Проект-пример mvc.war.example (быстрая установка и запуск)](greetgo.mvc.parent/doc/mvc_war_example.md)
- - [Спецификация контроллеров](greetgo.mvc.parent/doc/controller_spec.md)
+ - [Концепция](doc/concept.md)
+ - [Проект-пример mvc.war.example (быстрая установка и запуск)](doc/mvc_war_example.md)
+ - [Спецификация контроллеров](doc/controller_spec.md)
 
 # Возможности
 
