@@ -241,7 +241,6 @@ public class ViewsImpl implements Views {
    * @param methodInvoker исполнитель метода контроллера
    */
   private void prepareSession(MethodInvoker methodInvoker) {
-    try {
       //смотрим, есть ли у вызываемого метода аннотация NoSecurity
       if (methodInvoker.getMethodAnnotation(NoSecurity.class) == null) {
         // если аннотации нет, то нужно проверить на наличие прав
@@ -261,9 +260,6 @@ public class ViewsImpl implements Views {
         // В этом случае мы очищаем ThreadLocal-переменную
         authRegister.get().cleanTokenThreadLocal();
       }
-    } catch (RestError restError) {
-      restError.printStackTrace();
-    }
   }
 
   /**
