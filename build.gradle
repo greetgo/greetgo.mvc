@@ -1,13 +1,13 @@
 buildscript {
   repositories {
-    if (System.getenv('GG_REPO') != null && System.getenv('GG_REPO').length() > 0) maven {
-      url System.getenv('GG_REPO')
-    }
-    jcenter()
+    mavenLocal()
+    if (System.getenv('GG_REPO')?.trim()) maven { url System.getenv('GG_REPO') }
+    mavenCentral()
   }
 
   dependencies {
     classpath 'com.bmuschko:gradle-tomcat-plugin:2.3'
+    classpath "kz.greetgo.plugins:greetgo.gradle.plugins:0.0.2"
   }
 }
 
@@ -17,6 +17,8 @@ allprojects {
   apply plugin: 'eclipse'
   apply plugin: 'maven'
   apply plugin: 'signing'
+  //noinspection UnnecessaryQualifiedReference
+  apply plugin: kz.greetgo.gradle.plugins.ShortJavaPathPlugin
 
   version = '2.1.0'
 
@@ -25,6 +27,13 @@ allprojects {
   group = "kz.greetgo.mvc"
 
   eclipse.project.natures 'org.springsource.ide.eclipse.gradle.core.nature'
+
+  tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+  }
+
 }
 
 subprojects {
@@ -48,10 +57,6 @@ subprojects {
     testCompile 'org.easytesting:fest-assert-core:2.0M10'
   }
 
-  compileJava.options.encoding = "UTF-8"
-  compileTestJava.options.encoding = "UTF-8"
-
-
   project.eclipse.classpath.file.whenMerged { cp ->
     if (project.hasProperty("sourceCompatibility")) {
       cp.entries.findAll { it.path.contains('JRE_CONTAINER') }.each {
@@ -71,15 +76,6 @@ subprojects {
       attributes 'Created-At': new Date().format("yyyy-MM-dd/HH:mm:ss")
     }
   }
-
-  sourceSets.main.java.srcDirs = ["src", "src_resources"]
-  sourceSets.main.resources.srcDirs = ["src", "src_resources"]
-  sourceSets.main.output.classesDir = "build/main_classes"
-  sourceSets.main.output.resourcesDir = "build/main_resources"
-  sourceSets.test.java.srcDirs = ["test_src", "test_src_resources"]
-  sourceSets.test.resources.srcDirs = ["test_src", "test_src_resources"]
-  sourceSets.test.output.classesDir = "build/test_classes"
-  sourceSets.test.output.resourcesDir = "build/test_resources"
 
   test { useTestNG() }
 }

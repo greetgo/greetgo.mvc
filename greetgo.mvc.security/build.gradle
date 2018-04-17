@@ -1,5 +1,5 @@
-def nowDate = new Date()
-def nowFormattedDate = nowDate.format("yyyy-MM-dd/HH:mm:ss")
+//noinspection UnnecessaryQualifiedReference
+apply plugin: kz.greetgo.gradle.plugins.MavenUploadPlugin
 
 eclipse {
   jdt {
@@ -20,109 +20,13 @@ dependencies {
   testCompile "kz.greetgo:greetgo.util:${greetgoUtilVersion}"
 }
 
-test { useTestNG() }
-
-task javadocJar(type: Jar, dependsOn: 'javadoc') {
-  from javadoc.destinationDir
-  classifier = 'javadoc'
-}
-
-task sourcesJar(type: Jar) {
-  from sourceSets.main.allSource
-  classifier = 'sources'
-}
-
-artifacts {
-  archives javadocJar
-  archives sourcesJar
-}
-
-uploadArchives {
-  repositories.mavenDeployer {
-    configuration = configurations.archives
-    repository(
-      url: System.getenv('GG_REPO')
-    )
-
-    pom.project {
-      name project.name
-      packaging 'jar'
-    }
-  }
-}
-
-
-if (System.getenv('LIB_SIGN_GPG_KEY_ID') != null && System.getenv('LIB_SIGN_GPG_KEY_ID').length() > 0) {
-
-  gradle.taskGraph.whenReady { taskGraph ->
-    if (taskGraph.allTasks.any { it instanceof Sign }) {
-      allprojects { ext."signing.keyId" = System.getenv('LIB_SIGN_GPG_KEY_ID') }
-      allprojects { ext."signing.secretKeyRingFile" = System.getenv('LIB_SIGN_GPG_KEY_LOCATION') }
-      allprojects { ext."signing.password" = System.getenv('LIB_SIGN_GPG_KEY_PASSWORD') }
-    }
-  }
-}
-
-signing {
-  sign configurations.archives
-}
-
-tasks.withType(Javadoc) {
-  options.addStringOption('Xdoclint:none', '-quiet')
-  options.addStringOption('encoding', 'UTF-8')
-  options.addStringOption('charSet', 'UTF-8')
-}
-
-
-project.tasks.create('uploadToMavenCentral', Upload.class) {
-  group = "upload"
-  configuration = configurations.archives
-  repositories {
-    mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(
-            userName: System.getenv('LIB_SONATYPE_ACCOUNT_HASH_ID'),
-            password: System.getenv('LIB_SONATYPE_ACCOUNT_HASH_PASSWORD')
-        )
-      }
-
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(
-            userName: System.getenv('LIB_SONATYPE_ACCOUNT_HASH_ID'),
-            password: System.getenv('LIB_SONATYPE_ACCOUNT_HASH_PASSWORD')
-        )
-      }
-
-      pom.project {
-        name project.name
-        packaging 'jar'
-
-        description 'Lightweight implementation of pattern MVC. Idea based on SpringMVC'
-        url 'http://tech.greetgo.kz/libs/greetgo/mvc.php'
-
-        scm {
-          connection 'scm:git:https://github.com/greetgo/mvc'
-          developerConnection 'scm:git:https://github.com/greetgo/mvc'
-          url 'https://github.com/greetgo/mvc'
-        }
-
-        licenses {
-          license {
-            name 'The Apache License, Version 2.0'
-            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-          }
-        }
-
-        developers {
-          developer {
-            id 'greetgo'
-            name 'Yevgeniy Kolpakov'
-            email 'tech@greet-go.com'
-          }
-        }
-      }
-    }
+uploadToMavenCentral {
+  description = "MVC Functionality using in greetgo! - security features"
+  url = 'https://github.com/greetgo/greetgo.mvc'
+  scm.url = 'https://github.com/greetgo/greetgo.mvc.git'
+  developer {
+    id = 'pompei'
+    name = 'Evgeniy Kolpakov'
+    email = 'ekolpakov@greet-go.com'
   }
 }
