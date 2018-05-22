@@ -1,9 +1,15 @@
 package kz.greetgo.mvc.util;
 
+import kz.greetgo.mvc.annotations.MethodFilter;
+import kz.greetgo.mvc.core.MappingIdentity;
+import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.errors.CannotConvertToDate;
+import kz.greetgo.mvc.errors.CompatibleTargetMapping;
+import kz.greetgo.mvc.errors.DoublePathPar;
 import kz.greetgo.mvc.errors.IllegalChar;
 import kz.greetgo.mvc.errors.NoConverterFor;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
+import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.model.Redirect;
 
 import javax.servlet.ServletException;
@@ -19,16 +25,16 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.unmodifiableMap;
 
@@ -336,5 +342,62 @@ public class MvcUtil {
       if (e instanceof RuntimeException) throw (RuntimeException) e;
       throw new RuntimeException(e);
     }
+  }
+
+  public static void checkTunnelExecutorGetters(List<TunnelExecutorGetter> tunnelExecutorGetters) {
+    final int size = tunnelExecutorGetters.size();
+    for (int i = 0; i < size; i++) {
+
+      checkIncompatibilityOne(tunnelExecutorGetters.get(i));
+
+      for (int j = i + 1; j < size; j++) {
+
+        checkIncompatibility(tunnelExecutorGetters.get(i), tunnelExecutorGetters.get(j));
+
+      }
+    }
+  }
+
+  private static void checkIncompatibility(TunnelExecutorGetter teg1, TunnelExecutorGetter teg2) {
+    MappingIdentity mi1 = teg1.getMappingIdentity();
+    MappingIdentity mi2 = teg2.getMappingIdentity();
+
+    if (!isCompatibles(mi1.methodFilter(), mi2.methodFilter())) return;
+
+    String tm1 = mi1.targetMapping();
+    String tm2 = mi2.targetMapping();
+
+    if (isTargetMappingCompatible(tm1, tm2)) {
+      throw new CompatibleTargetMapping(teg1.infoStr(), teg2.infoStr());
+    }
+  }
+
+  private final static Pattern DOUBLE_ASTERISK = Pattern.compile("\\*{2}");
+
+  private static void checkIncompatibilityOne(TunnelExecutorGetter teg) {
+    String targetMapping = teg.getMappingIdentity().targetMapping();
+
+    if (DOUBLE_ASTERISK.matcher(targetMapping).find()) {
+      throw new DoublePathPar(teg.infoStr());
+    }
+  }
+
+  private static boolean isCompatibles(MethodFilter filter1, MethodFilter filter2) {
+    if (filter1 == null) return true;
+    if (filter2 == null) return true;
+
+    if (filter1.value().length == 0) return false;
+    if (filter2.value().length == 0) return false;
+
+    Set<RequestMethod> set1 = Arrays.stream(filter1.value()).collect(Collectors.toSet());
+    Set<RequestMethod> set2 = Arrays.stream(filter2.value()).collect(Collectors.toSet());
+
+    set1.retainAll(set2);
+
+    return set1.size() > 0;
+  }
+
+  private static boolean isTargetMappingCompatible(String tm1, String tm2) {
+    return true;
   }
 }

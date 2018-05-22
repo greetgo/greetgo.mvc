@@ -131,4 +131,37 @@ public class TargetMapperTest {
     mappingResult.getParam("asd");
 
   }
+
+  @Test
+  public void toTargetMapperIdentity_1() {
+    String a = "/page/{pageNumber}/pageSize/{pageSize}/sort/{direction}/column/{nameOfColumn}";
+    String b = "/page/*/pageSize/*/sort/*/column/*";
+
+    assertThat(TargetMapper.toTargetMapperIdentity(a)).isEqualTo(b);
+  }
+
+  @Test
+  public void toTargetMapperIdentity_2() {
+    String a = "/asd";
+    String b = "/asd";
+
+    assertThat(TargetMapper.toTargetMapperIdentity(a)).isEqualTo(b);
+  }
+
+  @Test
+  public void toTargetMapperIdentity_3() {
+    String a = "/hello{stone}/xxx/fix{fix}s/it";
+    String b = "/hello*/xxx/fix*s/it";
+
+    assertThat(TargetMapper.toTargetMapperIdentity(a)).isEqualTo(b);
+  }
+
+  @Test
+  public void toTargetMapperIdentity_4() {
+    String a = "/page/{pageNumber}/pageSize/{pageSize}/sort/{direction}/column/{nameOfColumn}/DETAILS";
+    String b = "/page/*/pageSize/*/sort/*/column/*/DETAILS";
+
+    assertThat(TargetMapper.toTargetMapperIdentity(a)).isEqualTo(b);
+  }
+
 }

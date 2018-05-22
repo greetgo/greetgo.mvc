@@ -7,6 +7,7 @@ import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.UploadInfo;
+import kz.greetgo.mvc.util.MvcUtil;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.MultipartConfigElement;
@@ -45,6 +46,8 @@ public abstract class AppServlet extends GenericServlet {
     for (Object controller : getControllerList()) {
       tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
     }
+
+    MvcUtil.checkTunnelExecutorGetters(tunnelExecutorGetters);
 
     final ServletRegistration.Dynamic registration = ctx.addServlet(getAddingServletName(), this);
     {

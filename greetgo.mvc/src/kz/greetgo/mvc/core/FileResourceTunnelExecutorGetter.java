@@ -48,6 +48,11 @@ public class FileResourceTunnelExecutorGetter implements TunnelExecutorGetter {
   }
 
   @Override
+  public MappingIdentity getMappingIdentity() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public String infoStr() {
     return "File resource on dirs: " + resourceDirList;
   }

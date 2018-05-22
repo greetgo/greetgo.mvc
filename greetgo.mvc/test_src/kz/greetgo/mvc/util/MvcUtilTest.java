@@ -1,16 +1,29 @@
 package kz.greetgo.mvc.util;
 
+import kz.greetgo.mvc.annotations.MethodFilter;
+import kz.greetgo.mvc.core.MappingIdentity;
+import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.errors.CannotConvertToDate;
+import kz.greetgo.mvc.errors.CompatibleTargetMapping;
+import kz.greetgo.mvc.errors.DoublePathPar;
 import kz.greetgo.mvc.errors.IllegalChar;
+import kz.greetgo.mvc.interfaces.RequestTunnel;
+import kz.greetgo.mvc.interfaces.TunnelExecutor;
+import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.utils.TestEnum;
+import org.fest.assertions.api.Assertions;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -20,40 +33,40 @@ public class MvcUtilTest {
   public Object[][] amountBytesToLong_dataProvider() {
     return new Object[][]{
 
-      new Object[]{" - 123 4 ", -1234L},
+      {" - 123 4 ", -1234L},
 
-      new Object[]{" 123  ", 123L},
-      new Object[]{" 123 B", 123L},
-      new Object[]{" 123B ", 123L},
-      new Object[]{" 123 b", 123L},
-      new Object[]{" 123b ", 123L},
-      new Object[]{" 123 657 876b ", 123657876L},
-      new Object[]{" 123 657 876 b", 123657876L},
+      {" 123  ", 123L},
+      {" 123 B", 123L},
+      {" 123B ", 123L},
+      {" 123 b", 123L},
+      {" 123b ", 123L},
+      {" 123 657 876b ", 123657876L},
+      {" 123 657 876 b", 123657876L},
 
-      new Object[]{" 12 752K  ", 12_752L * 1024L},
-      new Object[]{" 12 752 K ", 12_752L * 1024L},
-      new Object[]{" 12 752k  ", 12_752L * 1024L},
-      new Object[]{" 12 752 k ", 12_752L * 1024L},
+      {" 12 752K  ", 12_752L * 1024L},
+      {" 12 752 K ", 12_752L * 1024L},
+      {" 12 752k  ", 12_752L * 1024L},
+      {" 12 752 k ", 12_752L * 1024L},
 
-      new Object[]{" - 12 752Kb  ", -12_752L * 1024L},
-      new Object[]{" - 12_752 Kb ", -12_752L * 1024L},
-      new Object[]{" - 12 752kb  ", -12_752L * 1024L},
-      new Object[]{" - 12 752 kb ", -12_752L * 1024L},
+      {" - 12 752Kb  ", -12_752L * 1024L},
+      {" - 12_752 Kb ", -12_752L * 1024L},
+      {" - 12 752kb  ", -12_752L * 1024L},
+      {" - 12 752 kb ", -12_752L * 1024L},
 
-      new Object[]{" - 12_752KB  ", -12_752L * 1024L},
-      new Object[]{" - 12 752 KB ", -12_752L * 1024L},
-      new Object[]{" - 12_752kB  ", -12_752L * 1024L},
-      new Object[]{" - 12 752 kB ", -12_752L * 1024L},
+      {" - 12_752KB  ", -12_752L * 1024L},
+      {" - 12 752 KB ", -12_752L * 1024L},
+      {" - 12_752kB  ", -12_752L * 1024L},
+      {" - 12 752 kB ", -12_752L * 1024L},
 
-      new Object[]{" 13 752MB  ", 13_752L * 1024L * 1024L},
-      new Object[]{" 13_752 MB ", 13_752L * 1024L * 1024L},
-      new Object[]{" 13 752 M  ", 13_752L * 1024L * 1024L},
-      new Object[]{" 13_752M   ", 13_752L * 1024L * 1024L},
+      {" 13 752MB  ", 13_752L * 1024L * 1024L},
+      {" 13_752 MB ", 13_752L * 1024L * 1024L},
+      {" 13 752 M  ", 13_752L * 1024L * 1024L},
+      {" 13_752M   ", 13_752L * 1024L * 1024L},
 
-      new Object[]{" 13 752GB  ", 13_752L * 1024L * 1024L * 1024L},
-      new Object[]{" 13_752 GB ", 13_752L * 1024L * 1024L * 1024L},
-      new Object[]{" 13 752 G  ", 13_752L * 1024L * 1024L * 1024L},
-      new Object[]{" 13_752G   ", 13_752L * 1024L * 1024L * 1024L},
+      {" 13 752GB  ", 13_752L * 1024L * 1024L * 1024L},
+      {" 13_752 GB ", 13_752L * 1024L * 1024L * 1024L},
+      {" 13 752 G  ", 13_752L * 1024L * 1024L * 1024L},
+      {" 13_752G   ", 13_752L * 1024L * 1024L * 1024L},
 
     };
   }
@@ -327,5 +340,146 @@ public class MvcUtilTest {
   public void convertStrToType_BigInteger_null() throws Exception {
     Object res = MvcUtil.convertStrToType(null, BigInteger.class);
     assertThat(res).isNull();
+  }
+
+  private static TunnelExecutorGetter createTestTEG(String requestMethods, String targetMapper) {
+    return new TunnelExecutorGetter() {
+      @Override
+      public TunnelExecutor getTunnelExecutor(RequestTunnel tunnel) {
+        throw new RuntimeException();
+      }
+
+      @Override
+      public String infoStr() {
+        return requestMethods + "::" + targetMapper;
+      }
+
+      @Override
+      public MappingIdentity getMappingIdentity() {
+        return new MappingIdentity() {
+          @Override
+          public String targetMapping() {
+            return targetMapper;
+          }
+
+          @Override
+          public MethodFilter methodFilter() {
+            return requestMethods == null ? null : new MethodFilter() {
+              @Override
+              public Class<? extends Annotation> annotationType() {
+                throw new UnsupportedOperationException();
+              }
+
+              @Override
+              public RequestMethod[] value() {
+                return Arrays.stream(requestMethods.split("-"))
+                  .filter(n -> !n.isEmpty())
+                  .map(RequestMethod::valueOf)
+                  .toArray(RequestMethod[]::new);
+              }
+            };
+          }
+        };
+      }
+    };
+  }
+
+  @Test
+  public void checkTunnelExecutorGetters_1() {
+    List<TunnelExecutorGetter> list = new ArrayList<>();
+
+    list.add(createTestTEG("POST-GET", "/asd/wow"));
+    list.add(createTestTEG("HEAD-PUT", "/asd/wow"));
+
+    MvcUtil.checkTunnelExecutorGetters(list);
+  }
+
+  @Test(expectedExceptions = CompatibleTargetMapping.class)
+  public void checkTunnelExecutorGetters_2() {
+    List<TunnelExecutorGetter> list = new ArrayList<>();
+
+    list.add(createTestTEG(null, "/asd/dsa"));//  null - это отсутствие аннотации @MethodFilter - т.е. все методы
+    list.add(createTestTEG("HEAD-PUT", "/asd/dsa"));
+
+    MvcUtil.checkTunnelExecutorGetters(list);
+  }
+
+  @Test(expectedExceptions = CompatibleTargetMapping.class)
+  public void checkTunnelExecutorGetters_3() {
+    List<TunnelExecutorGetter> list = new ArrayList<>();
+
+    list.add(createTestTEG("POST-GET", "/asd/dsa"));
+    list.add(createTestTEG(null, "/asd/dsa"));
+
+    MvcUtil.checkTunnelExecutorGetters(list);
+  }
+
+  @Test
+  public void checkTunnelExecutorGetters_4() {
+    List<TunnelExecutorGetter> list = new ArrayList<>();
+
+    list.add(createTestTEG("POST-GET", "/asd/dsa"));
+    list.add(createTestTEG("", "/asd/dsa"));//  значение "" - это аннотация с путым массивом - @MethodFilter({})
+
+    MvcUtil.checkTunnelExecutorGetters(list);
+  }
+
+  @Test(expectedExceptions = CompatibleTargetMapping.class)
+  public void checkTunnelExecutorGetters_5() {
+    List<TunnelExecutorGetter> list = new ArrayList<>();
+
+    list.add(createTestTEG("POST-GET", "/asd/dsa"));
+    list.add(createTestTEG("GET", "/asd/dsa"));
+
+    MvcUtil.checkTunnelExecutorGetters(list);
+  }
+
+  @DataProvider
+  public Object[][] checkTunnelExecutorGetters_targetMapper_DP() {
+    return new Object[][]{
+      {"/asd/dsa", "/asd/dsa", false},
+      {"/asd/dsa1", "/asd/dsa2", true},
+      {"/asd/dsa/*", "/asd/dsa/*/asd", false},
+      {"/asd/dsa/*/dsa", "/asd/dsa/*/asd", true},
+      {"/asd/dsa/*/dsa", "/asd/dsa/hello/dsa", false},
+      {"/asd/dsa/*/dsa", "/asd/dsa/hello/asd", true},
+      {"/asd/*", "/asd/wow", false},
+      {"/A/*/B/*/C/*/D1", "/A/*/B/*/C/*/D2", true},
+      {"/A/*/B/*/C1/*/D", "/A/*/B/*/C2/*/D", true},
+      {"/A/*/B/*/C1/*/D", "/A/*/B/*/C22/*/D", true},
+      {"/A/*/B/*/C11/*/D", "/A/*/B/*/C2/*/D", true},
+      {"/A/*/B/*/C/*/D", "/A/*/B/*/C/*/D", false},
+      {"/A/*/B/*/C/*/D", "/A/*/B/*/C/*", false},
+      {"*", "asd", false},
+      {"*", "asd*", false},
+      {"*", "asd*dsa", false},
+      {"*/asd", "*/dsa", true},
+      {"*/asd/*", "*/dsa/*", true},
+      {"*/asd/*", "*/asd/*", false},
+    };
+  }
+
+  @Test(dataProvider = "checkTunnelExecutorGetters_targetMapper_DP")
+  public void checkTunnelExecutorGetters_targetMapper(String targetMapper1, String targetMapper2, boolean ok) {
+    List<TunnelExecutorGetter> list = new ArrayList<>();
+
+    list.add(createTestTEG(null, targetMapper1));
+    list.add(createTestTEG(null, targetMapper2));
+
+    if (ok) {
+      MvcUtil.checkTunnelExecutorGetters(list);
+    } else try {
+      MvcUtil.checkTunnelExecutorGetters(list);
+      Assertions.fail("Must be exception CompatibleTargetMapping");
+    } catch (CompatibleTargetMapping ignore) {}
+  }
+
+  @Test(expectedExceptions = DoublePathPar.class)
+  public void checkTunnelExecutorGetters_doublePathPar() {
+    List<TunnelExecutorGetter> list = new ArrayList<>();
+
+    list.add(createTestTEG(null, "/asd/**/dsa/"));
+
+    MvcUtil.checkTunnelExecutorGetters(list);
   }
 }

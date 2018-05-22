@@ -5,6 +5,7 @@ import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
+import kz.greetgo.mvc.util.MvcUtil;
 import kz.greetgo.mvc.war.SecurityFilter;
 import kz.greetgo.mvc.war.WarRequestTunnel;
 import org.eclipse.jetty.servlet.DefaultServlet;
@@ -47,6 +48,8 @@ public abstract class JettyWarServlet extends DefaultServlet {
     for (Object controller : getControllerList()) {
       tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
     }
+
+    MvcUtil.checkTunnelExecutorGetters(tunnelExecutorGetters);
 
     webAppContext.addServlet(new ServletHolder(this), mappingBase());
 

@@ -1,11 +1,16 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.MethodFilter;
+import kz.greetgo.mvc.errors.AsteriskInTargetMapper;
 import kz.greetgo.mvc.errors.NoPathParam;
 import kz.greetgo.mvc.interfaces.MappingResult;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,18 +18,33 @@ public class TargetMapper {
 
   private final List<String> namesForGroups;
   private final Pattern mappingPattern;
-  private String targetMapping;
+  private final String targetMapping;
   private final MethodFilter methodFilter;
+  private final MappingIdentity mappingIdentity;
+
+  public MappingIdentity getMappingIdentity() {
+    return mappingIdentity;
+  }
 
   public TargetMapper(String targetMapping, MethodFilter methodFilter) {
     this.targetMapping = targetMapping;
     this.methodFilter = methodFilter;
-    //  EXAMPLE: targetMapping =  /asd/{clientId}/cool-phase/{phone}
+    this.mappingIdentity = new MappingIdentity() {
+      final String mappingIdentity = toTargetMapperIdentity(targetMapping);
+
+      @Override
+      public String targetMapping() {
+        return mappingIdentity;
+      }
+
+      @Override
+      public MethodFilter methodFilter() {
+        return methodFilter;
+      }
+    };
 
     StringBuilder pattern = new StringBuilder();
-
     int pos = 0;
-
     List<String> namesForGroups = new ArrayList<>();
 
     while (true) {
@@ -58,6 +78,31 @@ public class TargetMapper {
 
     this.namesForGroups = Collections.unmodifiableList(namesForGroups);
     this.mappingPattern = Pattern.compile(pattern.toString());
+  }
+
+  static String toTargetMapperIdentity(String targetMapper) {
+
+    if (targetMapper.contains("*")) throw new AsteriskInTargetMapper(targetMapper);
+
+    StringBuilder ret = new StringBuilder(targetMapper.length());
+
+    int lastPos = 0;
+
+    while (true) {
+
+      int openIndex = targetMapper.indexOf('{', lastPos);
+      if (openIndex < 0) break;
+
+      int closeIndex = targetMapper.indexOf('}', openIndex);
+      if (closeIndex < 0) break;
+
+      ret.append(targetMapper, lastPos, openIndex).append('*');
+      lastPos = closeIndex + 1;
+    }
+
+    ret.append(targetMapper, lastPos, targetMapper.length());
+
+    return ret.toString();
   }
 
   public String infoStr() {

@@ -110,11 +110,21 @@ public class ControllerTunnelExecutorBuilder {
       }
 
       @Override
+      public MappingIdentity getMappingIdentity() {
+        return targetMapper.getMappingIdentity();
+      }
+
+      @Override
       public TunnelExecutor getTunnelExecutor(final RequestTunnel tunnel) {
         final MappingResult mappingResult = targetMapper.mapTarget(tunnel);
         if (!mappingResult.ok()) return null;
 
         return new TunnelExecutor() {
+          @Override
+          public UploadInfo getUploadInfo() {
+            return localUploadInfoGetter.get();
+          }
+
           @Override
           public void execute() throws Exception {
             views.performRequest(new MethodInvoker() {
@@ -253,14 +263,8 @@ public class ControllerTunnelExecutorBuilder {
               }
             });
           }
-
-          @Override
-          public UploadInfo getUploadInfo() {
-            return localUploadInfoGetter.get();
-          }
         };
       }
-
 
     };
   }
