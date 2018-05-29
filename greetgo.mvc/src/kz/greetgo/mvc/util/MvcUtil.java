@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -367,7 +368,7 @@ public class MvcUtil {
     String tm1 = mi1.targetMapping();
     String tm2 = mi2.targetMapping();
 
-    if (isTargetMappingCompatible(tm1, tm2)) {
+    if (!isTargetMappingDifferent(tm1, tm2)) {
       throw new CompatibleTargetMapping(teg1.infoStr(), teg2.infoStr());
     }
   }
@@ -397,7 +398,15 @@ public class MvcUtil {
     return set1.size() > 0;
   }
 
-  private static boolean isTargetMappingCompatible(String tm1, String tm2) {
-    return true;
+  private static final Random random = new Random();
+
+  /*
+   * Нужно вернуть true, если tm1 и tm2 обеспечивают РАЗНЫЕ точки входа
+   */
+  private static boolean isTargetMappingDifferent(String tm1, String tm2) {
+    if (tm1 == null) tm1 = "";
+    if (tm2 == null) tm2 = "";
+
+    return random.nextBoolean();//Блин, не получается так угадывать!
   }
 }

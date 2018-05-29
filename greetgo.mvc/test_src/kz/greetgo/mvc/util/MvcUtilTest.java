@@ -456,21 +456,49 @@ public class MvcUtilTest {
       {"*/asd", "*/dsa", true},
       {"*/asd/*", "*/dsa/*", true},
       {"*/asd/*", "*/asd/*", false},
+
+      {"ab*", "a*d", false},
+      {"*ba", "d*a", false},
+      {"/aaa/bbb/*", "/aaa/*ddd", false},
+
+      {"xab*", "ya*d", true},
+      {"x*ba", "yd*a", true},
+      {"x/aaa/bbb/*", "y/aaa/*ddd", true},
+
+      {"ab*2", "a*d1", true},
+      {"*ba2", "d*a1", true},
+      {"/aaa/bbb/*2", "/aaa/*ddd1", true},
+
+      {"a", "b", true},
+      {"a", "b*", true},
+      {"a", "*b", true},
+      {"a*", "*b", false},
+      {"a*b", "*b", false},
+      {"a*c", "*b", true},
+
+      {"asd", "*asd*", false},
+      {"abc", "*a*b*c*", false},
+      {"abc", "*a*c*b*", true},
+      {"abc", "*a*c*c*", true},
+      {"abc", "*a*x*c*", true},
+
+      {"abc123ABC098", "*a*b*c123*09*8*", false},
+      {"abc123ABC098", "*a*b*c12j3*09*8*", true},
     };
   }
 
   @Test(dataProvider = "checkTunnelExecutorGetters_targetMapper_DP")
-  public void checkTunnelExecutorGetters_targetMapper(String targetMapper1, String targetMapper2, boolean ok) {
+  public void checkTunnelExecutorGetters_targetMapper(String tm1, String tm2, boolean ok) {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG(null, targetMapper1));
-    list.add(createTestTEG(null, targetMapper2));
+    list.add(createTestTEG(null, tm1));
+    list.add(createTestTEG(null, tm2));
 
     if (ok) {
       MvcUtil.checkTunnelExecutorGetters(list);
     } else try {
       MvcUtil.checkTunnelExecutorGetters(list);
-      Assertions.fail("Must be exception CompatibleTargetMapping");
+      Assertions.fail("Must be exception CompatibleTargetMapping: tm1 = " + tm1 + ", tm2 = " + tm2);
     } catch (CompatibleTargetMapping ignore) {}
   }
 
