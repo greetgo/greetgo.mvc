@@ -40,6 +40,10 @@ public abstract class JettyWarServlet extends DefaultServlet {
     return null;
   }
 
+  protected boolean checkControllerMappersConflicts() {
+    return true;
+  }
+
   @SuppressWarnings("unused")
   public void registerTo(WebAppContext webAppContext) {
 
@@ -49,7 +53,9 @@ public abstract class JettyWarServlet extends DefaultServlet {
       tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
     }
 
-    MvcUtil.checkTunnelExecutorGetters(tunnelExecutorGetters);
+    if (checkControllerMappersConflicts()) {
+      MvcUtil.checkTunnelExecutorGetters(tunnelExecutorGetters);
+    }
 
     webAppContext.addServlet(new ServletHolder(this), mappingBase());
 

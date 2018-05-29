@@ -40,6 +40,10 @@ public abstract class AppServlet extends GenericServlet {
     return "appServlet";
   }
 
+  protected boolean checkControllerMappersConflicts() {
+    return true;
+  }
+
   @SuppressWarnings("SameParameterValue")
   public void register(ServletContext ctx, String mappingBase) {
     final Views views = getViews();
@@ -47,7 +51,9 @@ public abstract class AppServlet extends GenericServlet {
       tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
     }
 
-    MvcUtil.checkTunnelExecutorGetters(tunnelExecutorGetters);
+    if (checkControllerMappersConflicts()) {
+      MvcUtil.checkTunnelExecutorGetters(tunnelExecutorGetters);
+    }
 
     final ServletRegistration.Dynamic registration = ctx.addServlet(getAddingServletName(), this);
     {
