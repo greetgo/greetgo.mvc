@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.fail;
 
 public class MvcUtilTest {
 
@@ -445,16 +446,16 @@ public class MvcUtilTest {
       {"/asd/dsa/*/dsa", "/asd/dsa/hello/asd", true},
       {"/asd/*", "/asd/wow", false},
       {"/A/*/B/*/C/*/D1", "/A/*/B/*/C/*/D2", true},
-      {"/A/*/B/*/C1/*/D", "/A/*/B/*/C2/*/D", true},
-      {"/A/*/B/*/C1/*/D", "/A/*/B/*/C22/*/D", true},
-      {"/A/*/B/*/C11/*/D", "/A/*/B/*/C2/*/D", true},
+      {"/A/*/B/*/C1/*/D", "/A/*/B/*/C2/*/D", false},
+      {"/A/*/B/*/C1/*/D", "/A/*/B/*/C22/*/D", false},
+      {"/A/*/B/*/C11/*/D", "/A/*/B/*/C2/*/D", false},
       {"/A/*/B/*/C/*/D", "/A/*/B/*/C/*/D", false},
       {"/A/*/B/*/C/*/D", "/A/*/B/*/C/*", false},
       {"*", "asd", false},
       {"*", "asd*", false},
       {"*", "asd*dsa", false},
       {"*/asd", "*/dsa", true},
-      {"*/asd/*", "*/dsa/*", true},
+      {"*/asd/*", "*/dsa/*", false},
       {"*/asd/*", "*/asd/*", false},
 
       {"ab*", "a*d", false},
@@ -478,12 +479,27 @@ public class MvcUtilTest {
 
       {"asd", "*asd*", false},
       {"abc", "*a*b*c*", false},
-      {"abc", "*a*c*b*", true},
-      {"abc", "*a*c*c*", true},
-      {"abc", "*a*x*c*", true},
+      {"abc", "*a*c*b*", false},
+      {"abc", "*a*c*c*", false},
+      {"abc", "*a*x*c*", false},
 
       {"abc123ABC098", "*a*b*c123*09*8*", false},
-      {"abc123ABC098", "*a*b*c12j3*09*8*", true},
+      {"abc123ABC098", "*a*b*c12j3*09*8*", false},
+
+      {"*a*b*c123*09*8*", "abc123ABC098", false},
+      {"*a*b*c12j3*09*8*", "abc123ABC098", false},
+
+      {"*", "*", false},
+      {"", "a", true},
+      {"a", "", true},
+      {"", "", false},
+      {"*", "", false},
+      {"", "*", false},
+      {"", "*a", true},
+      {"", "a*", true},
+
+      {"*/asd/*/wow", "*/asd/*/qu/*xxx/wow", false},
+      {"*/asd/*/wow", "*/asd/*/qu/*xxx/wow1", true},
     };
   }
 
@@ -500,6 +516,26 @@ public class MvcUtilTest {
       MvcUtil.checkTunnelExecutorGetters(list);
       Assertions.fail("Must be exception CompatibleTargetMapping: tm1 = " + tm1 + ", tm2 = " + tm2);
     } catch (CompatibleTargetMapping ignore) {}
+  }
+
+  @Test(expectedExceptions = CompatibleTargetMapping.class)
+  public void checkTunnelExecutorGetters_targetMapper_001() {
+    List<TunnelExecutorGetter> list = new ArrayList<>();
+
+    list.add(createTestTEG(null, "/asd/dsa/*/dsa"));
+    list.add(createTestTEG(null, "/asd/dsa/hello/dsa"));
+
+    MvcUtil.checkTunnelExecutorGetters(list);
+  }
+
+  @Test
+  public void checkTunnelExecutorGetters_targetMapper_002() {
+    List<TunnelExecutorGetter> list = new ArrayList<>();
+
+    list.add(createTestTEG(null, "xab*"));
+    list.add(createTestTEG(null, "ya*d"));
+
+    MvcUtil.checkTunnelExecutorGetters(list);
   }
 
   @Test(expectedExceptions = DoublePathPar.class)

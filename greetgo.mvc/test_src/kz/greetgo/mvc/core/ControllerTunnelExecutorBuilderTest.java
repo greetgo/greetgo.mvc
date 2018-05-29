@@ -12,6 +12,7 @@ import kz.greetgo.mvc.annotations.UploadMaxFileSize;
 import kz.greetgo.mvc.annotations.UploadMaxFileSizeFromMethod;
 import kz.greetgo.mvc.annotations.UploadMaxRequestSize;
 import kz.greetgo.mvc.errors.AmbiguousMaxFileSize;
+import kz.greetgo.mvc.errors.CompatibleTargetMapping;
 import kz.greetgo.mvc.errors.InconsistentUploadAnnotationsUnderClass;
 import kz.greetgo.mvc.errors.InconsistentUploadAnnotationsUnderMethod;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
@@ -19,6 +20,7 @@ import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.model.UploadInfo;
+import kz.greetgo.mvc.util.MvcUtil;
 import kz.greetgo.mvc.utils.TestTunnel;
 import kz.greetgo.mvc.utils.TestViews;
 import kz.greetgo.util.RND;
@@ -1158,5 +1160,28 @@ public class ControllerTunnelExecutorBuilderTest {
     assertThat(handleFirst(handlerGetterList, tunnel)).isFalse();
 
     assertThat(c.neverCalled_callCount).isEqualTo(0);
+  }
+
+  @Mapping("/asd")
+  public static class LeftController {
+    @Mapping("/asd")
+    public void asd1() {}
+
+    @Mapping("/asd")
+    public void asd2() {}
+  }
+
+  @Test(expectedExceptions = CompatibleTargetMapping.class)
+  public void checkTunnelExecutorGetters() {
+    TestViews views = new TestViews();
+    LeftController c = new LeftController();
+
+    final List<TunnelExecutorGetter> list = ControllerTunnelExecutorBuilder.build(c, views);
+
+    //
+    //
+    MvcUtil.checkTunnelExecutorGetters(list);
+    //
+    //
   }
 }
