@@ -26,6 +26,7 @@ import kz.greetgo.mvc.util.CookieUtil;
 import kz.greetgo.mvc.util.JsonUtil;
 import kz.greetgo.mvc.util.MimeUtil;
 import kz.greetgo.mvc.util.MvcUtil;
+import kz.greetgo.mvc.util.UriEscape;
 import kz.greetgo.mvc.util.setters.FieldSetters;
 import kz.greetgo.mvc.util.setters.FieldSettersStorage;
 
@@ -233,7 +234,7 @@ public class MethodParameterMeta {
               this.filename = filename;
               tunnel.setResponseHeader(
                 "Content-Disposition",
-                "attachment; filename=\"" + filename + "\""
+                "attachment; filename=\"" + UriEscape.escape(filename) + "\""
               );
             }
 
