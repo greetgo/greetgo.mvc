@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * В этом классе реализована обработка методов контроллеров
  */
-public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
+public class ViewsExample implements kz.greetgo.mvc.interfaces.Views {
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
