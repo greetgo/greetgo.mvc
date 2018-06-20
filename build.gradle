@@ -1,4 +1,5 @@
 buildscript {
+
   repositories {
     mavenLocal()
     if (System.getenv('GG_REPO')?.trim()) maven { url System.getenv('GG_REPO') }
@@ -7,9 +8,11 @@ buildscript {
 
   dependencies {
     classpath 'com.bmuschko:gradle-tomcat-plugin:2.3'
-    classpath "kz.greetgo.plugins:greetgo.gradle.plugins:0.0.2"
+    classpath "kz.greetgo.plugins:greetgo.gradle.plugins:0.0.5"
   }
 }
+
+import kz.greetgo.gradle.plugins.ShortJavaPathPlugin
 
 allprojects {
   apply plugin: 'java'
@@ -17,54 +20,27 @@ allprojects {
   apply plugin: 'eclipse'
   apply plugin: 'maven'
   apply plugin: 'signing'
-  //noinspection UnnecessaryQualifiedReference
-  apply plugin: kz.greetgo.gradle.plugins.ShortJavaPathPlugin
+  apply plugin: ShortJavaPathPlugin
 
   version = '2.1.2'
 
   sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+  [compileJava, compileTestJava]*.options*.debugOptions*.debugLevel = "source,lines,vars"
+
+  repositories {
+    mavenLocal()
+    if (System.getenv('GG_REPO')?.trim()) maven { url System.getenv('GG_REPO') }
+    mavenCentral()
+  }
 
   group = "kz.greetgo.mvc"
-
-  eclipse.project.natures 'org.springsource.ide.eclipse.gradle.core.nature'
 
   tasks.withType(Javadoc) {
     options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption('encoding', 'UTF-8')
     options.addStringOption('charSet', 'UTF-8')
-  }
-
-}
-
-subprojects {
-  compileJava.options.debugOptions.debugLevel = "source,lines,vars"
-  compileTestJava.options.debugOptions.debugLevel = "source,lines,vars"
-
-  repositories {
-    if (System.getenv('GG_REPO')?.trim()) maven { url System.getenv('GG_REPO') }
-    jcenter()
-  }
-
-  dependencies {
-    ext.jettyVersion = '9.2+'
-    ext.greetgoUtilVersion = '2.0.0'
-    ext.servletApiVersion = '3.1.0'
-    ext.jacksonVersion = '2.7.3'
-
-    compile 'com.google.code.findbugs:annotations:2.0.1'
-
-    testCompile 'org.testng:testng:6.5.1'
-    testCompile 'org.easytesting:fest-assert-core:2.0M10'
-  }
-
-  project.eclipse.classpath.file.whenMerged { cp ->
-    if (project.hasProperty("sourceCompatibility")) {
-      cp.entries.findAll { it.path.contains('JRE_CONTAINER') }.each {
-
-        it.path += "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/" +
-          "JavaSE-$project.sourceCompatibility"
-      }
-    }
   }
 
   jar {
@@ -77,5 +53,24 @@ subprojects {
     }
   }
 
-  test { useTestNG() }
+  idea.module.inheritOutputDirs = false
+  idea.module.outputDir = file("$buildDir/classes/main/")
+  idea.module.testOutputDir = file("$buildDir/classes/test/")
+
+  test.useTestNG()
+}
+
+subprojects {
+
+  dependencies {
+    ext.jettyVersion = '9.2+'
+    ext.greetgoUtilVersion = '2.0.0'
+    ext.servletApiVersion = '3.1.0'
+    ext.jacksonVersion = '2.7.3'
+
+    testCompile 'org.testng:testng:6.14.3'
+    testCompile 'org.easytesting:fest-assert-core:2.0M10'
+  }
+
+
 }
