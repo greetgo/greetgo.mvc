@@ -1,17 +1,6 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.ControllerPrefix;
-import kz.greetgo.mvc.annotations.HttpGET;
-import kz.greetgo.mvc.annotations.HttpPOST;
-import kz.greetgo.mvc.annotations.Par;
-import kz.greetgo.mvc.annotations.ToJson;
-import kz.greetgo.mvc.annotations.ToXml;
-import kz.greetgo.mvc.annotations.UploadFileSizeThreshold;
-import kz.greetgo.mvc.annotations.UploadInfoFromMethod;
-import kz.greetgo.mvc.annotations.UploadLocationFromMethod;
-import kz.greetgo.mvc.annotations.UploadMaxFileSize;
-import kz.greetgo.mvc.annotations.UploadMaxFileSizeFromMethod;
-import kz.greetgo.mvc.annotations.UploadMaxRequestSize;
+import kz.greetgo.mvc.annotations.*;
 import kz.greetgo.mvc.errors.AmbiguousMaxFileSize;
 import kz.greetgo.mvc.errors.CompatibleTargetMapping;
 import kz.greetgo.mvc.errors.InconsistentUploadAnnotationsUnderClass;
@@ -30,14 +19,14 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import javax.servlet.http.Cookie;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static kz.greetgo.mvc.core.RequestMethod.DELETE;
 import static kz.greetgo.mvc.core.RequestMethod.GET;
 import static kz.greetgo.mvc.core.RequestMethod.POST;
-import static kz.greetgo.mvc.core.RequestMethod.PUT;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ControllerTunnelExecutorBuilderTest {
@@ -61,20 +50,20 @@ public class ControllerTunnelExecutorBuilderTest {
     public String strParam;
 
     @ToJson
-    @HttpPOST("/to_json")
+    @HttpGET("/to_json")
     public Object performToJson(@Par("strParam") String strParam) {
       this.strParam = strParam;
       return RETURN_JSON;
     }
 
     @ToXml
-    @HttpPOST("/to_xml")
+    @HttpGET("/to_xml")
     public Object performToXml(@Par("strParam") String strParam) {
       this.strParam = strParam;
       return RETURN_XML;
     }
 
-    @HttpPOST("/default_str")
+    @HttpGET("/default_str")
     public String performDefaultStr(@Par("strParam") String strParam, MvcModel model) {
       this.strParam = strParam;
 
@@ -86,7 +75,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     public boolean calledReturnRedirect = false;
 
-    @HttpPOST("/return_redirect")
+    @HttpGET("/return_redirect")
     public Redirect returnRedirect() {
       calledReturnRedirect = true;
       //noinspection ThrowableResultOfMethodCallIgnored
@@ -96,7 +85,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     public boolean calledThrowRedirect = false;
 
-    @HttpPOST("/throw_redirect")
+    @HttpGET("/throw_redirect")
     public Redirect throwRedirect() {
       calledThrowRedirect = true;
       //noinspection ThrowableResultOfMethodCallIgnored
@@ -134,7 +123,7 @@ public class ControllerTunnelExecutorBuilderTest {
     //
     //
 
-    final TestTunnel tunnel = new TestTunnel();
+    final TestTunnel tunnel = new TestTunnel(GET);
     tunnel.target = "/test/return_redirect";
 
     //
@@ -168,7 +157,7 @@ public class ControllerTunnelExecutorBuilderTest {
     //
     //
 
-    final TestTunnel tunnel = new TestTunnel();
+    final TestTunnel tunnel = new TestTunnel(GET);
     tunnel.target = "/test/throw_redirect";
 
     //
@@ -200,7 +189,7 @@ public class ControllerTunnelExecutorBuilderTest {
     //
     //
 
-    final TestTunnel tunnel = new TestTunnel();
+    final TestTunnel tunnel = new TestTunnel(GET);
     tunnel.target = "b34h25b34h542hb42k5bh425hkb";
 
     //
@@ -226,7 +215,7 @@ public class ControllerTunnelExecutorBuilderTest {
     //
     //
 
-    final TestTunnel tunnel = new TestTunnel();
+    final TestTunnel tunnel = new TestTunnel(GET);
     tunnel.target = "/test/to_json";
     tunnel.setParam("strParam", STR_PARAM_VALUE);
 
@@ -255,7 +244,7 @@ public class ControllerTunnelExecutorBuilderTest {
     //
     //
 
-    final TestTunnel tunnel = new TestTunnel();
+    final TestTunnel tunnel = new TestTunnel(GET);
     tunnel.target = "/test/to_xml";
     tunnel.setParam("strParam", STR_PARAM_VALUE);
 
@@ -284,7 +273,7 @@ public class ControllerTunnelExecutorBuilderTest {
     //
     //
 
-    final TestTunnel tunnel = new TestTunnel();
+    final TestTunnel tunnel = new TestTunnel(GET);
     tunnel.target = "/test/default_str";
     tunnel.setParam("strParam", STR_PARAM_VALUE);
 
@@ -322,7 +311,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
@@ -369,10 +358,12 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+
+    assertThat(tunnelExecutor).isNotNull();
 
     //
     //
@@ -420,10 +411,12 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+
+    assertThat(tunnelExecutor).isNotNull();
 
     //
     //
@@ -549,7 +542,7 @@ public class ControllerTunnelExecutorBuilderTest {
     //
     //
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = target;
 
     for (TunnelExecutorGetter tunnelExecutorGetter : handlerGetterList) {
@@ -586,10 +579,11 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+    assertThat(tunnelExecutor).isNotNull();
 
     //
     //
@@ -622,10 +616,11 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+    assertThat(tunnelExecutor).isNotNull();
 
     //
     //
@@ -657,10 +652,11 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+    assertThat(tunnelExecutor).isNotNull();
 
     //
     //
@@ -693,10 +689,11 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+    assertThat(tunnelExecutor).isNotNull();
 
     //
     //
@@ -712,7 +709,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadFileSizeThreshold("22745")
   class UploadFileSizeThreshold1 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @HttpGET("tmp")
     public void forTest() {}
   }
 
@@ -728,10 +725,12 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(GET);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+
+    assertThat(tunnelExecutor).isNotNull();
 
     //
     //
@@ -764,10 +763,12 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+
+    assertThat(tunnelExecutor).isNotNull();
 
     //
     //
@@ -806,10 +807,12 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+
+    assertThat(tunnelExecutor).isNotNull();
 
     String expectedLocation = c.testLocation = RND.str(10);
 
@@ -851,11 +854,11 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
-
+    assertThat(tunnelExecutor).isNotNull();
     String expectedLocation = c.testLocation = RND.str(10);
 
     //
@@ -934,10 +937,11 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+    assertThat(tunnelExecutor).isNotNull();
 
     long expectedMaxFileSize = c.testMaxFileSize = RND.plusLong(1_000_000_000);
 
@@ -979,10 +983,11 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+    assertThat(tunnelExecutor).isNotNull();
 
     int expectedMaxFileSize = c.testMaxFileSize = RND.plusInt(1_000_000_000);
 
@@ -1024,10 +1029,11 @@ public class ControllerTunnelExecutorBuilderTest {
 
     assertThat(handlerGetterList).hasSize(1);
 
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(POST);
     tunnel.target = "tmp";
 
     final TunnelExecutor tunnelExecutor = handlerGetterList.get(0).getTunnelExecutor(tunnel);
+    assertThat(tunnelExecutor).isNotNull();
 
     c.testMaxFileSize = "123G";
     long expectedMaxFileSize = 123L * 1024L * 1024L * 1024L;
@@ -1065,28 +1071,55 @@ public class ControllerTunnelExecutorBuilderTest {
 
   public static class TestController2 {
 
-    public int forGet_callCount = 0;
+    public final Map<RequestMethod, AtomicInteger> counts = new HashMap<>();
+
+    {
+      counts.put(RequestMethod.GET, new AtomicInteger(0));
+      counts.put(RequestMethod.POST, new AtomicInteger(0));
+      counts.put(RequestMethod.HEAD, new AtomicInteger(0));
+      counts.put(RequestMethod.PUT, new AtomicInteger(0));
+      counts.put(RequestMethod.OPTIONS, new AtomicInteger(0));
+      counts.put(RequestMethod.DELETE, new AtomicInteger(0));
+      counts.put(RequestMethod.TRACE, new AtomicInteger(0));
+      counts.put(RequestMethod.CONNECT, new AtomicInteger(0));
+      counts.put(RequestMethod.MOVE, new AtomicInteger(0));
+      counts.put(RequestMethod.PROXY, new AtomicInteger(0));
+      counts.put(RequestMethod.PRI, new AtomicInteger(0));
+    }
 
     @HttpGET("/commonTarget")
-    public void forGet() {
-      forGet_callCount++;
-    }
-
-    public int forPutPost_callCount = 0;
+    public void forGET() {counts.get(RequestMethod.GET).incrementAndGet();}
 
     @HttpPOST("/commonTarget")
-//    @MethodFilter({PUT, POST})
-    public void forPutPost() {
-      forPutPost_callCount++;
-    }
+    public void forPOST() {counts.get(RequestMethod.POST).incrementAndGet();}
 
-    public int neverCalled_callCount = 0;
+    @HttpHEAD("/commonTarget")
+    public void forHEAD() {counts.get(RequestMethod.HEAD).incrementAndGet();}
 
-    @HttpPOST("/commonTarget")
-//    @MethodFilter({})
-    public void neverCalled() {
-      neverCalled_callCount++;
-    }
+    @HttpPUT("/commonTarget")
+    public void forPUT() {counts.get(RequestMethod.PUT).incrementAndGet();}
+
+    @HttpOPTIONS("/commonTarget")
+    public void forOPTIONS() {counts.get(RequestMethod.OPTIONS).incrementAndGet();}
+
+    @HttpDELETE("/commonTarget")
+    public void forDELETE() {counts.get(RequestMethod.DELETE).incrementAndGet();}
+
+    @HttpTRACE("/commonTarget")
+    public void forTRACE() {counts.get(RequestMethod.TRACE).incrementAndGet();}
+
+    @HttpCONNECT("/commonTarget")
+    public void forCONNECT() {counts.get(RequestMethod.CONNECT).incrementAndGet();}
+
+    @HttpMOVE("/commonTarget")
+    public void forMOVE() {counts.get(RequestMethod.MOVE).incrementAndGet();}
+
+    @HttpPROXY("/commonTarget")
+    public void forPROXY() {counts.get(RequestMethod.PROXY).incrementAndGet();}
+
+    @HttpPRI("/commonTarget")
+    public void forPRI() {counts.get(RequestMethod.PRI).incrementAndGet();}
+
   }
 
   @Test
@@ -1103,32 +1136,26 @@ public class ControllerTunnelExecutorBuilderTest {
     //
     //
 
-    TestTunnel tunnel = new TestTunnel();
-    tunnel.target = "/commonTarget";
-    tunnel.requestMethod = GET;
+    for (RequestMethod method : RequestMethod.values()) {
+      TestTunnel tunnel = new TestTunnel(method);
+      tunnel.target = "/commonTarget";
 
-    assertThat(handleFirst(handlerGetterList, tunnel)).isTrue();
-    assertThat(c.forGet_callCount).isEqualTo(1);
-    assertThat(c.forPutPost_callCount).isEqualTo(0);
-    assertThat(views.returnValue).isNull();
+      String d = "requestMethod = " + method;
 
-    tunnel.requestMethod = PUT;
+      assertThat(handleFirst(handlerGetterList, tunnel)).describedAs(d).isTrue();
+      assertThat(c.counts.get(method)).describedAs(d).isNotNull();
+      assertThat(c.counts.get(method).get()).describedAs(d).isEqualTo(1);
+      assertThat(views.returnValue).isNull();
+    }
 
-    assertThat(handleFirst(handlerGetterList, tunnel)).isTrue();
-    assertThat(c.forGet_callCount).isEqualTo(1);
-    assertThat(c.forPutPost_callCount).isEqualTo(1);
+    for (RequestMethod method : RequestMethod.values()) {
+      TestTunnel tunnel = new TestTunnel(method);
+      tunnel.target = "/leftTarget";
 
-    tunnel.requestMethod = POST;
+      String d = "requestMethod = " + method;
 
-    assertThat(handleFirst(handlerGetterList, tunnel)).isTrue();
-    assertThat(c.forGet_callCount).isEqualTo(1);
-    assertThat(c.forPutPost_callCount).isEqualTo(2);
-
-    tunnel.requestMethod = DELETE;
-
-    assertThat(handleFirst(handlerGetterList, tunnel)).isFalse();
-
-    assertThat(c.neverCalled_callCount).isEqualTo(0);
+      assertThat(handleFirst(handlerGetterList, tunnel)).describedAs(d).isFalse();
+    }
   }
 
   @ControllerPrefix("/asd")

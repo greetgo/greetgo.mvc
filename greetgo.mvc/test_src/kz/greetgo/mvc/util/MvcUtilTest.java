@@ -385,7 +385,7 @@ public class MvcUtilTest {
   public void checkTunnelExecutorGetters_2() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG(null, "/asd/dsa"));//  null - это отсутствие аннотации @MethodFilter - т.е. все методы
+    list.add(createTestTEG(RequestMethod.HEAD, "/asd/dsa"));//  null - это отсутствие аннотации @MethodFilter - т.е. все методы
     list.add(createTestTEG(RequestMethod.HEAD, "/asd/dsa"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
@@ -396,7 +396,7 @@ public class MvcUtilTest {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
     list.add(createTestTEG(RequestMethod.POST, "/asd/dsa"));
-    list.add(createTestTEG(null, "/asd/dsa"));
+    list.add(createTestTEG(RequestMethod.POST, "/asd/dsa"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }
@@ -406,7 +406,7 @@ public class MvcUtilTest {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
     list.add(createTestTEG(RequestMethod.GET, "/asd/dsa"));
-//    list.add(createTestTEG("", "/asd/dsa"));//  значение "" - это аннотация с путым массивом - @MethodFilter({})
+    list.add(createTestTEG(RequestMethod.POST, "/asd/dsa"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }

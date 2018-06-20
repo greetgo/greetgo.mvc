@@ -905,13 +905,11 @@ public class MethodParameterMetaTest {
     final List<MethodParamExtractor> ee = MethodParameterMeta.create(method, null);
     MethodParamExtractor e = ee.get(0);
 
-    TestTunnel tunnel = new TestTunnel();
-
-    tunnel.requestMethod = RND.someEnum(RequestMethod.values());
+    TestTunnel tunnel = new TestTunnel(RND.someEnum(RequestMethod.values()));
 
     final Object extractedValue = e.extract(null, tunnel, null);
 
-    assertThat(extractedValue).isEqualTo(tunnel.requestMethod);
+    assertThat(extractedValue).isEqualTo(tunnel.getRequestMethod());
   }
 
   private class ForBinResponse {

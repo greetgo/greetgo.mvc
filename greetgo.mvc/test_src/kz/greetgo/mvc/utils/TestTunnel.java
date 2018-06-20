@@ -38,6 +38,19 @@ public class TestTunnel implements RequestTunnel {
   public String redirectedTo;
 
 
+  public TestTunnel(RequestMethod requestMethod) {
+    this.requestMethod = requestMethod;
+  }
+
+  public TestTunnel() {
+    this(RequestMethod.GET);
+  }
+
+  @Override
+  public String toString() {
+    return "TestTunnel{http=" + requestMethod + ";target=" + target + "}";
+  }
+
   @Override
   public String getTarget() {
     return target;
@@ -177,7 +190,7 @@ public class TestTunnel implements RequestTunnel {
     this.executed = executed;
   }
 
-  public RequestMethod requestMethod;
+  private final RequestMethod requestMethod;
 
   @Override
   public RequestMethod getRequestMethod() {

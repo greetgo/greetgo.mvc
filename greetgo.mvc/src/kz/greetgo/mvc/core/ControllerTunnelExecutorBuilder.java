@@ -112,6 +112,11 @@ public class ControllerTunnelExecutorBuilder {
       }
 
       @Override
+      public String toString() {
+        return "ANON IMPL of TunnelExecutorGetter " + infoStr();
+      }
+
+      @Override
       public MappingIdentity getMappingIdentity() {
         return targetMapper.getMappingIdentity();
       }

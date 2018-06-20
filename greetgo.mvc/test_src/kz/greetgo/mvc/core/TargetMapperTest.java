@@ -29,15 +29,14 @@ public class TargetMapperTest {
   }
 
   private static RequestTunnel tunnel(String target) {
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(GET);
     tunnel.target = target;
     return tunnel;
   }
 
   private static RequestTunnel tunnel(String target, RequestMethod method) {
-    TestTunnel tunnel = new TestTunnel();
+    TestTunnel tunnel = new TestTunnel(method);
     tunnel.target = target;
-    tunnel.requestMethod = method;
     return tunnel;
   }
 
