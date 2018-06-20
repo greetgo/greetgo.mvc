@@ -1,7 +1,8 @@
 package kz.greetgo.mvc.war.example.controllers;
 
 import kz.greetgo.mvc.annotations.AsIs;
-import kz.greetgo.mvc.annotations.Mapping;
+import kz.greetgo.mvc.annotations.ControllerPrefix;
+import kz.greetgo.mvc.annotations.HttpGET;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.annotations.ParCookie;
 import kz.greetgo.mvc.annotations.ToJson;
@@ -11,16 +12,16 @@ import kz.greetgo.mvc.model.Redirect;
 
 import java.io.Serializable;
 
-@Mapping("/method_returns")
+@ControllerPrefix("/method_returns")
 public class MethodReturnsController {
 
-  @Mapping("/form")
+  @HttpGET("/form")
   public String form() {
     return "method_returns.jsp";
   }
 
   @AsIs
-  @Mapping("/using-as-is")
+  @HttpGET("/using-as-is")
   public String usingAsIs() {
     return "Method content put into response body as is\n\tHello World!!\n\t\tWell done!!!";
   }
@@ -32,7 +33,7 @@ public class MethodReturnsController {
   }
 
   @ToJson
-  @Mapping("/using-to-json")
+  @HttpGET("/using-to-json")
   public GoingToClientClass usingToJson() {
     GoingToClientClass ret = new GoingToClientClass();
     fillWithSomeValue(ret);
@@ -40,7 +41,7 @@ public class MethodReturnsController {
   }
 
   @ToXml
-  @Mapping("/using-to-xml")
+  @HttpGET("/using-to-xml")
   public GoingToClientClass usingToXml() {
     GoingToClientClass ret = new GoingToClientClass();
     fillWithSomeValue(ret);
@@ -55,7 +56,7 @@ public class MethodReturnsController {
     }
   }
 
-  @Mapping("/return-redirect")
+  @HttpGET("/return-redirect")
   public Redirect returnRedirect(@Par("param") String param) {
     switch (param) {
 
@@ -78,7 +79,7 @@ public class MethodReturnsController {
     }
   }
 
-  @Mapping("/redirect-param1")
+  @HttpGET("/redirect-param1")
   public String returnRedirectParam1(MvcModel model,
                                      @ParCookie("NAME") HasName nameFromCookie,
                                      @ParCookie(value = "ACT", asIs = true) String act) {
@@ -88,7 +89,7 @@ public class MethodReturnsController {
     return "method_returns/redirect_param1.jsp";
   }
 
-  @Mapping("/redirect-param2")
+  @HttpGET("/redirect-param2")
   public String returnRedirectParam2(MvcModel model,
                                      @ParCookie(value = "NAME", asIs = true) String nameFromCookie,
                                      @ParCookie(value = "ACT", asIs = true) String act) {
@@ -98,7 +99,7 @@ public class MethodReturnsController {
     return "method_returns/redirect_param2.jsp";
   }
 
-  @Mapping("/throw-redirect")
+  @HttpGET("/throw-redirect")
   public String throwRedirect(@Par("param") String param) {
     switch (param) {
 

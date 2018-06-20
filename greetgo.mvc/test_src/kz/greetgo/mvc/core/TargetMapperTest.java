@@ -1,15 +1,11 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.MethodFilter;
 import kz.greetgo.mvc.errors.NoPathParam;
 import kz.greetgo.mvc.interfaces.MappingResult;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.utils.TestTunnel;
 import org.testng.annotations.Test;
 
-import java.lang.annotation.Annotation;
-
-import static kz.greetgo.mvc.core.RequestMethod.DELETE;
 import static kz.greetgo.mvc.core.RequestMethod.GET;
 import static kz.greetgo.mvc.core.RequestMethod.POST;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -70,24 +66,10 @@ public class TargetMapperTest {
     }
   }
 
-  private static MethodFilter methodFilter(RequestMethod... methods) {
-    return new MethodFilter() {
-      @Override
-      public Class<? extends Annotation> annotationType() {
-        return null;
-      }
-
-      @Override
-      public RequestMethod[] value() {
-        return methods;
-      }
-    };
-  }
-
   @Test
   public void catchTarget_requestMethods() throws Exception {
 
-    TargetMapper targetMapper = new TargetMapper("/asd1", methodFilter(GET, DELETE));
+    TargetMapper targetMapper = new TargetMapper("/asd1", GET);
 
     {
       final MappingResult mappingResult = targetMapper.mapTarget(tunnel("/asd1", GET));

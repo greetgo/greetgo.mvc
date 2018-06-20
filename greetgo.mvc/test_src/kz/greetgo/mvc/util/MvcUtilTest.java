@@ -1,6 +1,5 @@
 package kz.greetgo.mvc.util;
 
-import kz.greetgo.mvc.annotations.MethodFilter;
 import kz.greetgo.mvc.core.MappingIdentity;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.errors.CannotConvertToDate;
@@ -15,18 +14,16 @@ import org.fest.assertions.api.Assertions;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
 
 public class MvcUtilTest {
 
@@ -343,7 +340,8 @@ public class MvcUtilTest {
     assertThat(res).isNull();
   }
 
-  private static TunnelExecutorGetter createTestTEG(String requestMethods, String targetMapper) {
+  private static TunnelExecutorGetter createTestTEG(RequestMethod requestMethod, String targetMapper) {
+    Objects.requireNonNull(requestMethod);
     return new TunnelExecutorGetter() {
       @Override
       public TunnelExecutor getTunnelExecutor(RequestTunnel tunnel) {
@@ -352,7 +350,7 @@ public class MvcUtilTest {
 
       @Override
       public String infoStr() {
-        return requestMethods + "::" + targetMapper;
+        return requestMethod + "::" + targetMapper;
       }
 
       @Override
@@ -364,22 +362,10 @@ public class MvcUtilTest {
           }
 
           @Override
-          public MethodFilter methodFilter() {
-            return requestMethods == null ? null : new MethodFilter() {
-              @Override
-              public Class<? extends Annotation> annotationType() {
-                throw new UnsupportedOperationException();
-              }
-
-              @Override
-              public RequestMethod[] value() {
-                return Arrays.stream(requestMethods.split("-"))
-                  .filter(n -> !n.isEmpty())
-                  .map(RequestMethod::valueOf)
-                  .toArray(RequestMethod[]::new);
-              }
-            };
+          public RequestMethod requestMethod() {
+            return requestMethod;
           }
+
         };
       }
     };
@@ -389,8 +375,8 @@ public class MvcUtilTest {
   public void checkTunnelExecutorGetters_1() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG("POST-GET", "/asd/wow"));
-    list.add(createTestTEG("HEAD-PUT", "/asd/wow"));
+    list.add(createTestTEG(RequestMethod.POST, "/asd/wow"));
+    list.add(createTestTEG(RequestMethod.HEAD, "/asd/wow"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }
@@ -400,7 +386,7 @@ public class MvcUtilTest {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
     list.add(createTestTEG(null, "/asd/dsa"));//  null - это отсутствие аннотации @MethodFilter - т.е. все методы
-    list.add(createTestTEG("HEAD-PUT", "/asd/dsa"));
+    list.add(createTestTEG(RequestMethod.HEAD, "/asd/dsa"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }
@@ -409,7 +395,7 @@ public class MvcUtilTest {
   public void checkTunnelExecutorGetters_3() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG("POST-GET", "/asd/dsa"));
+    list.add(createTestTEG(RequestMethod.POST, "/asd/dsa"));
     list.add(createTestTEG(null, "/asd/dsa"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
@@ -419,8 +405,8 @@ public class MvcUtilTest {
   public void checkTunnelExecutorGetters_4() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG("POST-GET", "/asd/dsa"));
-    list.add(createTestTEG("", "/asd/dsa"));//  значение "" - это аннотация с путым массивом - @MethodFilter({})
+    list.add(createTestTEG(RequestMethod.GET, "/asd/dsa"));
+//    list.add(createTestTEG("", "/asd/dsa"));//  значение "" - это аннотация с путым массивом - @MethodFilter({})
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }
@@ -429,8 +415,8 @@ public class MvcUtilTest {
   public void checkTunnelExecutorGetters_5() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG("POST-GET", "/asd/dsa"));
-    list.add(createTestTEG("GET", "/asd/dsa"));
+    list.add(createTestTEG(RequestMethod.POST, "/asd/dsa"));
+    list.add(createTestTEG(RequestMethod.GET, "/asd/dsa"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }

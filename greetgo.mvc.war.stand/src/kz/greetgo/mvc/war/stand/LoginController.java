@@ -1,6 +1,7 @@
 package kz.greetgo.mvc.war.stand;
 
-import kz.greetgo.mvc.annotations.Mapping;
+import kz.greetgo.mvc.annotations.HttpGET;
+import kz.greetgo.mvc.annotations.HttpPOST;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.Redirect;
@@ -13,7 +14,7 @@ public class LoginController {
     this.userDetailsStorage = userDetailsStorage;
   }
 
-  @Mapping("/client/save")
+  @HttpPOST("/client/save")
   @SuppressWarnings("unused")
   public Redirect clientSave(@Par("surname") String surname, @Par("name") String name) {
 
@@ -24,7 +25,7 @@ public class LoginController {
     return Redirect.to("/content.html");
   }
 
-  @Mapping("/login")
+  @HttpPOST("/login")
   @SuppressWarnings("unused")
   public Redirect login(@Par("username") String username, @Par("password") String password) {
 
@@ -41,7 +42,7 @@ public class LoginController {
     return Redirect.to("/index.html");
   }
 
-  @Mapping("/logout")
+  @HttpGET("/logout")
   @SuppressWarnings("unused")
   public Redirect logout() {
 
@@ -50,7 +51,7 @@ public class LoginController {
     return Redirect.to("/login.html");
   }
 
-  @Mapping("/uploadFile")
+  @HttpGET("/uploadFile")
   @SuppressWarnings("unused")
   public Redirect uploadFile(
     @Par("description") String description,

@@ -1,8 +1,7 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.AsIs;
-import kz.greetgo.mvc.annotations.Mapping;
-import kz.greetgo.mvc.annotations.MethodFilter;
+import kz.greetgo.mvc.annotations.ControllerPrefix;
 import kz.greetgo.mvc.annotations.ToJson;
 import kz.greetgo.mvc.annotations.ToXml;
 import kz.greetgo.mvc.interfaces.MappingResult;
@@ -65,13 +64,13 @@ public class ControllerTunnelExecutorBuilder {
   }
 
   private void prepareParentMapping() {
-    final Mapping mapping = controllerClass.getAnnotation(Mapping.class);
-    if (mapping != null) parentMapping = mapping.value();
+    final ControllerPrefix prefix = controllerClass.getAnnotation(ControllerPrefix.class);
+    if (prefix != null) parentMapping = prefix.value();
   }
 
   private void appendHandlerForMethod(final Method method) {
-    final Mapping mapping = method.getAnnotation(Mapping.class);
-    if (mapping == null) return;
+    List<MethodMapping> methodMappingList = MethodMapping.extract(method);
+    if (methodMappingList.isEmpty()) return;
 
     final UploadInfoGetter localUploadInfoGetter = uploadInfoGetter.copy();
 
@@ -79,24 +78,27 @@ public class ControllerTunnelExecutorBuilder {
 
     final List<MethodParamExtractor> extractorList = MethodParameterMeta.create(method, views);
 
-    if (parentMapping == null || parentMapping.length == 0) {
+    for (MethodMapping methodMapping : methodMappingList) {
 
-      for (String mappingStr : mapping.value()) {
-        final TargetMapper targetMapper = new TargetMapper(mappingStr, method.getAnnotation(MethodFilter.class));
-        result.add(createTunnelExecutorGetter(method, localUploadInfoGetter, targetMapper, extractorList));
+      if (parentMapping == null || parentMapping.length == 0) {
+
+        for (String mappingStr : methodMapping.mappingStrArray) {
+          final TargetMapper targetMapper = new TargetMapper(mappingStr, methodMapping.httpMethod);
+          result.add(createTunnelExecutorGetter(method, localUploadInfoGetter, targetMapper, extractorList));
+        }
+
+      } else for (String parentMapperStr : parentMapping) {
+
+        for (String mappingStr : methodMapping.mappingStrArray) {
+          final TargetMapper targetMapper = new TargetMapper
+            (parentMapperStr + mappingStr, methodMapping.httpMethod);
+          result.add(createTunnelExecutorGetter(method, localUploadInfoGetter, targetMapper, extractorList));
+        }
+
       }
 
-    } else for (String parentMapperStr : parentMapping) {
-
-      for (String mappingStr : mapping.value()) {
-        final TargetMapper targetMapper = new TargetMapper
-          (parentMapperStr + mappingStr, method.getAnnotation(MethodFilter.class));
-        result.add(createTunnelExecutorGetter(method, localUploadInfoGetter, targetMapper, extractorList));
-      }
 
     }
-
-
   }
 
   private TunnelExecutorGetter createTunnelExecutorGetter(Method method,

@@ -1,8 +1,9 @@
 package kz.greetgo.mvc.war.example.controllers;
 
 import kz.greetgo.mvc.annotations.AsIs;
+import kz.greetgo.mvc.annotations.ControllerPrefix;
+import kz.greetgo.mvc.annotations.HttpGET;
 import kz.greetgo.mvc.annotations.Json;
-import kz.greetgo.mvc.annotations.Mapping;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.annotations.ParPath;
 import kz.greetgo.mvc.annotations.ParSession;
@@ -12,10 +13,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-@Mapping("/request_parameters")
+@ControllerPrefix("/request_parameters")
 public class RequestParametersController {
 
-  @Mapping("/form")
+  @HttpGET("/form")
   public String form() {
     return "request_parameters.jsp";
   }
@@ -28,7 +29,7 @@ public class RequestParametersController {
   /////////////////////////////// Base Example /////////////////////////////////////////////////////////////////////////
 
   @AsIs
-  @Mapping("/base-example")
+  @HttpGET("/base-example")
   public String baseExample(@Par("helloMessage") String helloMessage,
                             @Par("age") int age,
                             @Par("amount") BigDecimal amount,
@@ -79,7 +80,7 @@ public class RequestParametersController {
   }
 
   @AsIs
-  @Mapping("/par-json-example")
+  @HttpGET("/par-json-example")
   public String parJsonExample(@Par("clientToSave") @Json ClientToSave clientToSave,
                                @Par("accountToSave") @Json AccountToSave accountToSave
   ) {
@@ -114,7 +115,7 @@ public class RequestParametersController {
   }
 
   @AsIs
-  @Mapping("/params-to-example")
+  @HttpGET("/params-to-example")
   public String paramsToExample(@ParamsTo Client client) {
     return "called RequestParametersController.paramsToExample with\n" +
       "    client = " + client;
@@ -124,7 +125,7 @@ public class RequestParametersController {
 
 
   @AsIs
-  @Mapping("/par-path-example/id:{id}/{name}")
+  @HttpGET("/par-path-example/id:{id}/{name}")
   public String parPathExample(@ParPath("id") Long id, @ParPath("name") String name) {
     return "called RequestParametersController.parPathExample with\n" +
       "    id   = " + id + "\n" +
@@ -134,7 +135,7 @@ public class RequestParametersController {
   /////////////////////////////// ParSession Example ///////////////////////////////////////////////////////////////////
 
   @AsIs
-  @Mapping("/par-session-example")
+  @HttpGET("/par-session-example")
   public String parSessionExample(@ParSession("personId") Long personId, @ParSession("role") String role) {
     return "called RequestParametersController.parSessionExample with\n" +
       "    personId = " + personId + "\n" +

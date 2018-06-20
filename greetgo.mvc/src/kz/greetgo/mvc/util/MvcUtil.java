@@ -1,6 +1,5 @@
 package kz.greetgo.mvc.util;
 
-import kz.greetgo.mvc.annotations.MethodFilter;
 import kz.greetgo.mvc.core.MappingIdentity;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.errors.CannotConvertToDate;
@@ -25,7 +24,6 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.unmodifiableMap;
 
@@ -362,7 +359,7 @@ public class MvcUtil {
     MappingIdentity mi1 = teg1.getMappingIdentity();
     MappingIdentity mi2 = teg2.getMappingIdentity();
 
-    if (!isCompatibles(mi1.methodFilter(), mi2.methodFilter())) return;
+    if (!isCompatibles(mi1.requestMethod(), mi2.requestMethod())) return;
 
     String tm1 = mi1.targetMapping();
     String tm2 = mi2.targetMapping();
@@ -382,19 +379,8 @@ public class MvcUtil {
     }
   }
 
-  private static boolean isCompatibles(MethodFilter filter1, MethodFilter filter2) {
-    if (filter1 == null) return true;
-    if (filter2 == null) return true;
-
-    if (filter1.value().length == 0) return false;
-    if (filter2.value().length == 0) return false;
-
-    Set<RequestMethod> set1 = Arrays.stream(filter1.value()).collect(Collectors.toSet());
-    Set<RequestMethod> set2 = Arrays.stream(filter2.value()).collect(Collectors.toSet());
-
-    set1.retainAll(set2);
-
-    return set1.size() > 0;
+  private static boolean isCompatibles(RequestMethod method1, RequestMethod method2) {
+    return method1 == method2;
   }
 
 

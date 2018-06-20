@@ -1,6 +1,6 @@
 package kz.greetgo.mvc.controllers;
 
-import kz.greetgo.mvc.annotations.Mapping;
+import kz.greetgo.mvc.annotations.HttpGET;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.utils.UserDetailsStorage;
@@ -13,8 +13,7 @@ public class LoginController {
     this.userDetailsStorage = userDetailsStorage;
   }
 
-  @Mapping("/client/save")
-  @SuppressWarnings("unused")
+  @HttpGET("/client/save")
   public Redirect clientSave(@Par("surname") String surname, @Par("name") String name) {
 
     System.out.println("Prev surname = " + userDetailsStorage.getUserDetails().surname);
@@ -24,8 +23,7 @@ public class LoginController {
     return Redirect.to("/content.html");
   }
 
-  @Mapping("/login")
-  @SuppressWarnings("unused")
+  @HttpGET("/login")
   public Redirect login(@Par("username") String username, @Par("password") String password) {
 
     if (!"111".equals(password)) {
@@ -41,8 +39,7 @@ public class LoginController {
     return Redirect.to("/index.html");
   }
 
-  @Mapping("/logout")
-  @SuppressWarnings("unused")
+  @HttpGET("/logout")
   public Redirect logout() {
 
     userDetailsStorage.setUsername(null);

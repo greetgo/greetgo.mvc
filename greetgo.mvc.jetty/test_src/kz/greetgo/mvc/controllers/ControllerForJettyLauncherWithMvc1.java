@@ -1,15 +1,16 @@
 package kz.greetgo.mvc.controllers;
 
-import kz.greetgo.mvc.annotations.Mapping;
+import kz.greetgo.mvc.annotations.ControllerPrefix;
+import kz.greetgo.mvc.annotations.HttpGET;
 import kz.greetgo.mvc.annotations.Par;
-import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.interfaces.Upload;
+import kz.greetgo.mvc.model.Redirect;
 
-@Mapping("/lot")
+@ControllerPrefix("/lot")
 @SuppressWarnings("unused")
 public class ControllerForJettyLauncherWithMvc1 {
 
-  @Mapping("/save")
+  @HttpGET("/save")
   public Redirect save(@Par("fileA") Upload fileA) throws Exception {
     System.out.println("fileA.SubmittedFileName = " + fileA.getSubmittedFileName());
     System.out.println("fileA.ContentType = " + fileA.getContentType());

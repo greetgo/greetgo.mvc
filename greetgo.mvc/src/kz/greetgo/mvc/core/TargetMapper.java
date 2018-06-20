@@ -1,6 +1,5 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.MethodFilter;
 import kz.greetgo.mvc.errors.AsteriskInTargetMapper;
 import kz.greetgo.mvc.errors.NoPathParam;
 import kz.greetgo.mvc.interfaces.MappingResult;
@@ -11,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,16 +19,17 @@ public class TargetMapper {
   private final List<String> namesForGroups;
   private final Pattern mappingPattern;
   private final String targetMapping;
-  private final MethodFilter methodFilter;
+  private final RequestMethod requestMethod;
   private final MappingIdentity mappingIdentity;
 
   public MappingIdentity getMappingIdentity() {
     return mappingIdentity;
   }
 
-  public TargetMapper(String targetMapping, MethodFilter methodFilter) {
+  public TargetMapper(String targetMapping, RequestMethod requestMethod) {
+    Objects.requireNonNull(requestMethod);
     this.targetMapping = targetMapping;
-    this.methodFilter = methodFilter;
+    this.requestMethod = requestMethod;
     this.mappingIdentity = new MappingIdentity() {
       final String mappingIdentity = toTargetMapperIdentity(targetMapping);
 
@@ -38,8 +39,8 @@ public class TargetMapper {
       }
 
       @Override
-      public MethodFilter methodFilter() {
-        return methodFilter;
+      public RequestMethod requestMethod() {
+        return requestMethod;
       }
     };
 
@@ -106,20 +107,7 @@ public class TargetMapper {
   }
 
   public String infoStr() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(targetMapping);
-    if (methodFilter != null) {
-      if (methodFilter.value().length == 0) {
-        sb.append(", BLOCKED (empty method list)");
-      } else {
-        sb.append(", only for ");
-        for (RequestMethod requestMethod : methodFilter.value()) {
-          sb.append(requestMethod).append(", ");
-        }
-        sb.setLength(sb.length() - 2);
-      }
-    }
-    return sb.toString();
+    return targetMapping + " for " + requestMethod;
   }
 
   private static StringBuilder quote(String str) {
@@ -179,12 +167,6 @@ public class TargetMapper {
   }
 
   private boolean isMethodCorrect(RequestMethod method) {
-    if (methodFilter == null) return true;
-
-    for (RequestMethod rm : methodFilter.value()) {
-      if (rm == method) return true;
-    }
-
-    return false;
+    return requestMethod == method;
   }
 }
