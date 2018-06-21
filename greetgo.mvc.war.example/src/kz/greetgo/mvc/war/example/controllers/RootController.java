@@ -1,23 +1,23 @@
 package kz.greetgo.mvc.war.example.controllers;
 
-import kz.greetgo.mvc.annotations.on_methods.onGET;
+import kz.greetgo.mvc.annotations.on_methods.OnGet;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.model.Redirect;
 
 public class RootController {
 
-  @onGET({"/", ""})
+  @OnGet({"/", ""})
   public Redirect root() {
     return Redirect.to("/");
   }
 
-  @onGET("/index")
+  @OnGet("/index")
   public String index() {
     return "index.jsp";
   }
 
-  @onGET("/asd")
+  @OnGet("/asd")
   public String asd(
     @Par("param1") String requestParam1,
     @Par("param2") Long requestParam2,

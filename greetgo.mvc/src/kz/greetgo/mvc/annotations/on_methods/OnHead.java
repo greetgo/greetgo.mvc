@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Determine format of request address for request performing by HTTP method DELETE
+ * Determine format of request address for request performing by HTTP method HEAD
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface onDELETE {
+public @interface OnHead {
   /**
    * @return format of request address
    */

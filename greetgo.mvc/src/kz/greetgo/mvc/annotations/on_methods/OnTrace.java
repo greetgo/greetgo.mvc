@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Determine format of request address for request performing by HTTP method PROXY
+ * Determine format of request address for request performing by HTTP method TRACE
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface onPROXY {
+public @interface OnTrace {
   /**
    * @return format of request address
    */

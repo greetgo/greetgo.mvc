@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Determine format of request address for request performing by HTTP method MOVE
+ * Determine format of request address for request performing by HTTP method GET
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface onMOVE {
+public @interface OnGet {
   /**
    * @return format of request address
    */

@@ -2,7 +2,7 @@ package kz.greetgo.mvc.builder;
 
 import kz.greetgo.mvc.annotations.AsIs;
 import kz.greetgo.mvc.annotations.on_methods.ControllerPrefix;
-import kz.greetgo.mvc.annotations.on_methods.onPOST;
+import kz.greetgo.mvc.annotations.on_methods.OnPost;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.interfaces.RequestProcessing;
 import kz.greetgo.mvc.utils.TestTunnel;
@@ -20,7 +20,7 @@ public class RequestProcessingBuilderTest {
     public String returnM1 = null;
 
     @AsIs
-    @onPOST("/m1")
+    @OnPost("/m1")
     public String m1() {
       calledM1 = true;
       return returnM1;
@@ -33,7 +33,7 @@ public class RequestProcessingBuilderTest {
     public String returnM1 = null;
 
     @AsIs
-    @onPOST("/m1")
+    @OnPost("/m1")
     public String m1() {
       calledM1 = true;
       return returnM1;
