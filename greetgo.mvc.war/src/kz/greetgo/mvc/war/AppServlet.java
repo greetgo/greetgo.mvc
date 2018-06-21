@@ -1,12 +1,11 @@
 package kz.greetgo.mvc.war;
 
-import kz.greetgo.mvc.core.ControllerTunnelExecutorBuilder;
+import kz.greetgo.mvc.builder.ExecDefinition;
+import kz.greetgo.mvc.builder.RequestProcessingBuilder;
+import kz.greetgo.mvc.interfaces.RequestProcessing;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
-import kz.greetgo.mvc.interfaces.TunnelExecutor;
-import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.UploadInfo;
-import kz.greetgo.mvc.util.MvcUtil;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.MultipartConfigElement;
@@ -16,7 +15,6 @@ import javax.servlet.ServletRegistration;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AppServlet extends GenericServlet {
@@ -27,8 +25,6 @@ public abstract class AppServlet extends GenericServlet {
 
   protected abstract UploadInfo getUploadInfo();
 
-  protected final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
-
   protected String getAddingServletName() {
     return "appServlet";
   }
@@ -37,16 +33,20 @@ public abstract class AppServlet extends GenericServlet {
     return true;
   }
 
+  private RequestProcessing requestProcessing;
+
+  public List<ExecDefinition> execDefinitionList() {
+    return requestProcessing.execDefinitionList();
+  }
+
   @SuppressWarnings("SameParameterValue")
   public void register(ServletContext ctx, String mappingBase) {
-    final Views views = getViews();
-    for (Object controller : getControllerList()) {
-      tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
-    }
 
-    if (checkControllerMappersConflicts()) {
-      MvcUtil.checkTunnelExecutorGetters(tunnelExecutorGetters);
-    }
+    requestProcessing = RequestProcessingBuilder
+      .newBuilder(getViews())
+      .setCheckControllerMappersConflicts(checkControllerMappersConflicts())
+      .with(builder -> getControllerList().forEach(builder::addController))
+      .build();
 
     final ServletRegistration.Dynamic registration = ctx.addServlet(getAddingServletName(), this);
     {
@@ -71,34 +71,16 @@ public abstract class AppServlet extends GenericServlet {
     register(ctx, null);
   }
 
-  private TunnelExecutor getTunnelExecutor(RequestTunnel tunnel) {
-    for (TunnelExecutorGetter tunnelExecutorGetter : tunnelExecutorGetters) {
-      final TunnelExecutor te = tunnelExecutorGetter.getTunnelExecutor(tunnel);
-      if (te != null) return te;
-    }
-
-    return null;
-  }
-
   @Override
   public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 
-    final RequestTunnel tunnel = getTunnel(req, res);
-
-    final TunnelExecutor te = getTunnelExecutor(tunnel);
-
     try {
 
-      if (te == null) {
-        getViews().missedView(tunnel);
-      } else {
-        te.execute();
-      }
+      requestProcessing.processRequest(getTunnel(req, res));
 
+    } catch (ServletException | IOException | RuntimeException e) {
+      throw e;
     } catch (Exception e) {
-      if (e instanceof ServletException) throw (ServletException) e;
-      if (e instanceof IOException) throw (IOException) e;
-      if (e instanceof RuntimeException) throw (RuntimeException) e;
       throw new RuntimeException(e);
     }
   }

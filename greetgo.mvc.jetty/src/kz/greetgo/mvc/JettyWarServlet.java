@@ -1,11 +1,10 @@
 package kz.greetgo.mvc;
 
-import kz.greetgo.mvc.core.ControllerTunnelExecutorBuilder;
+import kz.greetgo.mvc.builder.ExecDefinition;
+import kz.greetgo.mvc.builder.RequestProcessingBuilder;
+import kz.greetgo.mvc.interfaces.RequestProcessing;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
-import kz.greetgo.mvc.interfaces.TunnelExecutor;
-import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
-import kz.greetgo.mvc.util.MvcUtil;
 import kz.greetgo.mvc.war.SecurityFilter;
 import kz.greetgo.mvc.war.WarRequestTunnel;
 import org.eclipse.jetty.servlet.DefaultServlet;
@@ -19,7 +18,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class JettyWarServlet extends DefaultServlet {
@@ -28,40 +26,31 @@ public abstract class JettyWarServlet extends DefaultServlet {
 
   protected abstract Views getViews();
 
-  protected final List<TunnelExecutorGetter> tunnelExecutorGetters = new ArrayList<>();
-
-  private TunnelExecutor getTunnelExecutor(RequestTunnel tunnel) {
-    for (TunnelExecutorGetter tunnelExecutorGetter : tunnelExecutorGetters) {
-      final TunnelExecutor te = tunnelExecutorGetter.getTunnelExecutor(tunnel);
-      if (te != null) return te;
-    }
-    return null;
-  }
-
   protected boolean checkControllerMappersConflicts() {
     return true;
+  }
+
+  private RequestProcessing requestProcessing;
+
+  public List<ExecDefinition> execDefinitionList() {
+    return requestProcessing.execDefinitionList();
   }
 
   @SuppressWarnings("unused")
   public void registerTo(WebAppContext webAppContext) {
 
-    final Views views = getViews();
-
-    for (Object controller : getControllerList()) {
-      tunnelExecutorGetters.addAll(ControllerTunnelExecutorBuilder.build(controller, views));
-    }
-
-    if (checkControllerMappersConflicts()) {
-      MvcUtil.checkTunnelExecutorGetters(tunnelExecutorGetters);
-    }
+    requestProcessing = RequestProcessingBuilder
+      .newBuilder(getViews())
+      .setCheckControllerMappersConflicts(checkControllerMappersConflicts())
+      .with(builder -> getControllerList().forEach(builder::addController))
+      .build();
 
     webAppContext.addServlet(new ServletHolder(this), mappingBase());
 
     afterRegistered();
   }
 
-  protected void afterRegistered() {
-  }
+  protected void afterRegistered() {}
 
   protected String mappingBase() {
     return getTargetSubContext() + "/*";
@@ -76,22 +65,13 @@ public abstract class JettyWarServlet extends DefaultServlet {
       return;
     }
 
-    final RequestTunnel tunnel = getTunnel(req, resp);
-
-    final TunnelExecutor te = getTunnelExecutor(tunnel);
-
     try {
 
-      if (te == null) {
-        getViews().missedView(tunnel);
-      } else {
-        te.execute();
-      }
+      requestProcessing.processRequest(getTunnel(req, resp));
 
+    } catch (IOException | ServletException | RuntimeException e) {
+      throw e;
     } catch (Exception e) {
-      if (e instanceof IOException) throw (IOException) e;
-      if (e instanceof ServletException) throw (ServletException) e;
-      if (e instanceof RuntimeException) throw (RuntimeException) e;
       throw new RuntimeException(e);
     }
   }

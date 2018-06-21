@@ -6,6 +6,7 @@ import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
+import kz.greetgo.mvc.util.MvcUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,28 +32,37 @@ public class RequestProcessingBuilder {
 
   private RequestProcessingBuilder(Views views) {this.views = views;}
 
-  public RequestProcessingBuilder on(Consumer<RequestProcessingBuilder> consumer) {
+  public RequestProcessingBuilder with(Consumer<RequestProcessingBuilder> consumer) {
     consumer.accept(this);
+    return this;
+  }
+
+  public RequestProcessingBuilder setCheckControllerMappersConflicts(boolean checkControllerMappersConflicts) {
+    this.checkControllerMappersConflicts = checkControllerMappersConflicts;
     return this;
   }
 
   private final Views views;
   private final List<ControllerTaker> controllerTakerList = new ArrayList<>();
   private boolean built = false;
+  private boolean checkControllerMappersConflicts = true;
 
   public RequestProcessing build() {
     checkBuilt();
     built = true;
+
+    final List<TunnelExecutorGetter> getterList = controllerTakerList.stream()
+      .map(t -> t.instanceGetter.get())
+      .flatMap(controller -> ControllerTunnelExecutorBuilder.build(controller, views).stream())
+      .collect(Collectors.toList());
+
+    if (checkControllerMappersConflicts) MvcUtil.checkTunnelExecutorGetters(getterList);
+
+    final List<ExecDefinition> execDefinitionList = getterList.stream()
+      .map(TunnelExecutorGetter::definition)
+      .collect(Collectors.toList());
+
     return new RequestProcessing() {
-      final List<TunnelExecutorGetter> getterList = controllerTakerList.stream()
-        .map(t -> t.instanceGetter.get())
-        .flatMap(controller -> ControllerTunnelExecutorBuilder.build(controller, views).stream())
-        .collect(Collectors.toList());
-
-      final List<ExecDefinition> execDefinitionList = getterList.stream()
-        .map(TunnelExecutorGetter::definition)
-        .collect(Collectors.toList());
-
       @Override
       public List<ExecDefinition> execDefinitionList() {
         return execDefinitionList;

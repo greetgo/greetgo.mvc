@@ -1,5 +1,6 @@
 package kz.greetgo.mvc.war.example.app;
 
+import kz.greetgo.mvc.builder.ExecDefinition;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.UploadInfo;
@@ -51,8 +52,8 @@ public class ControllerServlet extends AppServlet {
 
     System.out.println("-- [ControllerServlet] --------------------------------------");
     System.out.println("-- [ControllerServlet] -- USING CONTROLLERS:");
-    for (TunnelExecutorGetter teg : tunnelExecutorGetters) {
-      System.out.println("-- [ControllerServlet] --   " + teg.definition().infoStr());
+    for (ExecDefinition definition : execDefinitionList()) {
+      System.out.println("-- [ControllerServlet] --   " + definition.infoStr());
     }
     System.out.println("-- [ControllerServlet] --------------------------------------");
 
