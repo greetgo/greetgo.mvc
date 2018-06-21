@@ -7,11 +7,9 @@ import kz.greetgo.mvc.errors.CompatibleTargetMapping;
 import kz.greetgo.mvc.errors.DoublePathPar;
 import kz.greetgo.mvc.errors.IllegalChar;
 import kz.greetgo.mvc.errors.NoConverterFor;
-import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.model.Redirect;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Array;
@@ -330,17 +328,6 @@ public class MvcUtil {
     }
   }
 
-  public static void executeExecutor(TunnelExecutor tunnelExecutor) throws ServletException, IOException {
-    try {
-      tunnelExecutor.execute();
-    } catch (Exception e) {
-      if (e instanceof ServletException) throw (ServletException) e;
-      if (e instanceof IOException) throw (IOException) e;
-      if (e instanceof RuntimeException) throw (RuntimeException) e;
-      throw new RuntimeException(e);
-    }
-  }
-
   public static void checkTunnelExecutorGetters(List<TunnelExecutorGetter> tunnelExecutorGetters) {
     final int size = tunnelExecutorGetters.size();
     for (int i = 0; i < size; i++) {
@@ -356,8 +343,8 @@ public class MvcUtil {
   }
 
   private static void checkIncompatibility(TunnelExecutorGetter teg1, TunnelExecutorGetter teg2) {
-    MappingIdentity mi1 = teg1.getMappingIdentity();
-    MappingIdentity mi2 = teg2.getMappingIdentity();
+    MappingIdentity mi1 = teg1.definition().targetMapper.getMappingIdentity();
+    MappingIdentity mi2 = teg2.definition().targetMapper.getMappingIdentity();
 
     if (!isCompatibles(mi1.requestMethod(), mi2.requestMethod())) return;
 
@@ -365,23 +352,21 @@ public class MvcUtil {
     String tm2 = mi2.targetMapping();
 
     if (!TargetMapperComparator.isDifferent(tm1, tm2)) {
-      throw new CompatibleTargetMapping(teg1.infoStr(), teg2.infoStr());
+      throw new CompatibleTargetMapping(teg1.definition().infoStr(), teg2.definition().infoStr());
     }
   }
 
   private final static Pattern DOUBLE_ASTERISK = Pattern.compile("\\*{2}");
 
   private static void checkIncompatibilityOne(TunnelExecutorGetter teg) {
-    String targetMapping = teg.getMappingIdentity().targetMapping();
+    String targetMapping = teg.definition().targetMapper.getMappingIdentity().targetMapping();
 
     if (DOUBLE_ASTERISK.matcher(targetMapping).find()) {
-      throw new DoublePathPar(teg.infoStr());
+      throw new DoublePathPar(teg.definition().targetMapper.infoStr());
     }
   }
 
   private static boolean isCompatibles(RequestMethod method1, RequestMethod method2) {
     return method1 == method2;
   }
-
-
 }

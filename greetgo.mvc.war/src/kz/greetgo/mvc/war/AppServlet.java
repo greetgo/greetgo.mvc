@@ -1,7 +1,6 @@
 package kz.greetgo.mvc.war;
 
 import kz.greetgo.mvc.core.ControllerTunnelExecutorBuilder;
-import kz.greetgo.mvc.core.FileResourceTunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
@@ -20,13 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static kz.greetgo.mvc.util.MvcUtil.executeExecutor;
-
 public abstract class AppServlet extends GenericServlet {
-
-  protected FileResourceTunnelExecutorGetter getFileResourceTunnelExecutorGetter() {
-    return null;
-  }
 
   protected abstract List<Object> getControllerList();
 
@@ -84,10 +77,7 @@ public abstract class AppServlet extends GenericServlet {
       if (te != null) return te;
     }
 
-    final FileResourceTunnelExecutorGetter fileResourceTunnelExecutorGetter = getFileResourceTunnelExecutorGetter();
-    if (fileResourceTunnelExecutorGetter == null) return null;
-
-    return fileResourceTunnelExecutorGetter.getTunnelExecutor(tunnel);
+    return null;
   }
 
   @Override
@@ -97,16 +87,22 @@ public abstract class AppServlet extends GenericServlet {
 
     final TunnelExecutor te = getTunnelExecutor(tunnel);
 
-    if (te == null) {
-      missedTarget(tunnel);
-    } else {
-      executeExecutor(te);
+    try {
+
+      if (te == null) {
+        getViews().missedView(tunnel);
+      } else {
+        te.execute();
+      }
+
+    } catch (Exception e) {
+      if (e instanceof ServletException) throw (ServletException) e;
+      if (e instanceof IOException) throw (IOException) e;
+      if (e instanceof RuntimeException) throw (RuntimeException) e;
+      throw new RuntimeException(e);
     }
   }
 
-  protected void missedTarget(RequestTunnel tunnel) {
-    getViews().missedView(tunnel);
-  }
 
   private RequestTunnel getTunnel(ServletRequest req, ServletResponse res) {
 

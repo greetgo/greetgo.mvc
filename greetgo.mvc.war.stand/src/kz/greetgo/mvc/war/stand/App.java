@@ -1,6 +1,5 @@
 package kz.greetgo.mvc.war.stand;
 
-import kz.greetgo.mvc.core.FileResourceTunnelExecutorGetter;
 import kz.greetgo.mvc.war.AppServlet;
 
 import javax.servlet.ServletContainerInitializer;
@@ -15,11 +14,7 @@ public class App implements ServletContainerInitializer {
 
     UserDetailsStorage userDetailsStorage = new UserDetailsStorage();
 
-    FileResourceTunnelExecutorGetter fileResourceTEG = new FileResourceTunnelExecutorGetter(ctx.getRealPath(""));
-    fileResourceTEG.useETag = true;
-    fileResourceTEG.wellComeFiles.add("index.html");
-
-    final AppServlet appServlet = new StandAppServlet(fileResourceTEG, userDetailsStorage);
+    final AppServlet appServlet = new StandAppServlet(userDetailsStorage);
     appServlet.register(ctx);
 
     String securityDir = ctx.getRealPath("");

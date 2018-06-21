@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.annotations;
+package kz.greetgo.mvc.annotations.on_methods;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Determine format of request address for request performing by HTTP method CONNECT
+ * Determine format of request address for request performing by HTTP method POST
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HttpCONNECT {
+public @interface HttpPOST {
   /**
    * @return format of request address
    */

@@ -1,6 +1,18 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.*;
+import kz.greetgo.mvc.annotations.on_methods.ControllerPrefix;
+import kz.greetgo.mvc.annotations.on_methods.HttpCONNECT;
+import kz.greetgo.mvc.annotations.on_methods.HttpDELETE;
+import kz.greetgo.mvc.annotations.on_methods.HttpGET;
+import kz.greetgo.mvc.annotations.on_methods.HttpHEAD;
+import kz.greetgo.mvc.annotations.on_methods.HttpMOVE;
+import kz.greetgo.mvc.annotations.on_methods.HttpOPTIONS;
+import kz.greetgo.mvc.annotations.on_methods.HttpPOST;
+import kz.greetgo.mvc.annotations.on_methods.HttpPRI;
+import kz.greetgo.mvc.annotations.on_methods.HttpPROXY;
+import kz.greetgo.mvc.annotations.on_methods.HttpPUT;
+import kz.greetgo.mvc.annotations.on_methods.HttpTRACE;
 import kz.greetgo.mvc.errors.AmbiguousMaxFileSize;
 import kz.greetgo.mvc.errors.CompatibleTargetMapping;
 import kz.greetgo.mvc.errors.InconsistentUploadAnnotationsUnderClass;

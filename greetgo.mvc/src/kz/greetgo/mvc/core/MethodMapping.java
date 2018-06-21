@@ -1,16 +1,16 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.HttpCONNECT;
-import kz.greetgo.mvc.annotations.HttpDELETE;
-import kz.greetgo.mvc.annotations.HttpGET;
-import kz.greetgo.mvc.annotations.HttpHEAD;
-import kz.greetgo.mvc.annotations.HttpMOVE;
-import kz.greetgo.mvc.annotations.HttpOPTIONS;
-import kz.greetgo.mvc.annotations.HttpPOST;
-import kz.greetgo.mvc.annotations.HttpPRI;
-import kz.greetgo.mvc.annotations.HttpPROXY;
-import kz.greetgo.mvc.annotations.HttpPUT;
-import kz.greetgo.mvc.annotations.HttpTRACE;
+import kz.greetgo.mvc.annotations.on_methods.HttpCONNECT;
+import kz.greetgo.mvc.annotations.on_methods.HttpDELETE;
+import kz.greetgo.mvc.annotations.on_methods.HttpGET;
+import kz.greetgo.mvc.annotations.on_methods.HttpHEAD;
+import kz.greetgo.mvc.annotations.on_methods.HttpMOVE;
+import kz.greetgo.mvc.annotations.on_methods.HttpOPTIONS;
+import kz.greetgo.mvc.annotations.on_methods.HttpPOST;
+import kz.greetgo.mvc.annotations.on_methods.HttpPRI;
+import kz.greetgo.mvc.annotations.on_methods.HttpPROXY;
+import kz.greetgo.mvc.annotations.on_methods.HttpPUT;
+import kz.greetgo.mvc.annotations.on_methods.HttpTRACE;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

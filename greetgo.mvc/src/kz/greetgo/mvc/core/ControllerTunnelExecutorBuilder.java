@@ -1,9 +1,10 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.AsIs;
-import kz.greetgo.mvc.annotations.ControllerPrefix;
+import kz.greetgo.mvc.annotations.on_methods.ControllerPrefix;
 import kz.greetgo.mvc.annotations.ToJson;
 import kz.greetgo.mvc.annotations.ToXml;
+import kz.greetgo.mvc.builder.ExecDefinition;
 import kz.greetgo.mvc.interfaces.MappingResult;
 import kz.greetgo.mvc.interfaces.MethodInvokedResult;
 import kz.greetgo.mvc.interfaces.MethodInvoker;
@@ -106,19 +107,16 @@ public class ControllerTunnelExecutorBuilder {
                                                           TargetMapper targetMapper,
                                                           List<MethodParamExtractor> extractorList) {
     return new TunnelExecutorGetter() {
+      final ExecDefinition definition = new ExecDefinition(method, targetMapper);
+
       @Override
-      public String infoStr() {
-        return method.getDeclaringClass().getSimpleName() + "." + method.getName() + " : " + targetMapper.infoStr();
+      public ExecDefinition definition() {
+        return definition;
       }
 
       @Override
       public String toString() {
-        return "ANON IMPL of TunnelExecutorGetter " + infoStr();
-      }
-
-      @Override
-      public MappingIdentity getMappingIdentity() {
-        return targetMapper.getMappingIdentity();
+        return "ANON IMPL of TunnelExecutorGetter " + definition.infoStr();
       }
 
       @Override

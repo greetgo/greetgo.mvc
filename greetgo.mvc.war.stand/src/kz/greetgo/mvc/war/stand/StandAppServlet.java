@@ -1,6 +1,5 @@
 package kz.greetgo.mvc.war.stand;
 
-import kz.greetgo.mvc.core.FileResourceTunnelExecutorGetter;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.mvc.war.AppServlet;
@@ -10,17 +9,10 @@ import java.util.List;
 
 public class StandAppServlet extends AppServlet {
 
-  private final FileResourceTunnelExecutorGetter fileResourceTEG;
   private final UserDetailsStorage userDetailsStorage;
 
-  public StandAppServlet(FileResourceTunnelExecutorGetter fileResourceTEG, UserDetailsStorage userDetailsStorage) {
-    this.fileResourceTEG = fileResourceTEG;
+  public StandAppServlet(UserDetailsStorage userDetailsStorage) {
     this.userDetailsStorage = userDetailsStorage;
-  }
-
-  @Override
-  protected FileResourceTunnelExecutorGetter getFileResourceTunnelExecutorGetter() {
-    return fileResourceTEG;
   }
 
   @Override

@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static kz.greetgo.mvc.util.MvcUtil.executeExecutor;
-
 public final class JettyControllerHandler extends AbstractHandler {
   public static final String MULTIPART_FORM_DATA_TYPE = "multipart/form-data";
 
@@ -53,7 +51,16 @@ public final class JettyControllerHandler extends AbstractHandler {
     }
 
     try {
-      executeExecutor(tunnelExecutor);
+      //noinspection Duplicates
+      try {
+        tunnelExecutor.execute();
+      } catch (Exception e) {
+        if (e instanceof ServletException) throw (ServletException) e;
+        if (e instanceof IOException) throw (IOException) e;
+        if (e instanceof RuntimeException) throw (RuntimeException) e;
+        throw new RuntimeException(e);
+      }
+
       baseRequest.setHandled(true);
     } finally {
 

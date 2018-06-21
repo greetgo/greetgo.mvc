@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.annotations;
+package kz.greetgo.mvc.annotations.on_methods;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,14 +7,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Determine prefix of request address for request performing of controller marked by this annotation
+ * Determine format of request address for request performing by HTTP method PROXY
  */
 @Documented
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ControllerPrefix {
+public @interface HttpPROXY {
   /**
-   * @return request address prefix
+   * @return format of request address
    */
   String[] value();
 }

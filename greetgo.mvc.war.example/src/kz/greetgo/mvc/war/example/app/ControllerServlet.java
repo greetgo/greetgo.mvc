@@ -52,7 +52,7 @@ public class ControllerServlet extends AppServlet {
     System.out.println("-- [ControllerServlet] --------------------------------------");
     System.out.println("-- [ControllerServlet] -- USING CONTROLLERS:");
     for (TunnelExecutorGetter teg : tunnelExecutorGetters) {
-      System.out.println("-- [ControllerServlet] --   " + teg.infoStr());
+      System.out.println("-- [ControllerServlet] --   " + teg.definition().infoStr());
     }
     System.out.println("-- [ControllerServlet] --------------------------------------");
 

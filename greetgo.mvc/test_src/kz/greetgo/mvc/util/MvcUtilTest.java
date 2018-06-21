@@ -1,7 +1,8 @@
 package kz.greetgo.mvc.util;
 
-import kz.greetgo.mvc.core.MappingIdentity;
+import kz.greetgo.mvc.builder.ExecDefinition;
 import kz.greetgo.mvc.core.RequestMethod;
+import kz.greetgo.mvc.core.TargetMapper;
 import kz.greetgo.mvc.errors.CannotConvertToDate;
 import kz.greetgo.mvc.errors.CompatibleTargetMapping;
 import kz.greetgo.mvc.errors.DoublePathPar;
@@ -348,25 +349,11 @@ public class MvcUtilTest {
         throw new RuntimeException();
       }
 
-      @Override
-      public String infoStr() {
-        return requestMethod + "::" + targetMapper;
-      }
+      final ExecDefinition execDefinition = new ExecDefinition(null, new TargetMapper(targetMapper, requestMethod));
 
       @Override
-      public MappingIdentity getMappingIdentity() {
-        return new MappingIdentity() {
-          @Override
-          public String targetMapping() {
-            return targetMapper;
-          }
-
-          @Override
-          public RequestMethod requestMethod() {
-            return requestMethod;
-          }
-
-        };
+      public ExecDefinition definition() {
+        return execDefinition;
       }
     };
   }

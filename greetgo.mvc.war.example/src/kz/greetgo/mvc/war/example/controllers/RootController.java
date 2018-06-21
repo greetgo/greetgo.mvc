@@ -1,6 +1,6 @@
 package kz.greetgo.mvc.war.example.controllers;
 
-import kz.greetgo.mvc.annotations.HttpGET;
+import kz.greetgo.mvc.annotations.on_methods.HttpGET;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.model.Redirect;

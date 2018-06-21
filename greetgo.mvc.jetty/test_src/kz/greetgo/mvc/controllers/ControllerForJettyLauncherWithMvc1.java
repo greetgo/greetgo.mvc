@@ -1,7 +1,7 @@
 package kz.greetgo.mvc.controllers;
 
-import kz.greetgo.mvc.annotations.ControllerPrefix;
-import kz.greetgo.mvc.annotations.HttpGET;
+import kz.greetgo.mvc.annotations.on_methods.ControllerPrefix;
+import kz.greetgo.mvc.annotations.on_methods.HttpGET;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.Redirect;

@@ -22,7 +22,7 @@ public interface Views extends SessionParameterGetter {
     }
   }
 
-  default void missedView(RequestTunnel tunnel) {
+  default void missedView(RequestTunnel tunnel) throws Exception {
     throw new MissedView(tunnel);
   }
 

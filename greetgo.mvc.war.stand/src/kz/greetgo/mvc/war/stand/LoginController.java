@@ -1,7 +1,7 @@
 package kz.greetgo.mvc.war.stand;
 
-import kz.greetgo.mvc.annotations.HttpGET;
-import kz.greetgo.mvc.annotations.HttpPOST;
+import kz.greetgo.mvc.annotations.on_methods.HttpGET;
+import kz.greetgo.mvc.annotations.on_methods.HttpPOST;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.Redirect;

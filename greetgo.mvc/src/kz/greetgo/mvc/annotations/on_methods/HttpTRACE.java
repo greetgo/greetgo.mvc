@@ -1,4 +1,4 @@
-package kz.greetgo.mvc.annotations;
+package kz.greetgo.mvc.annotations.on_methods;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

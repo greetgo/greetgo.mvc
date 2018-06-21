@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static kz.greetgo.mvc.util.MvcUtil.executeExecutor;
-
 public abstract class JettyWarServlet extends DefaultServlet {
 
   protected abstract List<Object> getControllerList();
@@ -82,20 +80,21 @@ public abstract class JettyWarServlet extends DefaultServlet {
 
     final TunnelExecutor te = getTunnelExecutor(tunnel);
 
-    if (te == null) {
-      targetMissed(tunnel, req, resp);
-    } else {
-      executeExecutor(te);
+    try {
+
+      if (te == null) {
+        getViews().missedView(tunnel);
+      } else {
+        te.execute();
+      }
+
+    } catch (Exception e) {
+      if (e instanceof IOException) throw (IOException) e;
+      if (e instanceof ServletException) throw (ServletException) e;
+      if (e instanceof RuntimeException) throw (RuntimeException) e;
+      throw new RuntimeException(e);
     }
   }
-
-  protected void targetMissed(RequestTunnel tunnel,
-                              @SuppressWarnings("unused") HttpServletRequest req,
-                              @SuppressWarnings("unused") HttpServletResponse resp)
-    throws ServletException, IOException {
-    getViews().missedView(tunnel);
-  }
-
 
   private RequestTunnel getTunnel(ServletRequest req, ServletResponse res) {
 
