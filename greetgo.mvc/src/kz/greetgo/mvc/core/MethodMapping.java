@@ -1,16 +1,16 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.on_methods.HttpCONNECT;
-import kz.greetgo.mvc.annotations.on_methods.HttpDELETE;
-import kz.greetgo.mvc.annotations.on_methods.HttpGET;
-import kz.greetgo.mvc.annotations.on_methods.HttpHEAD;
-import kz.greetgo.mvc.annotations.on_methods.HttpMOVE;
-import kz.greetgo.mvc.annotations.on_methods.HttpOPTIONS;
-import kz.greetgo.mvc.annotations.on_methods.HttpPOST;
-import kz.greetgo.mvc.annotations.on_methods.HttpPRI;
-import kz.greetgo.mvc.annotations.on_methods.HttpPROXY;
-import kz.greetgo.mvc.annotations.on_methods.HttpPUT;
-import kz.greetgo.mvc.annotations.on_methods.HttpTRACE;
+import kz.greetgo.mvc.annotations.on_methods.onCONNECT;
+import kz.greetgo.mvc.annotations.on_methods.onDELETE;
+import kz.greetgo.mvc.annotations.on_methods.onGET;
+import kz.greetgo.mvc.annotations.on_methods.onHEAD;
+import kz.greetgo.mvc.annotations.on_methods.onMOVE;
+import kz.greetgo.mvc.annotations.on_methods.onOPTIONS;
+import kz.greetgo.mvc.annotations.on_methods.onPOST;
+import kz.greetgo.mvc.annotations.on_methods.onPRI;
+import kz.greetgo.mvc.annotations.on_methods.onPROXY;
+import kz.greetgo.mvc.annotations.on_methods.onPUT;
+import kz.greetgo.mvc.annotations.on_methods.onTRACE;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -34,47 +34,47 @@ public class MethodMapping {
 
     final List<MethodMapping> ret = new ArrayList<>();
     {
-      HttpPOST a = method.getAnnotation(HttpPOST.class);
+      onPOST a = method.getAnnotation(onPOST.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.POST, a.value(), method, a));
     }
     {
-      HttpGET a = method.getAnnotation(HttpGET.class);
+      onGET a = method.getAnnotation(onGET.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.GET, a.value(), method, a));
     }
     {
-      HttpCONNECT a = method.getAnnotation(HttpCONNECT.class);
+      onCONNECT a = method.getAnnotation(onCONNECT.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.CONNECT, a.value(), method, a));
     }
     {
-      HttpDELETE a = method.getAnnotation(HttpDELETE.class);
+      onDELETE a = method.getAnnotation(onDELETE.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.DELETE, a.value(), method, a));
     }
     {
-      HttpHEAD a = method.getAnnotation(HttpHEAD.class);
+      onHEAD a = method.getAnnotation(onHEAD.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.HEAD, a.value(), method, a));
     }
     {
-      HttpMOVE a = method.getAnnotation(HttpMOVE.class);
+      onMOVE a = method.getAnnotation(onMOVE.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.MOVE, a.value(), method, a));
     }
     {
-      HttpOPTIONS a = method.getAnnotation(HttpOPTIONS.class);
+      onOPTIONS a = method.getAnnotation(onOPTIONS.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.OPTIONS, a.value(), method, a));
     }
     {
-      HttpPRI a = method.getAnnotation(HttpPRI.class);
+      onPRI a = method.getAnnotation(onPRI.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.PRI, a.value(), method, a));
     }
     {
-      HttpPROXY a = method.getAnnotation(HttpPROXY.class);
+      onPROXY a = method.getAnnotation(onPROXY.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.PROXY, a.value(), method, a));
     }
     {
-      HttpPUT a = method.getAnnotation(HttpPUT.class);
+      onPUT a = method.getAnnotation(onPUT.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.PUT, a.value(), method, a));
     }
     {
-      HttpTRACE a = method.getAnnotation(HttpTRACE.class);
+      onTRACE a = method.getAnnotation(onTRACE.class);
       if (a != null) ret.add(new MethodMapping(RequestMethod.TRACE, a.value(), method, a));
     }
 

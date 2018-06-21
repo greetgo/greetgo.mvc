@@ -1,7 +1,7 @@
 package kz.greetgo.mvc.war.stand;
 
-import kz.greetgo.mvc.annotations.on_methods.HttpGET;
-import kz.greetgo.mvc.annotations.on_methods.HttpPOST;
+import kz.greetgo.mvc.annotations.on_methods.onGET;
+import kz.greetgo.mvc.annotations.on_methods.onPOST;
 import kz.greetgo.mvc.annotations.Par;
 import kz.greetgo.mvc.interfaces.Upload;
 import kz.greetgo.mvc.model.Redirect;
@@ -14,7 +14,7 @@ public class LoginController {
     this.userDetailsStorage = userDetailsStorage;
   }
 
-  @HttpPOST("/client/save")
+  @onPOST("/client/save")
   @SuppressWarnings("unused")
   public Redirect clientSave(@Par("surname") String surname, @Par("name") String name) {
 
@@ -25,7 +25,7 @@ public class LoginController {
     return Redirect.to("/content.html");
   }
 
-  @HttpPOST("/login")
+  @onPOST("/login")
   @SuppressWarnings("unused")
   public Redirect login(@Par("username") String username, @Par("password") String password) {
 
@@ -42,7 +42,7 @@ public class LoginController {
     return Redirect.to("/index.html");
   }
 
-  @HttpGET("/logout")
+  @onGET("/logout")
   @SuppressWarnings("unused")
   public Redirect logout() {
 
@@ -51,7 +51,7 @@ public class LoginController {
     return Redirect.to("/login.html");
   }
 
-  @HttpGET("/uploadFile")
+  @onGET("/uploadFile")
   @SuppressWarnings("unused")
   public Redirect uploadFile(
     @Par("description") String description,

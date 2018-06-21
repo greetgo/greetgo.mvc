@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Determine format of request address for request performing by HTTP method PUT
+ * Determine format of request address for request performing by HTTP method PRI
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HttpPUT {
+public @interface onPRI {
   /**
    * @return format of request address
    */

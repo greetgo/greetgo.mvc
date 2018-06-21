@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HttpPOST {
+public @interface onPOST {
   /**
    * @return format of request address
    */

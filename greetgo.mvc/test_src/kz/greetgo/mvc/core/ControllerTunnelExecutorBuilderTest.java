@@ -2,17 +2,17 @@ package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.*;
 import kz.greetgo.mvc.annotations.on_methods.ControllerPrefix;
-import kz.greetgo.mvc.annotations.on_methods.HttpCONNECT;
-import kz.greetgo.mvc.annotations.on_methods.HttpDELETE;
-import kz.greetgo.mvc.annotations.on_methods.HttpGET;
-import kz.greetgo.mvc.annotations.on_methods.HttpHEAD;
-import kz.greetgo.mvc.annotations.on_methods.HttpMOVE;
-import kz.greetgo.mvc.annotations.on_methods.HttpOPTIONS;
-import kz.greetgo.mvc.annotations.on_methods.HttpPOST;
-import kz.greetgo.mvc.annotations.on_methods.HttpPRI;
-import kz.greetgo.mvc.annotations.on_methods.HttpPROXY;
-import kz.greetgo.mvc.annotations.on_methods.HttpPUT;
-import kz.greetgo.mvc.annotations.on_methods.HttpTRACE;
+import kz.greetgo.mvc.annotations.on_methods.onCONNECT;
+import kz.greetgo.mvc.annotations.on_methods.onDELETE;
+import kz.greetgo.mvc.annotations.on_methods.onGET;
+import kz.greetgo.mvc.annotations.on_methods.onHEAD;
+import kz.greetgo.mvc.annotations.on_methods.onMOVE;
+import kz.greetgo.mvc.annotations.on_methods.onOPTIONS;
+import kz.greetgo.mvc.annotations.on_methods.onPOST;
+import kz.greetgo.mvc.annotations.on_methods.onPRI;
+import kz.greetgo.mvc.annotations.on_methods.onPROXY;
+import kz.greetgo.mvc.annotations.on_methods.onPUT;
+import kz.greetgo.mvc.annotations.on_methods.onTRACE;
 import kz.greetgo.mvc.errors.AmbiguousMaxFileSize;
 import kz.greetgo.mvc.errors.CompatibleTargetMapping;
 import kz.greetgo.mvc.errors.InconsistentUploadAnnotationsUnderClass;
@@ -62,20 +62,20 @@ public class ControllerTunnelExecutorBuilderTest {
     public String strParam;
 
     @ToJson
-    @HttpGET("/to_json")
+    @onGET("/to_json")
     public Object performToJson(@Par("strParam") String strParam) {
       this.strParam = strParam;
       return RETURN_JSON;
     }
 
     @ToXml
-    @HttpGET("/to_xml")
+    @onGET("/to_xml")
     public Object performToXml(@Par("strParam") String strParam) {
       this.strParam = strParam;
       return RETURN_XML;
     }
 
-    @HttpGET("/default_str")
+    @onGET("/default_str")
     public String performDefaultStr(@Par("strParam") String strParam, MvcModel model) {
       this.strParam = strParam;
 
@@ -87,7 +87,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     public boolean calledReturnRedirect = false;
 
-    @HttpGET("/return_redirect")
+    @onGET("/return_redirect")
     public Redirect returnRedirect() {
       calledReturnRedirect = true;
       //noinspection ThrowableResultOfMethodCallIgnored
@@ -97,7 +97,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
     public boolean calledThrowRedirect = false;
 
-    @HttpGET("/throw_redirect")
+    @onGET("/throw_redirect")
     public Redirect throwRedirect() {
       calledThrowRedirect = true;
       //noinspection ThrowableResultOfMethodCallIgnored
@@ -307,7 +307,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   class UploadInfoDefault {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     public void forTest() {}
   }
 
@@ -346,7 +346,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadInfoFromMethod("getUploadInfoForTest")
   class UploadInfoFromMethod1 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     public void forTest() {}
 
     final String location = RND.str(10);
@@ -391,7 +391,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadInfoFromMethod("getUploadInfoForTest")
   class UploadInfoFromMethod2 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadInfoFromMethod("getUploadInfoForMethod")
     public void forTest() {
     }
@@ -443,82 +443,82 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   class AmountFormats {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest1")
+    @onPOST("forTest1")
     @UploadMaxFileSize("22 745")
     public void forTest1() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest2")
+    @onPOST("forTest2")
     @UploadMaxFileSize("22_745")
     public void forTest2() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_K")
+    @onPOST("forTest_K")
     @UploadMaxFileSize("22_745 K")
     public void forTest_K() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_k")
+    @onPOST("forTest_k")
     @UploadMaxFileSize("22_745 k")
     public void forTest_k() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_Kb")
+    @onPOST("forTest_Kb")
     @UploadMaxFileSize("22_745Kb")
     public void forTest_Kb() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_KB")
+    @onPOST("forTest_KB")
     @UploadMaxFileSize("22 745 KB")
     public void forTest_KB() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_kb")
+    @onPOST("forTest_kb")
     @UploadMaxFileSize("22_745kb")
     public void forTest_kb() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_kB")
+    @onPOST("forTest_kB")
     @UploadMaxFileSize("22 745 kB")
     public void forTest_kB() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_M")
+    @onPOST("forTest_M")
     @UploadMaxFileSize("711 M")
     public void forTest_M() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_Mb")
+    @onPOST("forTest_Mb")
     @UploadMaxFileSize("711 Mb")
     public void forTest_Mb() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_MB")
+    @onPOST("forTest_MB")
     @UploadMaxFileSize("711 MB")
     public void forTest_MB() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_G")
+    @onPOST("forTest_G")
     @UploadMaxFileSize("317 G")
     public void forTest_G() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_Gb")
+    @onPOST("forTest_Gb")
     @UploadMaxFileSize("317 Gb")
     public void forTest_Gb() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_GB")
+    @onPOST("forTest_GB")
     @UploadMaxFileSize("317 GB")
     public void forTest_GB() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_m1")
+    @onPOST("forTest_m1")
     @UploadMaxFileSize("-1")
     public void forTest_m1() {}
 
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("forTest_zero")
+    @onPOST("forTest_zero")
     @UploadMaxFileSize("0")
     public void forTest_zero() {}
   }
@@ -575,7 +575,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadMaxFileSize("22745")
   class UploadMaxFileSize1 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     public void forTest() {}
   }
 
@@ -611,7 +611,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadMaxFileSize("22745")
   class UploadMaxFileSize2 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadMaxFileSize("7711")
     public void forTest() {}
   }
@@ -648,7 +648,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadMaxRequestSize("22745")
   class UploadMaxRequestSize1 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     public void forTest() {}
   }
 
@@ -684,7 +684,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadMaxRequestSize("22745")
   class UploadMaxRequestSize2 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadMaxRequestSize("7711")
     public void forTest() {}
   }
@@ -721,7 +721,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadFileSizeThreshold("22745")
   class UploadFileSizeThreshold1 {
     @SuppressWarnings("EmptyMethod")
-    @HttpGET("tmp")
+    @onGET("tmp")
     public void forTest() {}
   }
 
@@ -758,7 +758,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadFileSizeThreshold("22745")
   class UploadFileSizeThreshold2 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadFileSizeThreshold("7711")
     public void forTest() {}
   }
@@ -796,7 +796,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadLocationFromMethod("getTestLocation")
   class UploadLocationFromMethod1 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     public void forTest() {}
 
     public String testLocation;
@@ -842,7 +842,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadLocationFromMethod("getTestLocationLeft")
   class UploadLocationFromMethod2 {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadLocationFromMethod("getTestLocation")
     public void forTest() {}
 
@@ -888,7 +888,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadLocationFromMethod("tmp2")
   class TestInconsistentUploadAnnotationsUnderClass {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     public void forTest() {}
   }
 
@@ -905,7 +905,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @SuppressWarnings("unused")
   class TestInconsistentUploadAnnotationsUnderMethod {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadInfoFromMethod("tmp1")
     @UploadLocationFromMethod("tmp2")
     public void forTest() {}
@@ -925,7 +925,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadMaxFileSizeFromMethod("left")
   class UploadMaxFileSizeFromMethod_long {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadMaxFileSizeFromMethod("getTestMaxFileSize")
     public void forTest() {}
 
@@ -971,7 +971,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadMaxFileSizeFromMethod("left")
   class UploadMaxFileSizeFromMethod_int {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadMaxFileSizeFromMethod("getTestMaxFileSize")
     public void forTest() {}
 
@@ -1017,7 +1017,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadMaxFileSize("1M")
   class UploadMaxFileSizeFromMethod_String {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadMaxFileSizeFromMethod("getTestMaxFileSize")
     public void forTest() {}
 
@@ -1064,7 +1064,7 @@ public class ControllerTunnelExecutorBuilderTest {
   @UploadMaxFileSize("1M")
   class TestAmbiguousMaxFileSize {
     @SuppressWarnings("EmptyMethod")
-    @HttpPOST("tmp")
+    @onPOST("tmp")
     @UploadMaxFileSize("1M")
     @UploadMaxFileSizeFromMethod("asd")
     public void forTest() {}
@@ -1099,37 +1099,37 @@ public class ControllerTunnelExecutorBuilderTest {
       counts.put(RequestMethod.PRI, new AtomicInteger(0));
     }
 
-    @HttpGET("/commonTarget")
+    @onGET("/commonTarget")
     public void forGET() {counts.get(RequestMethod.GET).incrementAndGet();}
 
-    @HttpPOST("/commonTarget")
+    @onPOST("/commonTarget")
     public void forPOST() {counts.get(RequestMethod.POST).incrementAndGet();}
 
-    @HttpHEAD("/commonTarget")
+    @onHEAD("/commonTarget")
     public void forHEAD() {counts.get(RequestMethod.HEAD).incrementAndGet();}
 
-    @HttpPUT("/commonTarget")
+    @onPUT("/commonTarget")
     public void forPUT() {counts.get(RequestMethod.PUT).incrementAndGet();}
 
-    @HttpOPTIONS("/commonTarget")
+    @onOPTIONS("/commonTarget")
     public void forOPTIONS() {counts.get(RequestMethod.OPTIONS).incrementAndGet();}
 
-    @HttpDELETE("/commonTarget")
+    @onDELETE("/commonTarget")
     public void forDELETE() {counts.get(RequestMethod.DELETE).incrementAndGet();}
 
-    @HttpTRACE("/commonTarget")
+    @onTRACE("/commonTarget")
     public void forTRACE() {counts.get(RequestMethod.TRACE).incrementAndGet();}
 
-    @HttpCONNECT("/commonTarget")
+    @onCONNECT("/commonTarget")
     public void forCONNECT() {counts.get(RequestMethod.CONNECT).incrementAndGet();}
 
-    @HttpMOVE("/commonTarget")
+    @onMOVE("/commonTarget")
     public void forMOVE() {counts.get(RequestMethod.MOVE).incrementAndGet();}
 
-    @HttpPROXY("/commonTarget")
+    @onPROXY("/commonTarget")
     public void forPROXY() {counts.get(RequestMethod.PROXY).incrementAndGet();}
 
-    @HttpPRI("/commonTarget")
+    @onPRI("/commonTarget")
     public void forPRI() {counts.get(RequestMethod.PRI).incrementAndGet();}
 
   }
@@ -1172,10 +1172,10 @@ public class ControllerTunnelExecutorBuilderTest {
 
   @ControllerPrefix("/asd")
   public static class LeftController {
-    @HttpPOST("/asd")
+    @onPOST("/asd")
     public void asd1() {}
 
-    @HttpPOST("/asd")
+    @onPOST("/asd")
     public void asd2() {}
   }
 

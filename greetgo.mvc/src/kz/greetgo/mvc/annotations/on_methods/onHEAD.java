@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Determine format of request address for request performing by HTTP method PROXY
+ * Determine format of request address for request performing by HTTP method HEAD
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HttpPROXY {
+public @interface onHEAD {
   /**
    * @return format of request address
    */
