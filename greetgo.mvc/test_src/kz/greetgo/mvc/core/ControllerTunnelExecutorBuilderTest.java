@@ -1,6 +1,14 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.*;
+import kz.greetgo.mvc.annotations.Par;
+import kz.greetgo.mvc.annotations.ToJson;
+import kz.greetgo.mvc.annotations.ToXml;
+import kz.greetgo.mvc.annotations.UploadFileSizeThreshold;
+import kz.greetgo.mvc.annotations.UploadInfoFromMethod;
+import kz.greetgo.mvc.annotations.UploadLocationFromMethod;
+import kz.greetgo.mvc.annotations.UploadMaxFileSize;
+import kz.greetgo.mvc.annotations.UploadMaxFileSizeFromMethod;
+import kz.greetgo.mvc.annotations.UploadMaxRequestSize;
 import kz.greetgo.mvc.annotations.on_methods.ControllerPrefix;
 import kz.greetgo.mvc.annotations.on_methods.OnConnect;
 import kz.greetgo.mvc.annotations.on_methods.OnDelete;
@@ -23,6 +31,7 @@ import kz.greetgo.mvc.model.MvcModel;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.mvc.util.MvcUtil;
+import kz.greetgo.mvc.utils.TestAnn;
 import kz.greetgo.mvc.utils.TestTunnel;
 import kz.greetgo.mvc.utils.TestViews;
 import kz.greetgo.util.RND;
@@ -1191,5 +1200,110 @@ public class ControllerTunnelExecutorBuilderTest {
     MvcUtil.checkTunnelExecutorGetters(list);
     //
     //
+  }
+
+  @ControllerPrefix("/ann")
+  public static class AnnotatedMethod {
+    @OnGet("/method")
+    @TestAnn("Ann from method HI")
+    public void method() {}
+  }
+
+  @Test
+  public void getMethodAnnotation_fromMethod() throws Exception {
+    final TestViews views = new TestViews();
+
+    final AnnotatedMethod controller = new AnnotatedMethod();
+
+    //
+    //
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
+    //
+    //
+
+    final TestTunnel tunnel = new TestTunnel(GET);
+    tunnel.target = "/ann/method";
+
+    //
+    //
+    final boolean handled = handleFirst(handlerGetterList, tunnel);
+    //
+    //
+
+    assertThat(handled).isTrue();
+    assertThat(views.testAnn).isNotNull();
+    assertThat(views.testAnn.value()).isEqualTo("Ann from method HI");
+
+  }
+
+  @ControllerPrefix("/ann")
+  @TestAnn("Ann from class WOW")
+  public static class AnnotatedClass {
+    @OnGet("/method")
+    public void method() {}
+  }
+
+  @Test
+  public void getMethodAnnotation_fromClass() throws Exception {
+    final TestViews views = new TestViews();
+
+    final AnnotatedClass controller = new AnnotatedClass();
+
+    //
+    //
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
+    //
+    //
+
+    final TestTunnel tunnel = new TestTunnel(GET);
+    tunnel.target = "/ann/method";
+
+    //
+    //
+    final boolean handled = handleFirst(handlerGetterList, tunnel);
+    //
+    //
+
+    assertThat(handled).isTrue();
+    assertThat(views.testAnn).isNotNull();
+    assertThat(views.testAnn.value()).isEqualTo("Ann from class WOW");
+
+  }
+
+  @TestAnn("Ann from super super class BOOM")
+  public static class AnnotatedSuperSuperClass{}
+
+  public static class ParentClass extends AnnotatedSuperSuperClass {}
+
+  @ControllerPrefix("/ann")
+  public static class ChildClass extends ParentClass{
+    @OnGet("/method")
+    public void method() {}
+  }
+
+  @Test
+  public void getMethodAnnotation_fromSuperSuperClass() throws Exception {
+    final TestViews views = new TestViews();
+
+    final ChildClass controller = new ChildClass();
+
+    //
+    //
+    final List<TunnelExecutorGetter> handlerGetterList = ControllerTunnelExecutorBuilder.build(controller, views);
+    //
+    //
+
+    final TestTunnel tunnel = new TestTunnel(GET);
+    tunnel.target = "/ann/method";
+
+    //
+    //
+    final boolean handled = handleFirst(handlerGetterList, tunnel);
+    //
+    //
+
+    assertThat(handled).isTrue();
+    assertThat(views.testAnn).isNotNull();
+    assertThat(views.testAnn.value()).isEqualTo("Ann from super super class BOOM");
   }
 }

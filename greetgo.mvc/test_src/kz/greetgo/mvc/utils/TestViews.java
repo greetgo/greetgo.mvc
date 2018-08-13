@@ -1,8 +1,8 @@
 package kz.greetgo.mvc.utils;
 
 import kz.greetgo.mvc.interfaces.MappingResult;
-import kz.greetgo.mvc.interfaces.MethodInvoker;
 import kz.greetgo.mvc.interfaces.MethodInvokedResult;
+import kz.greetgo.mvc.interfaces.MethodInvoker;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.Views;
 import kz.greetgo.mvc.model.MvcModelData;
@@ -27,10 +27,14 @@ public class TestViews implements Views {
 
   public String errorTarget = null;
 
+  public TestAnn testAnn;
+
   @Override
   public void performRequest(MethodInvoker methodInvoker) {
     MethodInvokedResult invokingResult = methodInvoker.invoke();
     if (invokingResult.tryDefaultRender()) return;
+
+    testAnn = methodInvoker.getMethodAnnotation(TestAnn.class);
 
     if (invokingResult.error() == null) {
 

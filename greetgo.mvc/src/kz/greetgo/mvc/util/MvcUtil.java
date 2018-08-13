@@ -12,6 +12,7 @@ import kz.greetgo.mvc.model.Redirect;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -368,5 +369,19 @@ public class MvcUtil {
 
   private static boolean isCompatibles(RequestMethod method1, RequestMethod method2) {
     return method1 == method2;
+  }
+
+  public static <T extends Annotation> T getAnnotation(Class<?> annotatedClass, Class<T> annotation) {
+    while (annotatedClass != null && annotatedClass != Object.class) {
+
+      T t = annotatedClass.getAnnotation(annotation);
+
+      if (t != null) return t;
+
+      annotatedClass = annotatedClass.getSuperclass();
+
+    }
+
+    return null;
   }
 }

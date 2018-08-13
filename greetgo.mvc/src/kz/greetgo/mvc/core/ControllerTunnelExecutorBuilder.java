@@ -1,9 +1,9 @@
 package kz.greetgo.mvc.core;
 
 import kz.greetgo.mvc.annotations.AsIs;
-import kz.greetgo.mvc.annotations.on_methods.ControllerPrefix;
 import kz.greetgo.mvc.annotations.ToJson;
 import kz.greetgo.mvc.annotations.ToXml;
+import kz.greetgo.mvc.annotations.on_methods.ControllerPrefix;
 import kz.greetgo.mvc.builder.ExecDefinition;
 import kz.greetgo.mvc.interfaces.MappingResult;
 import kz.greetgo.mvc.interfaces.MethodInvokedResult;
@@ -18,6 +18,7 @@ import kz.greetgo.mvc.model.MvcModelData;
 import kz.greetgo.mvc.model.Redirect;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.mvc.util.MvcUtil;
+import kz.greetgo.util.ServerUtil;
 
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
@@ -150,7 +151,13 @@ public class ControllerTunnelExecutorBuilder {
 
               @Override
               public <T extends Annotation> T getMethodAnnotation(Class<T> annotation) {
-                return getAnnotation(method, annotation);
+                {
+                  T ret = ServerUtil.getAnnotation(method, annotation);
+                  if (ret != null) return ret;
+                }
+                {
+                  return MvcUtil.getAnnotation(controller.getClass(), annotation);
+                }
               }
 
               final MvcModelData model = new MvcModelData();
