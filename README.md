@@ -63,44 +63,44 @@
 ```java
 
 @Bean
-@Mapping("/orgUnit")
+@ControllerPrefix("/orgUnit")
 public class OrgUnitController implements Controller {
 
   public BeanGetter<OrgUnitRegister> orgUnitRegister;
 
   @ToJson
-  @Mapping("/rootList")
+  @OnGet("/rootList")
   public OrgUnitRootListResult rootList() {
     return orgUnitRegister.get().rootList();
   }
 
   @ToJson
-  @Mapping("/children/{parentId}")
+  @OnGet("/children/{parentId}")
   public List<OrgUnitNode> children(@ParPath("parentId") String parentId) {
     return orgUnitRegister.get().children(parentId);
   }
 
 
   @ToJson
-  @Mapping("/findRootAndSaveCurrentOrgUnitId")
+  @OnGet("/findRootAndSaveCurrentOrgUnitId")
   public void findRootAndSaveCurrentOrgUnitId(@Par("type") String type, @Par("id") String id) {
     orgUnitRegister.get().findRootAndSaveCurrentOrgUnitId(type, id);
   }
 
   @ToJson
-  @Mapping("/details/{orgUnitId}")
+  @OnGet("/details/{orgUnitId}")
   public OrgUnitDetails details(@ParPath("orgUnitId") String orgUnitId) {
     return orgUnitRegister.get().details(orgUnitId);
   }
 
   @ToJson
-  @Mapping("/delete/{orgUnitId}")
+  @OnDelete("/delete/{orgUnitId}")
   public void delete(@ParPath("orgUnitId") String orgUnitId) {
     orgUnitRegister.get().delete(orgUnitId);
   }
 
   @ToJson
-  @Mapping("/save")
+  @OnPost("/save")
   public OrgUnitNode save(@Par("parentId") String parentId,
                           @Par("id") String id,
                           @Par("guid") String guid,
@@ -110,7 +110,7 @@ public class OrgUnitController implements Controller {
   }
 
   @ToJson
-  @Mapping("/pathToPerson/{rootOrgUnitId}/{personId}")
+  @OnGet("/pathToPerson/{rootOrgUnitId}/{personId}")
   public List<String> pathToPerson(@ParPath("rootOrgUnitId") String rootOrgUnitId,
                                    @ParPath("personId") String personId,
                                    MvcModel model
@@ -121,7 +121,7 @@ public class OrgUnitController implements Controller {
   }
 
   @ToJson
-  @Mapping("/pathToOrgUnit/{orgUnitId}")
+  @OnGet("/pathToOrgUnit/{orgUnitId}")
   public List<String> pathToOrgUnit(@ParPath("orgUnitId") String orgUnitId, MvcModel model) {
     List<String> ret = orgUnitRegister.get().pathToOrgUnit(orgUnitId);
     model.setStatus(ret != null ? 200 : 202);
@@ -129,7 +129,7 @@ public class OrgUnitController implements Controller {
   }
 
   @ToJson
-  @Mapping("/search")
+  @OnGet("/search")
   public List<OrgUnitSearchRecord> search(@ParamsTo OrgUnitSearch a, MvcModel model) {
     orgUnitRegister.get().search(a);
     model.setStatus(a.hasMoreElements ? 200 : 201);
@@ -137,20 +137,19 @@ public class OrgUnitController implements Controller {
   }
 
   @ToJson
-  @Mapping("/switchingRoleContent")
+  @OnPost("/switchingRoleContent")
   public List<SwitchingRole> switchingRoleContent() {
     return orgUnitRegister.get().switchingRoleContent();
   }
 
   @ToJson
-  @Mapping("/assignedRoles/{orgUnitId}")
+  @OnPost("/assignedRoles/{orgUnitId}")
   public List<AssignedRoleId> assignedRoles(@ParPath("orgUnitId") String urgUnitId) {
     return orgUnitRegister.get().assignedRoles(urgUnitId);
   }
 
   @ToJson
-  @MethodFilter(POST)
-  @Mapping("/addRoles")
+  @OnPost("/addRoles")
   public Map<String, AssignTypeModification> addRoles(
     @Par("id") String personId, @Par("roleIds") @Json List<String> roleIds,
     @ParSession("personId") String modifierId
@@ -159,8 +158,7 @@ public class OrgUnitController implements Controller {
   }
 
   @ToJson
-  @MethodFilter(POST)
-  @Mapping("/removeRoles")
+  @OnPost("/removeRoles")
   public Map<String, AssignTypeModification> removeRoles(
     @Par("id") String personId, @Par("roleIds") @Json List<String> roleIds,
     @ParSession("personId") String modifierId
@@ -170,7 +168,7 @@ public class OrgUnitController implements Controller {
 
 
   @ToJson
-  @Mapping("/allPersonsUnder")
+  @OnGet("/allPersonsUnder")
   public List<PersonRecord> allPersonsUnder(@ParamsTo InOutAllPersonsUnder inOut, MvcModel model) {
     orgUnitRegister.get().allPersonsUnder(inOut);
     model.setStatus(inOut.hasMore ? 201 : 200);

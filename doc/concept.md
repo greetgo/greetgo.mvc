@@ -89,12 +89,11 @@
 import kz.greetgo.mvc.annotations.*;
 import kz.greetgo.mvc.core.*;
 
-@Mapping("/client")
+@ControllerPrefix("/client")
 public class ClientController {
   
   @AsIs
-  @Mapping("/surname")
-  @MethodFilter(RequestMethod.GET)
+  @OnGet("/surname")
   public String getSurname(@Par("id") String id) {
     return "surname of " + id;
   }

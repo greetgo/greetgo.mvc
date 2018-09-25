@@ -15,7 +15,6 @@
      - [Аннотация @ToXml](#annotation-toxml)
      - [Аннотация @AsIs](#annotation-asis)
      - [Производство редиректа](#using-redirect)
-   - [MethodFilter](#methodfilter)
 
 ### Спецификация контроллеров
 
@@ -36,10 +35,10 @@
 Например: к контроллере `RequestParametersController` есть метод:
 
 ```java
-@Mapping("/request_parameters")
+@ControllerPrefix("/request_parameters")
 public class RequestParametersController {
   @AsIs
-  @Mapping("/base-example")
+  @OnGet("/base-example")
   public String baseExample(@Par("helloMessage") String helloMessage, @Par("age") int age) {
     return "called RequestParametersController.baseExample with arguments:\n" +
       "    helloMessage = " + helloMessage + "\n" +
@@ -91,7 +90,7 @@ public class RequestParametersController {
 аннотации можно добавить аннотацию `@Json` как в приведённом миже примере:
 
 ```java
-@Mapping("/request_parameters")
+@ControllerPrefix("/request_parameters")
 public class RequestParametersController {
   public static class ClientToSave {
     public String id;
@@ -106,7 +105,7 @@ public class RequestParametersController {
   }
 
   @AsIs
-  @Mapping("/par-json-example")
+  @OnPost("/par-json-example")
   public String parJsonExample(@Par("clientToSave") @Json ClientToSave clientToSave,
                                @Par("accountToSave") @Json AccountToSave accountToSave
   ) {
@@ -145,7 +144,7 @@ public class RequestParametersController {
 как приведено на примере ниже:
 
 ```java
-@Mapping("/request_parameters")
+@ControllerPrefix("/request_parameters")
 public class RequestParametersController {
   
   public static class Client {
@@ -156,7 +155,7 @@ public class RequestParametersController {
   }
   
   @AsIs
-  @Mapping("/params-to-example")
+  @OnPost("/params-to-example")
   public String paramsToExample(@ParamsTo Client client) {
     return "called RequestParametersController.paramsToExample with\n" +
       "    client = " + client;
@@ -176,10 +175,10 @@ public class RequestParametersController {
 Параметры можно передавать через URL-путь, используя фигурные скобки - `{имя_параметра}`. Например так:
 
 ```java
-@Mapping("/request_parameters")
+@ControllerPrefix("/request_parameters")
 public class RequestParametersController {
   @AsIs
-  @Mapping("/par-path-example/id:{id}/{name}")
+  @OnPost("/par-path-example/id:{id}/{name}")
   public String parPathExample(@ParPath("id") Long id, @ParPath("name") String name) {
     return "called RequestParametersController.parPathExample with\n" +
       "    id   = " + id + "\n" +
@@ -208,10 +207,10 @@ public class RequestParametersController {
 который использует эту аннотацию:
 
 ```java
-@Mapping("/request_parameters")
+@ControllerPrefix("/request_parameters")
 public class RequestParametersController {
   @AsIs
-  @Mapping("/par-session-example")
+  @OnPost("/par-session-example")
   public String parSessionExample(@ParSession("personId") Long personId, @ParSession("role") String role) {
     return "called RequestParametersController.parSessionExample with\n" +
       "    personId = " + personId + "\n" +
@@ -266,9 +265,9 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 Пример использования:
 
 ```java
-@Mapping("/some_prefix")
+@ControllerPrefix("/some_prefix")
 public class SomeController {
-  @Mapping("/some_suffix")
+  @OnPost("/some_suffix")
   public String someMethod(@RequestInput String content) {
     //...
   }
@@ -356,8 +355,3 @@ public class SomeController {
 В [проекте-примере](mvc_war_example.md) такие методы, как: `RequestParametersController.form`,
 `MethodReturnsController.form`, `MethodReturnsController.returnRedirectParam1` и другие, возвращают необходимый им
 для рендеринга jsp-файл.
-
-### MethodFilter
-
-Аннотация MethodFilter позволяет отфильтровать только некоторые HTTP-методы запроса - те, которые перечисленны в
-аннотации. Если эту аннотацию не указать, то фильтрации по HTTP-методам не будет - будут проходить все HTTP-методы.
