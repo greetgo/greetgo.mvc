@@ -50,13 +50,13 @@ Allows to read parameters:
 ### and
   - Request and Response classes are combined into one: RequestTunnel, which simplifies the structure of the library and its use;
   - Cool possibility of organizing erroneous requests:
-    - somewhere inside the code `throw new RestError(450, "Плохо!");` and the request ends with error code 450 and the response body "Bad";
+    - somewhere inside the code `throw new RestError(450, "Bad!");` and the request ends with error code 450 and the response body "Bad";
     - or - `throw new RestJsonError(450, someObject);` and the request ends with error code 450 and and the response body someObject deserialized in JSON;
   - It is possible to implement any complex security;
 
 ### Disadvantages
 
-  - Previously, it is needed to implement two classes (but there is an example of implementation and you can just copypast!);
+  - Previously, it is needed to implement two classes (but there is an example of implementation and you can just copy/paste!);
 
 # Typical Rest-controller
 
