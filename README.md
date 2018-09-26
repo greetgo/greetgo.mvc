@@ -1,64 +1,64 @@
 # greetgo.mvc
 
-Облегчённая реализация паттерна MVC. Сделана по образу и подобию SpringMVC
+Light implementation of MVC pattern. It is made in the image and likeness of SpringMVC
 
- - [Концепция](doc/concept.md)
- - [Проект-пример mvc.war.example (быстрая установка и запуск)](doc/mvc_war_example.md)
- - [Спецификация контроллеров](doc/controller_spec.md)
+ - [Concept](doc/concept.md)
+ - [Example project mvc.war.example (Quick setup and launch)](doc/mvc_war_example.md)
+ - [Specification of controllers](doc/controller_spec.md)
 
-# Возможности
+# Capabilities
 
-### Организационные возможности
-  - Простая, лёгкая и маленькая;
-  - Не содержит лишних зависимостей;
-  - Не привязана к какой-либо Dependency Injection библиотеке (значит можно использовать любую);
+### Organizational capabilities
+  - Simple, light and small;
+  - Does not contain unnecessary dependencies;
+  - Not connected to any Dependency Injection library (so you can use any);
 
-### Функциональные возможности
+### Functionalities
 
-Создана по образу и подобию SpringMVC (но без многих недостатков);
+It is made in the image and likeness of SpringMVC (but does not have any drawbacks);
 
-##### Параметры
-Позволяет считывать параметры:
-  - для запроса : `...?asd=значение1&...&asd=значение2&...`
-    - с помощью `@Par("asd") String asd`, получим первое значение: `asd === "значение1"`
-    - с помощью `@Par("asd") List<String> asd`, получим все значения: `asd === ["значение1","значение2"]`
-  - Если параметр содержит JSON `...?wow={"asd":"значение"}`, то его можно десериализовать с помощью `@Par("wow") @Json ClassWithAsd wow`;
-  - Все параметры `...?asd=значение&dsa=значение` можно запихать напрямую в объект с помощью `@ParamsTo ClassWithAsdAndDsa argument`;
-  - Параметр можно считать из URL-пути `.../{asd}/...` с помощью аннотации `@ParPath("asd") String asd` (можно добавить `@Json`);
-  - Параметр можно считать из сессии с помощью `@ParSession`;
-  - Параметр можно считать из кукисов с помощью `@ParCookie` (притом как на прямую, так и с помощью встроенного механизма cookie-сериализации);
-  - Всё тело запроса можно запихнуть в парамтер с помощью `@RequestInput String requestContentUtf8`;
+##### Parameters
+Allows to read parameters:
+  - for the request: `...?asd=value&...&asd=value2&...`
+    - using `@Par("asd") String asd`, get the first value: `asd === "value1"`
+    - using `@Par("asd") List<String> asd`, get all values: `asd === ["value1","value2"]`
+  - If the parameter contains JSON `...?wow={"asd":"value"}`, it can be deserialized using `@Par("wow") @Json ClassWithAsd wow`;
+  - All parameters `...?asd=value&dsa=value` can be put directly into the object using `@ParamsTo ClassWithAsdAndDsa argument`;
+  - The parameter can be read from the URL path `.../{asd}/...` using annotation `@ParPath("asd") String asd` (it is possible to add `@Json`);
+  - The parameter can be read from the session using `@ParSession`;
+  - The parameter can be read from cookies using `@ParCookie` (both directly and with the help of cookie-serialization built-in mechanism);
+  - The whole request body can be put into the parameter using `@RequestInput String requestContentUtf8`;
 
-##### Рендеринг
-  - то, что возвращает метод контроллера можно сериализовать
-    - в JSON с помощью `@ToJson` у метода контроллера;
-    - в XML с помощью `@ToXml` у метода контроллера;
-  - позволяет рендерить в JSP, и передавать туда параметры через `MvcModel`;
-  - вместо JSP можно использовать любой другой механизм рендеринга (библиотека ничего не знает про JSP);
+##### Rendering
+  - what the controller method returns can be serialized
+    - in JSON using `@ToJson` from controller method;
+    - in XML using `@ToXml` from controller method;
+  - allows you to render in JSP, and transmit parameters there through `MvcModel`;
+  - instead of JSP, you can use any other rendering mechanism (the library does not know anything about JSP);
 
-##### Редиректы
-  - редиректы можно делать с помощью исключений: `throws Redirect.to("some/uri")`
-    - и добавлять к ним кукисы: `throws Redirect.to("some/uri").addCookie("KEY", "str value");`
-      - их потом можно считывать в параметре метода тонтроллера так: `@ParCookie(value="KEY", asIs = true) String str`
-    - а можно сериализованные кукисы: `throws Redirect.to("some/uri").addCookieObject("KEY", object);`
-      - их потом можно считывать в параметре метода тонтроллера так: `@ParCookie(value="KEY", asIs = false) SomeClass object`
-  - редиректы можно просто возвращать из метода контроллера: `return Redirect.to("some/uri")`;
+##### Redirects
+  - Redirects can be done using exceptions: `throws Redirect.to("some/uri")`
+    - and add cookies to them: `throws Redirect.to("some/uri").addCookie("KEY", "str value");`
+      - then they can be read in the parameter of the controller method in this way: `@ParCookie(value="KEY", asIs = true) String str`
+    - or serialized cookies: `throws Redirect.to("some/uri").addCookieObject("KEY", object);`
+      - then they can be read in the parameter of the controller method in this way: `@ParCookie(value="KEY", asIs = false) SomeClass object`
+  - redirects can be returned from the controller method:`return Redirect.to("some/uri")`;
 
 ##### MethodFilter
-  - можно фильтровать по разным HTTP-методам, с помощью `@MethodFilter`;
+  - can be filtered by different HTTP methods, using `@MethodFilter`;
 
-### И ещё
-  - Два класса Request и Response объединены в один : RequestTunnel, что упрощает структуру библиотеки и пользование ей;
-  - Приколькная возможность организации ошибочных запросов:
-    - где-то внутри кода `throw new RestError(450, "Плохо!");` и запрос заканчивается с кодом ошибки 450 и в теле ответа "Плохо";
-    - или - `throw new RestJsonError(450, someObject);` и запрос заканчивается с кодом ошибки 450 и в теле ответа someObject десериализованный в JSON;
-  - Можно реализовать любую сложную security;
+### and
+  - Request and Response classes are combined into one: RequestTunnel, which simplifies the structure of the library and its use;
+  - Cool possibility of organizing erroneous requests:
+    - somewhere inside the code `throw new RestError(450, "Плохо!");` and the request ends with error code 450 and the response body "Bad";
+    - or - `throw new RestJsonError(450, someObject);` and the request ends with error code 450 and and the response body someObject deserialized in JSON;
+  - It is possible to implement any complex security;
 
-### Недостатки
+### Disadvantages
 
-  - Предварительно нужно реализовать два класса (но есть пример реализация и можно быстро закопипастить!);
+  - Previously, it is needed to implement two classes (but there is an example of implementation and you can just copypast!);
 
-# Типичный Rest-контроллер
+# Typical Rest-controller
 
 ```java
 

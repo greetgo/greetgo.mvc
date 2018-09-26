@@ -1,54 +1,54 @@
-### Ссылки
+### References
 
- - [Концепция](concept.md)
- - [Проект-пример mvc.war.example (быстрая установка и запуск)]
- - [Спецификация контроллеров](controller_spec.md)
+ - [Concept](concept.md)
+ - [Example project mvc.war.example (Quick setup and launch)]
+ - [Specification of controllers](controller_spec.md)
 
-### Проект-пример mvc.war.example
+### Example project mvc.war.example
 
-Для описания работы библиотеки разработчиками был приготовлен проект-пример, где продемонстрированны все возможности
-данной библиотеки. Проект пример находиться в модуле `greetgo.mvc.war.example`. Все контроллеры находятся в пакете `kz.greetgo.mvc.war.example.controllers` в этом модуле. 
+To describe the work of the library, the developers prepared an example project, which demonstrated all the possibilities of
+this library. The example project  is in `greetgo.mvc.war.example` module. All controllers are in `kz.greetgo.mvc.war.example.controllers` packageв of this module. 
 
-Также определён подпроект `war` внутри `greetgo.mvc.war.example`, в котором происходит сборка war-файла. Для удобства в подпроект `war` добавлен плагин `com.bmuschko.tomcat` для запуска war-файла через apache-tomcat. Запуская цель `runMvcWarExample`, происходит сборка war-файла, запуск apache-tomcat-а и деплоинг приложения.
+`war` subproject is also defined inside `greetgo.mvc.war.example`, where war file is assembled. `com.bmuschko.tomcat` plugin was added to `war` subproject for convinient running a war file through apache-tomcat. When launching `runMvcWarExample`, war file assembling, apache-tomcat running and application deploying are carried out.
 
-В подпроекте `war` имеется директория `webapps/jsp/`, в которой можно найти все примеры вызова Rest-сервисов. Например, в файле `webapps/request_parameters/base_example.jsp` базовые примеры вызова Rest-сервисов с параметрами.
+`war` subproject has `webapps/jsp/` directory, which you can find all examples of calling Rest-services. For example, `webapps/request_parameters/base_example.jsp` file has basic examples of calling Rest-services with parameters.
 
-### Быстрая установка и запуск
+### Quick setup and launch
 
-Для запуска проекта-примера необходимо сначала установить следующее ПО:
+To launch the example project, first it is necessary to install the following software:
  - java jdk 1.8+
  - gradle 3.5+ (https://gradle.org/)
  - git 2.7.4+ (https://ru.wikipedia.org/wiki/Git)
 
-Если ПО стоит [прыгаем сюда](#install).
+If software is installed [go here](#install).
 
-В Ubuntu это можно сделать, выполнив команды:
+In Ubuntu, it is possible to do this by running the following commands:
 
     sudo apt-get install openjdk-8-jdk git
 
-Gradle из репозитория лучше не устанавливать - там наверное слишком старая версия. Для корректной установки необходимо
-скачать gradle из официального источника, например командой:
+It is better not to install Gradle from the repository - there is probably too old version. For the correct installation, you should
+download gradle from an official source, for example:
 
     wget https://downloads.gradle.org/distributions/gradle-3.5.1-bin.zip
     
-Разархивировать, например командой:
+Unzip, for example, with a help of the command:
 
     unzip path/to/gradle-3.5.1-bin.zip
 
-Создать в домашней папке пользователя папку `bin`, например командой:
+Create `bin` folder in the user's home folder, for example, with a help of the command:
 
     mkdir ~/bin
 
-И сделать символическую ссылку, например командой:
+And make a symbolic reference, for example, with a help of the command:
 
     ln -s path/to/gradle-3.5.1/bin/gradle ~/bin/gradle
 
-Если папка `~/bin` не перечислена в переменной окружения `$PATH`, то необходимо перезагрузить компьютер.
-Потом можно в любом месте запустить команду:
+If `~/bin` folder is not listed in the environment variable `$PATH`, then it is necessary to restart the computer
+Then you can run the command:
 
     gradle -version
 
-И должно вылететь что-то типа этого:
+Then you should get somethimg like this
 
     
     ------------------------------------------------------------
@@ -63,25 +63,23 @@ Gradle из репозитория лучше не устанавливать - 
     JVM:          1.8.0_144 (Oracle Corporation 25.144-b01)
     OS:           Linux 4.10.0-35-generic amd64
 
-###### Install
+### Installing example project
 
-### Установка непосредственно проекта-примера
-
-После установки необходимого ПО, приступаем непосредственно к проекту-примеру,
-для этого скачиваем репозиторий с проектом, запустив команду:
+After installing the necessary software, proceed directly to the example project,
+to do this download the repository with the project, running the command:
 
     git clone https://github.com/greetgo/greetgo.mvc.git
 
-Заходим в директорию:
+Enter the directory:
 
     cd greetgo.mvc/greetgo.mvc.parent/
 
-И запускаем команду:
+And ran the command:
 
     gradle runMvcWarExample
 
-Эта команда соберёт проект-пример и запустит apache-tomcat с этим проектом. В конце вылетит сообщение:
+This command will assemble the example project and run apache-tomcat with this project. At the end a message will be displayed:
 
     The Server is running at http://localhost:10000/mvc_example
 
-Пройдя в браузере по указанной ссылке, попадаем в приложение-пример.
+Clicking on the specified link, we get into the example application.

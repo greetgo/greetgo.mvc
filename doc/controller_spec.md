@@ -1,38 +1,37 @@
-### Ссылки
+### References
 
- - [Концепция](concept.md)
- - [Проект-пример mvc.war.example (быстрая установка и запуск)](mvc_war_example.md)
- - [Спецификация контроллеров]
-   - [Доступ к параметрам запроса](#access-to-request-parameters)
-     - [Аннотация @Par (простые параметры)](#base-example)
-     - [Аннотация @Par с @Json (структурные параметры в формате JSON)](#json-parameter-example)
-     - [Аннотация @ParamsTo (все параметры в один класс)](#params-to-example)
-     - [Аннотация @ParPath (параметры из URL‐пути)](#parpath-example)
-     - [Аннотация @ParSession (параметры из сессии)](#parsession-example)
-     - [Аннотация @RequestInput (тело запроса как параметр)](#requestinput-help)
-   - [Возврат из метода контроллера](#controller-method-return)
-     - [Аннотация @ToJson](#annotation-tojson)
-     - [Аннотация @ToXml](#annotation-toxml)
-     - [Аннотация @AsIs](#annotation-asis)
-     - [Производство редиректа](#using-redirect)
+ - [Concept](concept.md)
+ - [Example project mvc.war.example (Quick setup and launch)](mvc_war_example.md)
+ - [Specification of controllers]
+   - [Access to request parameters](#access-to-request-parameters)
+     - [Annotation @Par (simple parameters)](#base-example)
+     - [Annotation @Par с @Json (structural parameters in JSON format)](#json-parameter-example)
+     - [Annotation @ParamsTo (all parameters in one class)](#params-to-example)
+     - [Annotation @ParPath (parameters from URL path)](#parpath-example)
+     - [Annotation @ParSession (parameters from session)](#parsession-example)
+     - [Annotation @RequestInput (request body as a parameter)](#requestinput-help)
+   - [Controller method return](#controller-method-return)
+     - [Annotation @ToJson](#annotation-tojson)
+     - [Annotation @ToXml](#annotation-toxml)
+     - [Annotation @AsIs](#annotation-asis)
+     - [Using redirect](#using-redirect)
 
-### Спецификация контроллеров
+### Specification of controllers
 
-Контроллеры - это инстанции классов, содержащие методы с аннотациями. В этих аннотациях прописана информация
-о rest-запросах, которые эти методы обслуживают. Идея взята из SpringMVC, но упрощены аннотации. Чтобы контроллеры
-стали обслуживать rest-запросы необходимо их подключить к специальной инфраструктуре, которая
-описана в [концепции](concept.md)
+Controllers are the instances of classes that contain methods with annotations. These annotations contain information
+about the rest-requests that serve these methods. The idea is taken from SpringMVC, but the annotations are simplified. 
+In order to make controllers begin to serve rest-requests, they must be connected to a special infrastructure that
+described in [concept](concept.md)
 
-Разработчиками составлен специальный [проект-пример](mvc_war_example.md), в котором продемонсрированы
-все возможные способы, и на который ссылается спецификация далее.
+Developers created the special [example project](mvc_war_example.md), in which the
+all possible methods are demonstrated, and to which the specification further refers.
 
-##### Access to Request Parameters
-### Доступ к параметрам запроса
+### Access to Request Parameters
 
 ###### Base Example
-#### Аннотация @Par (простые параметры)
-Получать значения параметров запроса можно через аргументы метода контроллера помеченные аннотацией `@Par`.
-Например: к контроллере `RequestParametersController` есть метод:
+#### Annotation @Par (simple parameters)
+It is possible to get the values of request parameters through arguments of the controller method marked with an annotation `@Par`.
+For example: `RequestParametersController` has the method:
 
 ```java
 @ControllerPrefix("/request_parameters")
@@ -46,48 +45,47 @@ public class RequestParametersController {
   }
 }
 ```
-> Пример его вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/base_example.jsp`
+> An example of its call  is in a file: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/base_example.jsp`
 >
-> В [проекте-примере](mvc_war_example.md) заходим сюда: http://localhost:10000/mvc_example/api/request_parameters/form#base-example
+> In [example project](mvc_war_example.md) we enter here: http://localhost:10000/mvc_example/api/request_parameters/form#base-example
 
-Если сделать запрос:
+If you make a request:
 
     GET /request_parameters/base-example?helloMessage=HI&age=19
 
-То значения `HI` и `19` присвоятся аргументам `helloMessage` и `age` соответственно. Притом `age` автоматически
-преобразуется в тип `int`.
+Then `HI` and `19` values are assigned to `helloMessage` and `age` arguments respectively. Besides `age` is automatically
+converted to `int`.
 
-Имя параметра определяет аннотация @Par. Имя аргумента метода может быть любым. Рекомендуется чтобы они совпадали, дабы
-избежать ненужную путанницу.
+The parameter name defines @Par annotation. The name of the method argument can be whatever. It is recommended that they match 
+each othet so that avoid unnecessary confusion.
 
-К сожалению механизм Java Reflection не позволяет получать доступ к имени параметра метода, поэтому приходиться
-довольствоваться параметрами аннотации. Есть возможность вытащить эту информации из отладочной информации, но намеренно
-это не сделанно, во избежание путанницы (например, если откомпилировать без отладочной информации, то всё сломается).
+Unfortunately, the Java Reflection mechanism does not allow to access the method parameter name, so you have to
+be content with the parameters of the annotation. There is an opportunity to pull this information out of debug information, but intentionally
+this is not done, to avoid confusion (for example, if you compile without debug information, everything will fail).
 
-**@Par List<...>** Спецификация Rest позволяет один и тот же параметр указывать несколько раз - это параметр-массив.
-В этом случае аннотация `@Par` предоставит только одно первое значение. Если же необходимо получить все значения, то 
-в качестве типа аргумента метода контроллера
-следует выбрать `java.util.List<здесь указать нужный тип>` и аргумент будет получать все передаваемые значения.
-В проекте примере таким параметров является `address`.
+**@Par List<...>** Rest specification allows to specify the same parameter for multiple times - it is an array parameter.
+In this case,  `@Par` annotation will provide only one first value. If it is necessary to get all the values, то 
+then you should select `java.util.List<specify the type here>` as the argument type of the controller method, and the argument will receive all the values transmitted.
+In the example project, this parameter is `address`.
 
-Аннотация @Par может преобразовывать данные в следующие типы:
+@Par annotation can convert data to the following types:
 
-| Тип аргумента с аннотацией `@Par` | Особенности конвертации при передаче |
+| The type of the argument with `@Par` annotation| Features of conversion during transmission |
 |---|---|
-| `String` | Копируется как есть. Если параметр не указан вообще, то аргументу присваивается `null`. Если параметр передали, но пустым, то аргументу присваивается пустая строка |
-| `int`, `long` | Значение параметра конвертится в число и присваивается аргументу. Если параметр не указан, то аргументу присваивается `0`. Если конвертация в число не удаётся, то запрос прерывается с ошибкой 500. |
-| `Integer`, `Long` | Передаваемое значение параметра конвертиться в число и присваивается аргументу. Если параметр не указан, то аргументу присваивается `null`. Если конвертация в число не удаётся, то запрос прерывается с ошибкой 500. |
-| Enums | Если передаваемый параметр состоит из одних цифр, то предполагается что это ordinal, по нему выбирается элемент enum-а и присваивается аргументу. Если параметр содержит хотябы одну не цифру, то значение enum-а вычисляется с помощью функции `Enum.valueOf` и присваивается аргументу. Если такого элемента нет в enum-е, то возникает ошибка 500. Если параметр пустой или не указан, то аргументу присваивается `null`. |
-| `boolean`, `Boolean` | Если параметр отсутствует или передаваемое значение параметра пустое или равно одному из: "0", "false", "f", "off", "no", "n" (с любым регистром), то аргумету присваивается `false`, в остальных случаях - `true`. Типу Boolean ни при каких обстоятельствах не присваивается `null`. |
-| `java.util.Date` | Передаваемый параметр тримится и преобразуется в дату с помощью `SimpleDateFormat`, используя следующие паттерны: `"yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy"` в указанном порядке, и присваивается аргумету. Если ни один паттерн не подошёл, то генерируется 500 ошибка. Если параметра нет или он пустой, то аргументу присваивается `null`.  |
-| `BigDecimal`, `BigInteger`, `Double`, `Float` | У передаваемого параметра удаляются все пробелы и знаки подчёркивания, запятые меняются на точки и преобразуются в соответствующие типы контрукторами или методом `valueOf`, полученное значение присваивается аргументу. Если параметр не передаётся, или он пустой, или содержит только пробелы, то аргументу присваивается `null` |
-| `double`, `float` | У передаваемого параметра удаляются все пробелы и знаки подчёркивания, запятые меняются на точки и преобразуются в соответствующие типы методом `valueOf`, полученное значение присваивается аргументу. Если параметр не передаётся, или он пустой, или содержит только пробелы, то аргументу присваивается `0` |
+| `String` | Copied as it is. If the parameter is not specified at all, then the argument is set to `null`. If the parameter is transmitted, but it is empty, then the argument is assigned with an empty string |
+| `int`, `long` | The value of the parameter is converted to a number and assigned to the argument. If the parameter is not specified, then the argument is set to `0`. If the conversion to a number fails, the request is terminated with an error 500. |
+| `Integer`, `Long` | The transmitted parameter value is converted to a number and assigned to the argument. If the parameter is not specified, then the argument is set to `null`. If the conversion to a number fails, the request is terminated with an error 500. |
+| Enums | If the passed parameter consists of only digits, then it is assumed that this is ordinal, according to this enum element is chosen and assigned to the argument. If the parameter contains at least one non-digit, then the enum value is evaluated using `Enum.valueOf` function and assigned to the argument. If there is no such element in enum, an error 500 occurs. If the parameter is empty or not specified, then the argument is set to `null`. |
+| `boolean`, `Boolean` | If the parameter is missing or the transmitted parameter value is empty or equal to the following: "0", "false", "f", "off", "no", "n" (with any register), the the argument is set to `false`, in other cases - `true`. Boolean type is never set to `null`. |
+| `java.util.Date` | The transmitted parameter is trimmed and converted to a date with a help of `SimpleDateFormat`, using the following patterns: `"yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy"` in the specified order, and assigned to the argument. If no pattern is right, then an error 500 is generated. If there is no parameter or it is empty, then the argument is set to `null`.  |
+| `BigDecimal`, `BigInteger`, `Double`, `Float` | The transmitted parameter should not have any spaces and underscores, the commas are changed to points and are converted to the corresponding types by the constructors or `valueOf` method, the obtained value is assigned to the argument. If the parameter is not transmitted, or it is empty, or contains only spaces, then the argument is set to `null` |
+| `double`, `float` | The transmitted parameter should not have any spaces and underscores, the commas are changed to points and are converted to the corresponding types using `valueOf` method, the obtained value is assigned to the argument. If the parameter is not transmitted, or it is empty, or contains only spaces, then the argument is set to `0` |
 
 ###### Json Parameter Example
-#### Аннотация @Par с @Json (структурные параметры в формате JSON)
+#### @Par annotation with @Json (structural parameters in JSON format)
 
-Аннотация `@Par` может также работать с более сложными структурами, передаваемыми в формате JSON. Для этого к этой
-аннотации можно добавить аннотацию `@Json` как в приведённом миже примере:
+`@Par` annotation can also work with more complex structures transmitten in JSON format. To do this, these
+annotations can be added with `@Json` annotation, as the following example shows:
 
 ```java
 @ControllerPrefix("/request_parameters")
@@ -116,32 +114,32 @@ public class RequestParametersController {
 }
 ```
 
-Например параметр `clientToSave` нужно приготовить так:
+For example, `clientToSave` parameter shpuld be prepared in the following way:
 ```javascript
   
-  //Например есть объект, который надо отослать на сервер
+  //For example, there is an object that needs to be sent to the server
   var clientToSave = {
      id: "sa676hyu",
      surname: "Smith",
      name: "John"
   };
 
-  // Вот так можно составить запрос GET
+  // That's how you can compose a GET request
   var uri = "../par-json-example?clientToSave=" + encodeURIComponent(JSON.stringify(clientToSave));
   
   console.log("uri = " + uri);
 
 ```
 
-> Другой пример вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_json_example.jsp`
+> Another example of a call is in the file: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_json_example.jsp`
 >
->В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-json-example
+> In [example project](mvc_war_example.md) see here: http://localhost:10000/mvc_example/api/request_parameters/form#par-json-example
 
 ###### Params To Example
-#### Аннотация @ParamsTo (все параметры в один класс)
+#### @ParamsTo annotation (all parameters in one class)
 
-Все переметры запроса можно передавть одному аргументу-классу. Для этого можно воспользоваться аннотацией `@ParamsTo`,
-как приведено на примере ниже:
+All request parameters can be transmitted to one argument-class. To do this,  `@ParamsTo` annotation can be used,
+as the following example shows:
 
 ```java
 @ControllerPrefix("/request_parameters")
@@ -164,15 +162,15 @@ public class RequestParametersController {
 }
 ```
 
-> Пример его вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/params_to_example.jsp`
+> An example of a call is in the file: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/params_to_example.jsp`
 >
-> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#params-to-example
+> In [example project](mvc_war_example.md) see here: http://localhost:10000/mvc_example/api/request_parameters/form#params-to-example
 
 
 ###### ParPath Example
-#### Аннотация @ParPath (параметры из URL‐пути)
+#### @ParPath annotation (parameters from URL‐path)
 
-Параметры можно передавать через URL-путь, используя фигурные скобки - `{имя_параметра}`. Например так:
+Parameters can be transmitted through URL path using curly braces - `{parameter_name}`. For example:
 
 ```java
 @ControllerPrefix("/request_parameters")
@@ -187,24 +185,24 @@ public class RequestParametersController {
 }
 ```
 
-Тогда, если сделать запрос:
+Then, if you make a request:
 
     GET /request_parameters/par-path-example/id:4567/John
 
-То аргументу `id` присвоиться значение `4567`, а аргументу `name` присвоиться значение `John`.
+`id` argument is set to `4567` value, `name` argument is set to `John` value.
 
-> Пример находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_path_example.jsp`
+> An example is in the file:`greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_path_example.jsp`
 >
-> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-path-example
+> In [example project](mvc_war_example.md) see here: http://localhost:10000/mvc_example/api/request_parameters/form#par-path-example
 
-Если в аннотации `@ParPath` указать параметр, которого нет в аннотации `@Mapping` в фигурных скобках, то, при вызове,
-произойдёт ошибка 500. В лог вывалиться ошибка `kz.greetgo.mvc.errors.NoPathParam`.
+If in `@ParPath` annotation you specify the parameter that is not in `@Mapping` annotation using curly braces, then, when called,
+an error 500 will occur. The log will have `kz.greetgo.mvc.errors.NoPathParam` error.
 
 ###### ParSession Example
-#### Аннотация @ParSession (параметры из сессии)
+#### @ParSession annotation (параметры из сессии)
 
-Параметры можно получать из сессии. Для этого используется аннотация `@ParSession`. Вот пример метода контроллера,
-который использует эту аннотацию:
+The parameters can be received from the session. To do this, `@ParSession` annotation is used. Here is an example of the controller method,
+which uses this annotation:
 
 ```java
 @ControllerPrefix("/request_parameters")
@@ -219,19 +217,19 @@ public class RequestParametersController {
 }
 ```
 
-Для получения значения запрашиваемого параметра из сессии библиотека обращается к методу: 
-`kz.greetgo.mvc.interfaces.Views#getSessionParameter(...)`, и то, что этот метод вернёт, передаётся на запрашиваемый
-параметр. Вот пример реализации этого метода:
+To get the value of the requested parameter from the session, the library refers to the method:
+`kz.greetgo.mvc.interfaces.Views#getSessionParameter(...)`, and what this method returns is transmitted to the requested
+parameter. Here is an example of implementing this method:
 
 ```java
 public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
   /**
-   * Этот метод вызывается, когда необходимо заполнить параметр метода контроллера
-   * помеченный аннотацией {@link ParSession}
+   * This method is called when it is needed to fill in the controller method parameter
+   * marked with the annotation {@link ParSession}
    *
-   * @param context информация о параметре: что за параметр, его тип и пр.
-   * @param tunnel  тунель запроса - дан для того, чтобы можно было получить какие-нибудь данные для параметра
-   * @return значение этого параметра: оно будет подставлено в этот параметр
+   * @param context parameter information: kind of parameter, its type, etc.
+   * @param tunnel  request tunnel is given so that you can get any data for the parameter
+   * @return the value of this parameter: it will be substituted in this parameter
    */
   @Override
   public Object getSessionParameter(SessionParameterGetter.ParameterContext context, RequestTunnel tunnel) {
@@ -254,15 +252,15 @@ public class ViewsImpl implements kz.greetgo.mvc.interfaces.Views {
 }
 ```
 
-> Пример его вызова находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_session_example.jsp`
+> An example of its call is in the file: `greetgo.mvc.war.example/war/webapps/jsp/request_parameters/par_session_example.jsp`
 >
-> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/request_parameters/form#par-session-example
+> In [example project](mvc_war_example.md) see here: http://localhost:10000/mvc_example/api/request_parameters/form#par-session-example
 
 ###### RequestInput Help
-#### Аннотация @RequestInput (тело запроса как параметр)
+#### @RequestInput annotation (request body as a parameter)
 
-Можно обращаться ко всему телу запроса как к одному параметру. Для этого используется аннотация `@RequestInput`.
-Пример использования:
+You can call the entire request body as one parameter. To do this, `@RequestInput` annotation is used.
+Here is an example of use:
 
 ```java
 @ControllerPrefix("/some_prefix")
@@ -274,84 +272,82 @@ public class SomeController {
 }
 ```
 
-Возможны следующие варианты использования этой аннотации:
+The following ways of using this annotation are possible:
 
-| Определение аргумента метода контроллера|Описание|
+| Defining the controller method argument|Description|
 |---|---|
-|`@RequestInput String content`|Всё тело запроса будет преобразовано в строку, используя кодировку UTF-8, и передано параметру `content`|
-|`@RequestInput List<String> lines`|Всё тело запроса будет преобразовано в строку, используя кодировку UTF-8, разрезано на строки по \\n или по \\r\\n, и, в качесте списка, передано аргументу `lines` |
-|`@RequestInput byte[] content`|Всё тело запроса будет передано параметру `content` как массив байтов|
-|`@RequestInput @Json SomeClass object`|Всё тело запроса будет будет рассмотрено, как JSON, и десериализовано в указанный объект. Если тело запроса пустое, то будет передан `null`|
-|`@RequestInput @Json List<SomeClass? object`|Всё тело запроса будет будет рассмотрено, как JSON, и десериализовано в список указанных объектов (корневым элементов JSON-а должен быть массив). Если тело запроса пустое, то будет передан пустой массив|
-|`@RequestInput InputStream inputStream`|Тело запроса предоставляется как `InputStream`|
-|`@RequestInput BufferedReader reader`|Тело запроса предоставляется как `BufferedReader` через кодировку в запросе|
-|`@RequestInput Reader reader`|Тело запроса предоставляется как `BufferedReader` через кодировку в запросе|
+|`@RequestInput String content`|The entire body of the request will be converted to a string using UTF-8 encoding, and transmitted to `content` parameter|
+|`@RequestInput List<String> lines`|The entire body of the request will be converted to a string using UTF-8 encoding, cut into lines by \\n or by \\r\\n, and, in the form of a list, transmitted to the  `lines` argument|
+|`@RequestInput byte[] content`|The entire body of the request will be transmitted to `content` parameter as an array of bytes |
+|`@RequestInput @Json SomeClass object`|The whole body of the request will be considered as JSON, and deserialized to the specified object. If the request body is empty, `null` will be transmitted|
+|`@RequestInput @Json List<SomeClass? object`|The whole body of the request will be considered as JSON, and deserialized to the list of specified objects (JSON root element should be an array). If the request body is empty, an empty array will be transmitted|
+|`@RequestInput InputStream inputStream`|The request body is `InputStream`|
+|`@RequestInput BufferedReader reader`|The request body is `BufferedReader` through the encoding in the request|
+|`@RequestInput Reader reader`|The request body is `BufferedReader` through the encoding in the request|
 
-###### Controller Method Return
-### Возврат из метода контроллера
+### Controller Method Return
 
-В таблице [Controller Method Return Table](concept.md#controller-method-return-table) описаны способы,
-которыми обрабатываются результаты методов контроллеров, реализлованные методом
+Thetable [Controller Method Return Table](concept.md#controller-method-return-table) describes the ways,
+which processes the results of controllers methods, which implemented with the following method
 [MethodInvokedResult.tryDefaultRenderer()](concept.md#method-viewsperformrequest).
 
 ###### Annotation @AsIs
 
-Если же метод контроллера помечен аннотацией `@AsIs`, то этот метод должен возвращать строку. Эта строка будет
-преобразована в текст в кодировке UTF-8, и полученный текст будет отправлен в тело ответа на запрос.
+If the controller method is marked with `@AsIs` annotation, then this method should return a string. This string will be
+converted into text in UTF-8 encoding, and the received text will be sent to request response body.
 
-> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/using_as_is.jsp`
+> The example of its use is in the file: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/using_as_is.jsp`
 >
-> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#using-as-is
+> In [example project](mvc_war_example.md) see here: http://localhost:10000/mvc_example/api/method_returns/form#using-as-is
 
 ###### Annotation @ToJson
 
-Если метод контроллера пометить аннотацией `@ToJson`, то предполагается, что возвращённый объект метода контроллера
-должен конвертироваться JSON, и полученный JSON уйти в теле ответа на запрос. Это реализовано тем, что вызывается
-метод `Views.toJson` и передаётся ему объект, возвращённый методом контроллера,  в качестве первого аргумента. А строка,
-которую вернёт метод `Views.toJson` будет преобразована в текст в кодировке UTF-8, и полученный текст будет отправлен
-в тело ответа на запрос. 
+If the controller method is marked with `@ToJson` annotation, then it is assumed that the returned object of the controller method
+should be converted to JSON, and the resulting JSON will go away from the request response body. This is implemented by that
+`Views.toJson` method is called, and the object returned by controller method is transmitted to it as the first argument. And the string,
+which will be returned by `Views.toJson` method will be converted into text in UTF-8 encoding, and the received text will be sent to 
+request response body.
 
-> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/using_to_json.jsp`
+> The example of its use is in the file: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/using_to_json.jsp`
 >
-> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#using-to-json
+> In [example project](mvc_war_example.md) see here: http://localhost:10000/mvc_example/api/method_returns/form#using-to-json
 
 ###### Annotation @ToXml
 
-Если метод контроллера пометить аннотацией `@ToXml`, то предполагается, что возвращённый объект метода контроллера
-должен конвертироваться XML, и полученный XML уйти в теле ответа на запрос. Это реализовано тем, что вызывается
-метод `Views.toXml` и передаётся ему объект, возвращённый методом контроллера,  в качестве первого аргумента. А строка,
-которую вернёт метод `Views.toXml` будет преобразована в текст в кодировке UTF-8, и полученный текст будет отправлен
-в тело ответа на запрос. 
+If the controller method is marked with `@ToXml`annotation, then it is assumed that the returned object of the controller method
+should be converted to XML, and the resulting XML will go away from the request response body. This is implemented by that
+`Views.toXml` method is called, and the object returned by controller method is transmitted to it as the first argument. And the string,
+which will be returned by `Views.toXml` method will be converted into text in UTF-8 encoding, and the received text will be sent to 
+request response body.
 
-> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/using_to_xml.jsp`
+> The example of its use is in the file: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/using_to_xml.jsp`
 >
-> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#using-to-xml
+> In [example project](mvc_war_example.md) see here: http://localhost:10000/mvc_example/api/method_returns/form#using-to-xml
 
 ###### Using Redirect
 
-Если метод контроллера вернёт объект `kz.greetgo.mvc.model.Redirect`, то соответствующий редирект
-отправится в ответ запроса. При этом указанный редирект может содержать кукие, которые будут корректно добавлены
-в заголовки ответа на запрос.
+If the controller method returns `kz.greetgo.mvc.model.Redirect` object, then the corresponding redirect
+will be sent to request response. In this case, the specified redirect may contain cookies that will be correctly added
+to the headers of the request response.
 
-> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/return_redirect.jsp`
+> The example of its use is in the file: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/return_redirect.jsp`
 >
-> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#return-redirect
+> In [example project](mvc_war_example.md) see here: http://localhost:10000/mvc_example/api/method_returns/form#return-redirect
 
-Если метод контроллера сгенерирует исключение класса `kz.greetgo.mvc.model.Redirect`, то соответствующий редирект
-отправится в ответ запроса. При этом указанный редирект может содержать кукие, которые будут корректно добавлены
-в заголовки ответа на запрос.
+If the controller method generates an exception of `kz.greetgo.mvc.model.Redirect` class, then the corresponding redirect
+will be sent to request response. In this case, the specified redirect can contain cookies that will be correctly added
+to the headers of the request response.
 
-> Пример его использования находиться в файле: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/throw_redirect.jsp`
+> The example of its use is in the file: `greetgo.mvc.war.example/war/webapps/jsp/method_returns/throw_redirect.jsp`
 >
-> В [проекте-примере](mvc_war_example.md) смотрите здесь: http://localhost:10000/mvc_example/api/method_returns/form#throw-redirect
+> In [example project](mvc_war_example.md) see here: http://localhost:10000/mvc_example/api/method_returns/form#throw-redirect
 
 ###### User Renderer
 
-Во всех остальных случаях пользователю необходимо самостоятельно обрабатывать результаты методов контроллеров. Более
-детально это описано в [концепции](concept.md). В проекте-примеры все формы, оттображаемые в браузере, реализованы
-посредством jsp-рендеринга. В методе `ViewsImpl.performRequest` происходит вызов метода `ViewsImpl.performRender`,
-в котором происходит форвардинг на jsp-рендеринг. Имя jsp-файла берётся из возврата метода контроллера.
+In all other cases, the user must process the results of the controller methods by himself. 
+This is described in details in [Concept](concept.md). In example project, all forms displayed in the browser are implemented
+through jsp-rendering. In `ViewsImpl.performRequest` method, `ViewsImpl.performRender` method is called,
+in which there is a forwarding to jsp-rendering. The name of the jsp file is taken from the controller method return.
 
-В [проекте-примере](mvc_war_example.md) такие методы, как: `RequestParametersController.form`,
-`MethodReturnsController.form`, `MethodReturnsController.returnRedirectParam1` и другие, возвращают необходимый им
-для рендеринга jsp-файл.
+In [example project](mvc_war_example.md) the methods like: `RequestParametersController.form`,
+`MethodReturnsController.form`, `MethodReturnsController.returnRedirectParam1` and others return jsp-file necessary for rendering.
