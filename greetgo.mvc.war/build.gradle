@@ -16,7 +16,7 @@ dependencies {
   compile project(':greetgo.mvc')
   compile project(':greetgo.mvc.security')
 
-  testCompile "kz.greetgo:greetgo.util:${greetgoUtilVersion}"
+  testCompile "kz.greetgo.util:greetgo.util:${greetgoUtilVersion}"
 
   compile "javax.servlet:javax.servlet-api:${servletApiVersion}"
 }

@@ -22,7 +22,7 @@ allprojects {
   apply plugin: 'signing'
   apply plugin: ShortJavaPathPlugin
 
-  version = '3.0.1'
+  version = '3.0.2'
 
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
@@ -66,7 +66,7 @@ subprojects {
 
   dependencies {
     ext.jettyVersion = '9.2+'
-    ext.greetgoUtilVersion = '2.0.0'
+    ext.greetgoUtilVersion = '0.1.1'
     ext.servletApiVersion = '3.1.0'
     ext.jacksonVersion = '2.7.3'
 
