@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -82,6 +83,22 @@ public class JsonUtil {
       List<Object> list = new ArrayList<>();
       appendToListOfClass(list, (Class) type, strArray);
       return list;
+    }
+
+    if (type instanceof WildcardType) {
+      System.out.println("wow");
+
+      WildcardType wildcardType = (WildcardType) type;
+
+      if (wildcardType.getUpperBounds().length == 1) {
+        Type upperBound = wildcardType.getUpperBounds()[0];
+        if (upperBound instanceof Class) {
+          Class upperBoundClass = (Class) upperBound;
+          List<Object> list = new ArrayList<>();
+          appendToListOfClass(list, upperBoundClass, strArray);
+          return list;
+        }
+      }
     }
 
     throw new IllegalArgumentException("Cannot convert json to list of type: " + type);

@@ -5,12 +5,7 @@ import kz.greetgo.mvc.errors.NoPathParam;
 import kz.greetgo.mvc.interfaces.MappingResult;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,7 +78,9 @@ public class TargetMapper {
 
   static String toTargetMapperIdentity(String targetMapper) {
 
-    if (targetMapper.contains("*")) throw new AsteriskInTargetMapper(targetMapper);
+    if (targetMapper.contains("*")) {
+      throw new AsteriskInTargetMapper(targetMapper);
+    }
 
     StringBuilder ret = new StringBuilder(targetMapper.length());
 

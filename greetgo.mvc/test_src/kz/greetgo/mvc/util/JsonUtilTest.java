@@ -10,6 +10,7 @@ import java.util.List;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class JsonUtilTest {
+  @SuppressWarnings("SameParameterValue")
   private static Type getType(Class<?> aClass, String methodName) {
     for (Method method : aClass.getMethods()) {
       if (method.getName().equals(methodName)) return method.getGenericParameterTypes()[0];
@@ -21,12 +22,13 @@ public class JsonUtilTest {
     public String id, name;
   }
 
+  @SuppressWarnings("unused")
   static class TypeSource {
-    public void client(Client client) {
-    }
+    public void client(Client client) {}
 
-    public void listClient(List<Client> listClient) {
-    }
+    public void listClient(List<Client> listClient) {}
+
+    public void listExtendsClient(List<? extends Client> listClient) {}
   }
 
   @DataProvider
@@ -40,7 +42,7 @@ public class JsonUtilTest {
   }
 
   @Test(dataProvider = "convertStrsToType_client_DataSource")
-  public void convertStrsToType_client(String string1, String string2) throws Exception {
+  public void convertStrsToType_client(String string1, String string2) {
     Type type = getType(TypeSource.class, "client");
 
     //
@@ -62,7 +64,7 @@ public class JsonUtilTest {
   }
 
   @Test
-  public void convertStrsToType_listClient() throws Exception {
+  public void convertStrsToType_listClient() {
     Type type = getType(TypeSource.class, "listClient");
 
     String string1 = "[{\"id\":\"id1\",\"name\":\"name1\"},{\"id\":\"id2\",\"name\":\"name2\"}]";
@@ -89,7 +91,7 @@ public class JsonUtilTest {
   }
 
   @Test
-  public void convertStrsToType_listClient_null() throws Exception {
+  public void convertStrsToType_listClient_null() {
     Type type = getType(TypeSource.class, "listClient");
 
     //
@@ -107,7 +109,7 @@ public class JsonUtilTest {
 
 
   @Test
-  public void convertStrsToType_listClient_empty() throws Exception {
+  public void convertStrsToType_listClient_empty() {
     Type type = getType(TypeSource.class, "listClient");
 
     //
@@ -123,4 +125,20 @@ public class JsonUtilTest {
     assertThat(actual).isEmpty();
   }
 
+  @Test
+  public void convertStrsToType_listClient_empty1() {
+    Type type = getType(TypeSource.class, "listExtendsClient");
+
+    //
+    //
+    Object o = JsonUtil.convertStrsToType(new String[]{"    "}, type);
+    //
+    //
+
+    assertThat(o).isInstanceOf(List.class);
+
+    @SuppressWarnings("unchecked")
+    List<Client> actual = (List<Client>) o;
+    assertThat(actual).isEmpty();
+  }
 }

@@ -3,18 +3,18 @@ package kz.greetgo.mvc.util;
 import kz.greetgo.mvc.builder.ExecDefinition;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.core.TargetMapper;
+import kz.greetgo.mvc.errors.AsteriskInTargetMapper;
 import kz.greetgo.mvc.errors.CannotConvertToDate;
 import kz.greetgo.mvc.errors.CompatibleTargetMapping;
-import kz.greetgo.mvc.errors.DoublePathPar;
 import kz.greetgo.mvc.errors.IllegalChar;
 import kz.greetgo.mvc.interfaces.RequestTunnel;
 import kz.greetgo.mvc.interfaces.TunnelExecutor;
 import kz.greetgo.mvc.interfaces.TunnelExecutorGetter;
 import kz.greetgo.mvc.utils.TestEnum;
-import org.fest.assertions.api.Assertions;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static kz.greetgo.mvc.core.RequestMethod.GET;
+import static kz.greetgo.mvc.core.RequestMethod.POST;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class MvcUtilTest {
@@ -349,7 +351,7 @@ public class MvcUtilTest {
         throw new RuntimeException();
       }
 
-      final ExecDefinition execDefinition = new ExecDefinition(null, new TargetMapper(targetMapper, requestMethod));
+      final ExecDefinition execDefinition = new ExecDefinition(aMethod(), new TargetMapper(targetMapper, requestMethod));
 
       @Override
       public ExecDefinition definition() {
@@ -358,11 +360,23 @@ public class MvcUtilTest {
     };
   }
 
+  interface ForAMethod {
+    void aMethod();
+  }
+
+  private static Method aMethod() {
+    try {
+      return ForAMethod.class.getMethod("aMethod");
+    } catch (NoSuchMethodException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @Test
   public void checkTunnelExecutorGetters_1() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG(RequestMethod.POST, "/asd/wow"));
+    list.add(createTestTEG(POST, "/asd/wow"));
     list.add(createTestTEG(RequestMethod.HEAD, "/asd/wow"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
@@ -382,8 +396,8 @@ public class MvcUtilTest {
   public void checkTunnelExecutorGetters_3() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG(RequestMethod.POST, "/asd/dsa"));
-    list.add(createTestTEG(RequestMethod.POST, "/asd/dsa"));
+    list.add(createTestTEG(POST, "/asd/dsa"));
+    list.add(createTestTEG(POST, "/asd/dsa"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }
@@ -392,8 +406,8 @@ public class MvcUtilTest {
   public void checkTunnelExecutorGetters_4() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG(RequestMethod.GET, "/asd/dsa"));
-    list.add(createTestTEG(RequestMethod.POST, "/asd/dsa"));
+    list.add(createTestTEG(GET, "/asd/dsa"));
+    list.add(createTestTEG(POST, "/asd/dsa"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }
@@ -402,120 +416,17 @@ public class MvcUtilTest {
   public void checkTunnelExecutorGetters_5() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG(RequestMethod.POST, "/asd/dsa"));
-    list.add(createTestTEG(RequestMethod.GET, "/asd/dsa"));
+    list.add(createTestTEG(GET, "/asd/dsa"));
+    list.add(createTestTEG(GET, "/asd/dsa"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }
 
-  @DataProvider
-  public Object[][] checkTunnelExecutorGetters_targetMapper_DP() {
-    return new Object[][]{
-      {"/asd/dsa", "/asd/dsa", false},
-      {"/asd/dsa1", "/asd/dsa2", true},
-      {"/asd/dsa/*", "/asd/dsa/*/asd", false},
-      {"/asd/dsa/*/dsa", "/asd/dsa/*/asd", true},
-      {"/asd/dsa/*/dsa", "/asd/dsa/hello/dsa", false},
-      {"/asd/dsa/*/dsa", "/asd/dsa/hello/asd", true},
-      {"/asd/*", "/asd/wow", false},
-      {"/A/*/B/*/C/*/D1", "/A/*/B/*/C/*/D2", true},
-      {"/A/*/B/*/C1/*/D", "/A/*/B/*/C2/*/D", false},
-      {"/A/*/B/*/C1/*/D", "/A/*/B/*/C22/*/D", false},
-      {"/A/*/B/*/C11/*/D", "/A/*/B/*/C2/*/D", false},
-      {"/A/*/B/*/C/*/D", "/A/*/B/*/C/*/D", false},
-      {"/A/*/B/*/C/*/D", "/A/*/B/*/C/*", false},
-      {"*", "asd", false},
-      {"*", "asd*", false},
-      {"*", "asd*dsa", false},
-      {"*/asd", "*/dsa", true},
-      {"*/asd/*", "*/dsa/*", false},
-      {"*/asd/*", "*/asd/*", false},
-
-      {"ab*", "a*d", false},
-      {"*ba", "d*a", false},
-      {"/aaa/bbb/*", "/aaa/*ddd", false},
-
-      {"xab*", "ya*d", true},
-      {"x*ba", "yd*a", true},
-      {"x/aaa/bbb/*", "y/aaa/*ddd", true},
-
-      {"ab*2", "a*d1", true},
-      {"*ba2", "d*a1", true},
-      {"/aaa/bbb/*2", "/aaa/*ddd1", true},
-
-      {"a", "b", true},
-      {"a", "b*", true},
-      {"a", "*b", true},
-      {"a*", "*b", false},
-      {"a*b", "*b", false},
-      {"a*c", "*b", true},
-
-      {"asd", "*asd*", false},
-      {"abc", "*a*b*c*", false},
-      {"abc", "*a*c*b*", false},
-      {"abc", "*a*c*c*", false},
-      {"abc", "*a*x*c*", false},
-
-      {"abc123ABC098", "*a*b*c123*09*8*", false},
-      {"abc123ABC098", "*a*b*c12j3*09*8*", false},
-
-      {"*a*b*c123*09*8*", "abc123ABC098", false},
-      {"*a*b*c12j3*09*8*", "abc123ABC098", false},
-
-      {"*", "*", false},
-      {"", "a", true},
-      {"a", "", true},
-      {"", "", false},
-      {"*", "", false},
-      {"", "*", false},
-      {"", "*a", true},
-      {"", "a*", true},
-
-      {"*/asd/*/wow", "*/asd/*/qu/*xxx/wow", false},
-      {"*/asd/*/wow", "*/asd/*/qu/*xxx/wow1", true},
-    };
-  }
-
-  @Test(dataProvider = "checkTunnelExecutorGetters_targetMapper_DP")
-  public void checkTunnelExecutorGetters_targetMapper(String tm1, String tm2, boolean ok) {
-    List<TunnelExecutorGetter> list = new ArrayList<>();
-
-    list.add(createTestTEG(null, tm1));
-    list.add(createTestTEG(null, tm2));
-
-    if (ok) {
-      MvcUtil.checkTunnelExecutorGetters(list);
-    } else try {
-      MvcUtil.checkTunnelExecutorGetters(list);
-      Assertions.fail("Must be exception CompatibleTargetMapping: tm1 = " + tm1 + ", tm2 = " + tm2);
-    } catch (CompatibleTargetMapping ignore) {}
-  }
-
-  @Test(expectedExceptions = CompatibleTargetMapping.class)
-  public void checkTunnelExecutorGetters_targetMapper_001() {
-    List<TunnelExecutorGetter> list = new ArrayList<>();
-
-    list.add(createTestTEG(null, "/asd/dsa/*/dsa"));
-    list.add(createTestTEG(null, "/asd/dsa/hello/dsa"));
-
-    MvcUtil.checkTunnelExecutorGetters(list);
-  }
-
-  @Test
-  public void checkTunnelExecutorGetters_targetMapper_002() {
-    List<TunnelExecutorGetter> list = new ArrayList<>();
-
-    list.add(createTestTEG(null, "xab*"));
-    list.add(createTestTEG(null, "ya*d"));
-
-    MvcUtil.checkTunnelExecutorGetters(list);
-  }
-
-  @Test(expectedExceptions = DoublePathPar.class)
+  @Test(expectedExceptions = AsteriskInTargetMapper.class)
   public void checkTunnelExecutorGetters_doublePathPar() {
     List<TunnelExecutorGetter> list = new ArrayList<>();
 
-    list.add(createTestTEG(null, "/asd/**/dsa/"));
+    list.add(createTestTEG(GET, "/asd/**/dsa/"));
 
     MvcUtil.checkTunnelExecutorGetters(list);
   }

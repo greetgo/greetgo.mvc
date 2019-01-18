@@ -13,8 +13,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class TargetMapperTest {
 
   @Test
-  public void catchTarget_simple() throws Exception {
-    TargetMapper targetMapper = new TargetMapper("/asd/dsa", null);
+  public void catchTarget_simple() {
+    TargetMapper targetMapper = new TargetMapper("/asd/dsa", GET);
 
     {
       final MappingResult mappingResult = targetMapper.mapTarget(tunnel("/asd"));
@@ -41,8 +41,8 @@ public class TargetMapperTest {
   }
 
   @Test
-  public void catchTarget_params() throws Exception {
-    TargetMapper targetMapper = new TargetMapper("/asd/{clientId}/cool-phase/{phone}", null);
+  public void catchTarget_params() {
+    TargetMapper targetMapper = new TargetMapper("/asd/{clientId}/cool-phase/{phone}", GET);
 
     {
       final MappingResult mappingResult = targetMapper.mapTarget(tunnel("/left"));
@@ -66,7 +66,7 @@ public class TargetMapperTest {
   }
 
   @Test
-  public void catchTarget_requestMethods() throws Exception {
+  public void catchTarget_requestMethods() {
 
     TargetMapper targetMapper = new TargetMapper("/asd1", GET);
 
@@ -84,8 +84,8 @@ public class TargetMapperTest {
   }
 
   @Test
-  public void parseManyParams() throws Exception {
-    TargetMapper targetMapper = new TargetMapper("/page/{pageNumber}/pageSize/{pageSize}/sort/{direction}/column/{nameOfColumn}", null);
+  public void parseManyParams() {
+    TargetMapper targetMapper = new TargetMapper("/page/{pageNumber}/pageSize/{pageSize}/sort/{direction}/column/{nameOfColumn}", GET);
 
 
     final MappingResult mappingResult = targetMapper.mapTarget(tunnel(
@@ -101,8 +101,8 @@ public class TargetMapperTest {
   }
 
   @Test(expectedExceptions = NoPathParam.class)
-  public void throws_NoPathParam() throws Exception {
-    TargetMapper targetMapper = new TargetMapper("/page/{pageNumber}/pageSize/{pageSize}/sort/{direction}/column/{nameOfColumn}", null);
+  public void throws_NoPathParam() {
+    TargetMapper targetMapper = new TargetMapper("/page/{pageNumber}/pageSize/{pageSize}/sort/{direction}/column/{nameOfColumn}", GET);
 
 
     final MappingResult mappingResult = targetMapper.mapTarget(tunnel(
