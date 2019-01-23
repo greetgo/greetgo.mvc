@@ -140,7 +140,7 @@ public class MethodParameterMeta {
 
     if (parSession != null) {
       if (sessionParameterGetter == null) throw new NullPointerException("sessionParameterGetter == null");
-      final SessionParameterGetter.ParameterContext context = new SessionParameterGetter.ParameterContext() {
+      final ParameterContext context = new ParameterContext() {
         @Override
         public String parameterName() {
           return parSession.value();
@@ -154,6 +154,11 @@ public class MethodParameterMeta {
         @Override
         public Json json() {
           return annotationJson;
+        }
+
+        @Override
+        public Method controllerMethod() {
+          return method;
         }
       };
       return (mappingResult, tunnel, model) -> sessionParameterGetter.getSessionParameter(context, tunnel);
@@ -213,8 +218,6 @@ public class MethodParameterMeta {
                 throw new DoNotSetFilenameAfterOut();
               }
               this.filename = filename;
-
-              tunnel.getUserAgent();
 
               tunnel.setResponseHeader(
                 "Content-Disposition",

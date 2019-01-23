@@ -5,10 +5,7 @@ import com.thoughtworks.xstream.XStream;
 import kz.greetgo.mvc.annotations.ParSession;
 import kz.greetgo.mvc.annotations.ToJson;
 import kz.greetgo.mvc.annotations.ToXml;
-import kz.greetgo.mvc.interfaces.MethodInvokedResult;
-import kz.greetgo.mvc.interfaces.MethodInvoker;
-import kz.greetgo.mvc.interfaces.RequestTunnel;
-import kz.greetgo.mvc.interfaces.SessionParameterGetter;
+import kz.greetgo.mvc.interfaces.*;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
@@ -115,7 +112,7 @@ public class ViewsExample implements kz.greetgo.mvc.interfaces.Views {
    * @return значение этого параметра: оно будет подставлено в этот параметр
    */
   @Override
-  public Object getSessionParameter(SessionParameterGetter.ParameterContext context, RequestTunnel tunnel) {
+  public Object getSessionParameter(ParameterContext context, RequestTunnel tunnel) {
     if ("personId".equals(context.parameterName())) {
       if (context.expectedReturnType() != Long.class) {
         throw new RuntimeException("Session parameter `personId` must be a Long");

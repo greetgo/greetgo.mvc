@@ -1176,6 +1176,7 @@ public class MethodParameterMetaTest {
       assertThat(context.expectedReturnType()).isEqualTo(String.class);
       assertThat(context.json()).isNotNull();
       assertThat(context.parameterName()).isEqualTo("strParamHello");
+      assertThat(context.controllerMethod()).isEqualTo(method);
       assertThat(handlerTunnel).isSameAs(tunnel);
       return paramValue;
     }).get(0);
