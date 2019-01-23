@@ -1,40 +1,15 @@
 package kz.greetgo.mvc.core;
 
-import kz.greetgo.mvc.annotations.Json;
-import kz.greetgo.mvc.annotations.Par;
-import kz.greetgo.mvc.annotations.ParCookie;
-import kz.greetgo.mvc.annotations.ParPath;
-import kz.greetgo.mvc.annotations.ParSession;
-import kz.greetgo.mvc.annotations.ParamsTo;
-import kz.greetgo.mvc.annotations.RequestInput;
-import kz.greetgo.mvc.errors.AsIsOnlyForString;
-import kz.greetgo.mvc.errors.CannotExtractParamValue;
-import kz.greetgo.mvc.errors.DoNotSetContentTypeAfterOut;
-import kz.greetgo.mvc.errors.DoNotSetFilenameAfterOut;
-import kz.greetgo.mvc.errors.IDoNotKnowHowToConvertRequestContentToType;
-import kz.greetgo.mvc.errors.IllegalCallSequence;
-import kz.greetgo.mvc.errors.NoAnnotationParInUploadParam;
-import kz.greetgo.mvc.interfaces.BinResponse;
-import kz.greetgo.mvc.interfaces.MappingResult;
-import kz.greetgo.mvc.interfaces.MethodParamExtractor;
-import kz.greetgo.mvc.interfaces.RequestTunnel;
-import kz.greetgo.mvc.interfaces.SessionParameterGetter;
-import kz.greetgo.mvc.interfaces.TunnelCookies;
-import kz.greetgo.mvc.interfaces.Upload;
+import eu.bitwalker.useragentutils.UserAgent;
+import kz.greetgo.mvc.annotations.*;
+import kz.greetgo.mvc.errors.*;
+import kz.greetgo.mvc.interfaces.*;
 import kz.greetgo.mvc.model.MvcModel;
-import kz.greetgo.mvc.util.CookieUtil;
-import kz.greetgo.mvc.util.JsonUtil;
-import kz.greetgo.mvc.util.MimeUtil;
-import kz.greetgo.mvc.util.MvcUtil;
-import kz.greetgo.mvc.util.UriEscape;
+import kz.greetgo.mvc.util.*;
 import kz.greetgo.mvc.util.setters.FieldSetters;
 import kz.greetgo.mvc.util.setters.FieldSettersStorage;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -211,14 +186,18 @@ public class MethodParameterMeta {
       };
     }
 
-    if (MvcModel.class == genericParameterType) return (mappingResult, tunnel, model) -> model;
+    if (genericParameterType == MvcModel.class) return (mappingResult, tunnel, model) -> model;
 
-    if (RequestTunnel.class == genericParameterType) return (mappingResult, tunnel, model) -> tunnel;
+    if (genericParameterType == RequestTunnel.class) return (mappingResult, tunnel, model) -> tunnel;
 
-    if (TunnelCookies.class == genericParameterType) return (mappingResult, tunnel, model) -> tunnel.cookies();
+    if (genericParameterType == TunnelCookies.class) return (mappingResult, tunnel, model) -> tunnel.cookies();
 
     if (genericParameterType == RequestMethod.class) {
       return (mappingResult, tunnel, model) -> tunnel.getRequestMethod();
+    }
+
+    if (genericParameterType == UserAgent.class) {
+      return (mappingResult, tunnel, model) -> tunnel.getUserAgent();
     }
 
     if (genericParameterType == BinResponse.class) {
@@ -230,8 +209,13 @@ public class MethodParameterMeta {
 
             @Override
             public void setFilename(String filename) {
-              if (out != null) throw new DoNotSetFilenameAfterOut();
+              if (out != null) {
+                throw new DoNotSetFilenameAfterOut();
+              }
               this.filename = filename;
+
+              tunnel.getUserAgent();
+
               tunnel.setResponseHeader(
                 "Content-Disposition",
                 "attachment; filename=\"" + UriEscape.escape(filename) + "\""

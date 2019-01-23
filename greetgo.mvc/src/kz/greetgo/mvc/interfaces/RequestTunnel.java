@@ -1,5 +1,6 @@
 package kz.greetgo.mvc.interfaces;
 
+import eu.bitwalker.useragentutils.UserAgent;
 import kz.greetgo.mvc.core.RequestMethod;
 import kz.greetgo.mvc.model.UploadInfo;
 import kz.greetgo.util.events.EventHandlerList;
@@ -186,4 +187,8 @@ public interface RequestTunnel {
   RequestMeta requestMeta();
 
   DispatcherType getDispatcherType();
+
+  default UserAgent getUserAgent() {
+    return UserAgent.parseUserAgentString(requestHeaders().value("User-Agent"));
+  }
 }

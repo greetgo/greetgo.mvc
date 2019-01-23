@@ -1,17 +1,20 @@
 package kz.greetgo.mvc.war.example.controllers;
 
-import kz.greetgo.mvc.annotations.AsIs;
+import eu.bitwalker.useragentutils.UserAgent;
+import kz.greetgo.mvc.annotations.*;
 import kz.greetgo.mvc.annotations.on_methods.ControllerPrefix;
 import kz.greetgo.mvc.annotations.on_methods.OnGet;
-import kz.greetgo.mvc.annotations.Json;
-import kz.greetgo.mvc.annotations.Par;
-import kz.greetgo.mvc.annotations.ParPath;
-import kz.greetgo.mvc.annotations.ParSession;
-import kz.greetgo.mvc.annotations.ParamsTo;
+import kz.greetgo.mvc.interfaces.BinResponse;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @ControllerPrefix("/request_parameters")
 public class RequestParametersController {
@@ -23,7 +26,7 @@ public class RequestParametersController {
 
   @SuppressWarnings("unused")
   public enum Weather {
-    SUNNY, CLOUDY, RAINY, HOT;
+    SUNNY, CLOUDY, RAINY, HOT,
   }
 
   /////////////////////////////// Base Example /////////////////////////////////////////////////////////////////////////
@@ -140,5 +143,34 @@ public class RequestParametersController {
     return "called RequestParametersController.parSessionExample with\n" +
       "    personId = " + personId + "\n" +
       "    role     = '" + role + "'";
+  }
+
+  /////////////////////////////// BinResponse Example //////////////////////////////////////////////////////////////////
+
+  @OnGet("/download-a-file")
+  public void downloadAFile(BinResponse binResponse) throws IOException {
+    binResponse.setFilename("Это имя файла на русском, и также должно сохряниться на диск.txt");
+    binResponse.setContentTypeByFilenameExtension();
+
+    Writer writer = new BufferedWriter(new OutputStreamWriter(binResponse.out(), UTF_8));
+    writer.write("This is content of text file\n");
+    writer.write("Это содержимое текстового файла\n");
+    writer.flush();
+
+    binResponse.flushBuffers();
+  }
+
+  /////////////////////////////// UserAgent Example ///////////////////////////////////////////////////////////////////
+
+  @AsIs
+  @OnGet("/user-agent-example")
+  public String userAgentExample(UserAgent userAgent) {
+    return "called RequestParametersController.userAgentExample with\n"
+      + "    userAgent.getId()              = " + userAgent.getId() + "\n"
+      + "    userAgent.getBrowser()         = " + userAgent.getBrowser() + "\n"
+      + "    userAgent.getBrowserVersion()  = " + userAgent.getBrowserVersion() + "\n"
+      + "    userAgent.getOperatingSystem() = " + userAgent.getOperatingSystem() + "\n"
+      + "    userAgent.toString()           = " + userAgent.toString() + "\n"
+      ;
   }
 }

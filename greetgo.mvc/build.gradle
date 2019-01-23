@@ -26,6 +26,7 @@ dependencies {
 
   compile "kz.greetgo.util:greetgo.util:${greetgoUtilVersion}"
   compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+  compile 'eu.bitwalker:UserAgentUtils:1.21'
 
   testCompile "org.eclipse.jetty:jetty-server:${jettyServerVersion}"
   testCompile "org.eclipse.jetty:jetty-servlet:${jettyServerVersion}"

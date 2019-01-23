@@ -19,6 +19,8 @@
   <li><a href="request_parameters/form#params-to-example">@ParamsTo Example</a></li>
   <li><a href="request_parameters/form#par-path-example">@ParPath Example</a></li>
   <li><a href="request_parameters/form#par-session-example">@ParSession Example</a></li>
+  <li><a href="request_parameters/form#bin-response-example">BinResponse Example</a></li>
+  <li><a href="request_parameters/form#user-agent-example">UserAgent Example</a></li>
 </ul>
 <p>
   <a href="method_returns/form">Method Returns Example</a>

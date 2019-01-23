@@ -24,6 +24,10 @@
 <%@include file="request_parameters/par_path_example.jsp" %>
 &nbsp;
 <%@include file="request_parameters/par_session_example.jsp" %>
+&nbsp;
+<%@include file="request_parameters/bin_response_example.jsp" %>
+&nbsp;
+<%@include file="request_parameters/user_agent_example.jsp" %>
 
 <div style="height: 100rem"></div>
 
