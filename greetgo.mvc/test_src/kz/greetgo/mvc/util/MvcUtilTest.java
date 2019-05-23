@@ -26,7 +26,7 @@ import java.util.Objects;
 
 import static kz.greetgo.mvc.core.RequestMethod.GET;
 import static kz.greetgo.mvc.core.RequestMethod.POST;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MvcUtilTest {
 

@@ -35,7 +35,7 @@ import kz.greetgo.mvc.utils.TestAnn;
 import kz.greetgo.mvc.utils.TestTunnel;
 import kz.greetgo.mvc.utils.TestViews;
 import kz.greetgo.util.RND;
-import org.fest.assertions.api.Assertions;
+import org.assertj.core.api.Assertions;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 
 import static kz.greetgo.mvc.core.RequestMethod.GET;
 import static kz.greetgo.mvc.core.RequestMethod.POST;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ControllerTunnelExecutorBuilderTest {
 
@@ -59,9 +59,9 @@ public class ControllerTunnelExecutorBuilderTest {
   private static final String MODEL_PARAMETER_NAME = RND.str(10);
   private static final String MODEL_PARAMETER_VALUE = RND.str(10);
 
-  private static final String COOKIE_KEY1 = "COOKIE_KEY1_" + RND.intStr(10);
+  private static final String COOKIE_KEY1 = "COOKIE_KEY1_" + RND.strInt(10);
   private static final String COOKIE_VALUE1 = "COOKIE_VALUE1_" + RND.str(10);
-  private static final String COOKIE_KEY2 = "COOKIE_KEY2_" + RND.intStr(10);
+  private static final String COOKIE_KEY2 = "COOKIE_KEY2_" + RND.strInt(10);
   private static final String COOKIE_VALUE2 = "COOKIE_VALUE2_" + RND.str(10);
 
   @ControllerPrefix("/test")
@@ -1080,7 +1080,7 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @Test(expectedExceptions = AmbiguousMaxFileSize.class)
-  public void testAmbiguousMaxFileSize() throws Exception {
+  public void testAmbiguousMaxFileSize() {
     TestAmbiguousMaxFileSize c = new TestAmbiguousMaxFileSize();
 
     //
@@ -1090,6 +1090,7 @@ public class ControllerTunnelExecutorBuilderTest {
     //
   }
 
+  @SuppressWarnings("unused")
   public static class TestController2 {
 
     public final Map<RequestMethod, AtomicInteger> counts = new HashMap<>();
@@ -1179,6 +1180,7 @@ public class ControllerTunnelExecutorBuilderTest {
     }
   }
 
+  @SuppressWarnings("unused")
   @ControllerPrefix("/asd")
   public static class LeftController {
     @OnPost("/asd")
@@ -1202,6 +1204,7 @@ public class ControllerTunnelExecutorBuilderTest {
     //
   }
 
+  @SuppressWarnings("unused")
   @ControllerPrefix("/ann")
   public static class AnnotatedMethod {
     @OnGet("/method")
@@ -1236,6 +1239,7 @@ public class ControllerTunnelExecutorBuilderTest {
 
   }
 
+  @SuppressWarnings("unused")
   @ControllerPrefix("/ann")
   @TestAnn("Ann from class WOW")
   public static class AnnotatedClass {
@@ -1271,12 +1275,13 @@ public class ControllerTunnelExecutorBuilderTest {
   }
 
   @TestAnn("Ann from super super class BOOM")
-  public static class AnnotatedSuperSuperClass{}
+  public static class AnnotatedSuperSuperClass {}
 
   public static class ParentClass extends AnnotatedSuperSuperClass {}
 
+  @SuppressWarnings("unused")
   @ControllerPrefix("/ann")
-  public static class ChildClass extends ParentClass{
+  public static class ChildClass extends ParentClass {
     @OnGet("/method")
     public void method() {}
   }

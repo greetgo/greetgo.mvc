@@ -11,17 +11,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.System.arraycopy;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.copyOfRange;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SecurityCryptoBridgeTest {
 
   private File privateFile, publicFile;
 
   @BeforeMethod
-  public void setUp() throws Exception {
+  public void setUp() {
 
-    String keyDir = "build/test_keys/test_" + RND.intStr(10) + "/";
+    String keyDir = "build/test_keys/test_" + RND.strInt(10) + "/";
     privateFile = new File(keyDir + "private.bin");
     publicFile = new File(keyDir + "public.bin");
 
@@ -47,11 +48,11 @@ public class SecurityCryptoBridgeTest {
   }
 
   @Test(dataProvider = "sourceDataProvider")
-  public void encrypt_decrypt(String source) throws Exception {
+  public void encrypt_decrypt(String source) {
 
     //
     //
-    final byte[] encryptedBytes = securityCrypto.encrypt(source.getBytes("UTF-8"));
+    final byte[] encryptedBytes = securityCrypto.encrypt(source.getBytes(UTF_8));
     //
     //
 
@@ -61,17 +62,17 @@ public class SecurityCryptoBridgeTest {
     //
     //
 
-    final String actual = new String(originalBytes, "UTF-8");
+    final String actual = new String(originalBytes, UTF_8);
 
     assertThat(actual).isEqualTo(source);
   }
 
   @Test(dataProvider = "sourceDataProvider")
-  public void encrypt_decrypt_load(String source) throws Exception {
+  public void encrypt_decrypt_load(String source) {
 
     //
     //
-    final byte[] encryptedBytes = securityCrypto.encrypt(source.getBytes("UTF-8"));
+    final byte[] encryptedBytes = securityCrypto.encrypt(source.getBytes(UTF_8));
     //
     //
 
@@ -83,17 +84,17 @@ public class SecurityCryptoBridgeTest {
     //
     //
 
-    final String actual = new String(originalBytes, "UTF-8");
+    final String actual = new String(originalBytes, UTF_8);
 
     assertThat(actual).isEqualTo(source);
   }
 
   @Test(dataProvider = "sourceDataProvider")
-  public void sign_verifySignature(String source) throws Exception {
+  public void sign_verifySignature(String source) {
 
     //
     //
-    final byte[] signature = securityCrypto.sign(source.getBytes("UTF-8"));
+    final byte[] signature = securityCrypto.sign(source.getBytes(UTF_8));
     //
     //
 
@@ -101,7 +102,7 @@ public class SecurityCryptoBridgeTest {
 
     //
     //
-    boolean verified = newSecurityCrypto.verifySignature(source.getBytes("UTF-8"), signature);
+    boolean verified = newSecurityCrypto.verifySignature(source.getBytes(UTF_8), signature);
     //
     //
 

@@ -24,9 +24,8 @@ import kz.greetgo.mvc.utils.TestTunnel;
 import kz.greetgo.mvc.utils.TestUpload;
 import kz.greetgo.mvc.utils.TestUtil;
 import kz.greetgo.util.RND;
-import org.fest.assertions.api.Assertions;
-import org.fest.assertions.data.MapEntry;
-import org.fest.util.Lists;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.data.MapEntry;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -41,12 +40,13 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import static java.lang.System.identityHashCode;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodParameterMetaTest {
 
@@ -217,7 +217,6 @@ public class MethodParameterMetaTest {
     {
       final Object actual = e.extract(null, tunnel, null);
       assertThat(actual).isInstanceOf(List.class);
-      //noinspection unchecked
       assertThat((List) actual).isEmpty();
     }
   }
@@ -254,7 +253,6 @@ public class MethodParameterMetaTest {
     {
       final Object actual = e.extract(null, tunnel, null);
       assertThat(actual).isInstanceOf(Set.class);
-      //noinspection unchecked
       assertThat((Set) actual).isEmpty();
     }
   }
@@ -352,7 +350,6 @@ public class MethodParameterMetaTest {
 
     assertThat(actualParamValue).isInstanceOf(Client.class);
 
-    @SuppressWarnings("unchecked")
     Client actual = (Client) actualParamValue;
 
     assertThat(actual.id).isEqualTo("id1");
@@ -405,7 +402,6 @@ public class MethodParameterMetaTest {
 
     assertThat(actualParamValue).isInstanceOf(List.class);
     List list = (List) actualParamValue;
-    //noinspection unchecked
     assertThat(list).hasSize(2);
     assertThat(list.get(0)).isEqualTo(arg1);
     assertThat(list.get(1)).isEqualTo(arg2);
@@ -758,7 +754,7 @@ public class MethodParameterMetaTest {
 
     TunnelCookies ex = (TunnelCookies) actualParamValue;
 
-    String cookieName = "A" + RND.intStr(10);
+    String cookieName = "A" + RND.strInt(10);
     tunnel.testCookies.requestCookies = new Cookie[]{
       new Cookie(cookieName, RND.str(10))
     };
@@ -887,7 +883,7 @@ public class MethodParameterMetaTest {
   }
 
   @Test(expectedExceptions = AsIsOnlyForString.class)
-  public void forParCookie_AsIsOnlyForString() throws Exception {
+  public void forParCookie_AsIsOnlyForString() {
     final Method method = TestUtil.getMethod(ForParCookie_AsIsOnlyForString.class, "forTest");
 
     MethodParameterMeta.create(method, null);
@@ -1129,7 +1125,7 @@ public class MethodParameterMetaTest {
     assertThat(argument.str3).isNull();
     assertThat(argument.str4).isNull();
     assertThat(argument.str5).isNull();
-    assertThat(argument.strs1).isEqualTo(Lists.newArrayList(strs1_1, strs1_2, strs1_3));
+    assertThat(argument.strs1).isEqualTo(Arrays.asList(strs1_1, strs1_2, strs1_3));
   }
 
   class ForParSession {
