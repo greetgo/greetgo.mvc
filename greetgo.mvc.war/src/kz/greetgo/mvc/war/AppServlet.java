@@ -39,6 +39,8 @@ public abstract class AppServlet extends GenericServlet {
     return requestProcessing.execDefinitionList();
   }
 
+  protected ServletRegistration.Dynamic servletRegistration;
+
   @SuppressWarnings("SameParameterValue")
   public void register(ServletContext ctx, String mappingBase) {
 
@@ -48,17 +50,20 @@ public abstract class AppServlet extends GenericServlet {
       .with(builder -> getControllerList().forEach(builder::addController))
       .build();
 
-    final ServletRegistration.Dynamic registration = ctx.addServlet(getAddingServletName(), this);
+    servletRegistration = ctx.addServlet(getAddingServletName(), this);
     {
-      if (mappingBase == null) mappingBase = getTargetSubContext() + "/*";
-      registration.addMapping(mappingBase);
+      if (mappingBase == null) {
+        mappingBase = getTargetSubContext() + "/*";
+      }
+      servletRegistration.addMapping(mappingBase);
     }
 
     {
       UploadInfo ui = getUploadInfo();
       if (ui != null) {
-        registration.setMultipartConfig(new MultipartConfigElement(ui.location, ui.maxFileSize,
-          ui.maxRequestSize, ui.fileSizeThreshold));
+        servletRegistration.setMultipartConfig(
+          new MultipartConfigElement(ui.location, ui.maxFileSize, ui.maxRequestSize, ui.fileSizeThreshold)
+        );
       }
     }
 

@@ -1,5 +1,7 @@
 //noinspection UnnecessaryQualifiedReference
 apply plugin: kz.greetgo.gradle.plugins.MavenUploadPlugin
+//noinspection UnnecessaryQualifiedReference
+apply plugin: kz.greetgo.gradle.plugins.GgRepoUploadPlugin
 
 eclipse {
   jdt {
